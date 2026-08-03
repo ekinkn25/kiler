@@ -1,0 +1,31 @@
+# ---------- Web framework ----------
+fastapi
+uvicorn[standard]
+
+# ---------- Veri doğrulama / yapılandırma ----------
+pydantic
+pydantic-settings
+python-dotenv
+
+# ---------- İlişkisel veritabanı (SQLite) ----------
+sqlalchemy
+alembic
+
+# ---------- Doküman veritabanı (MongoDB) ----------
+motor
+
+# ---------- Kimlik doğrulama ----------
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==4.0.1
+python-multipart
+
+# ---------- Dış servis çağrıları ----------
+httpx
+
+# ---------- Metin eşleştirme (malzeme normalizasyonu) ----------
+rapidfuzz
+
+# ---------- Test ----------
+pytest
+pytest-asyncio
