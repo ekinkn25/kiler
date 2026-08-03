@@ -1,0 +1,63 @@
+# ---------- Ortam değişkenleri / GİZLİ BİLGİLER ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---------- Python / Backend ----------
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# ---------- Veritabanı dosyaları ----------
+*.db
+*.sqlite
+*.sqlite3
+
+# ---------- Node / React Native / Expo ----------
+node_modules/
+.expo/
+.expo-shared/
+dist/
+web-build/
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+*.orig.*
+
+# ---------- Native build çıktıları ----------
+android/app/build/
+android/.gradle/
+ios/Pods/
+ios/build/
+*.apk
+*.aab
+*.ipa
+
+# ---------- Editör / İşletim sistemi ----------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- Loglar ----------
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# ---------- Ofis geçici / kilit dosyaları ----------
+~$*
+.~lock.*#
+*.tmp
