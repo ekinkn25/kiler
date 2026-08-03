@@ -24,10 +24,10 @@ hedefimi aşmadan ne pişirebilirim?" sorusuna cevap vermiyor.
 
 | Katman | Teknoloji |
 |---|---|
-| Mobil | React Native, TypeScript, Expo Dev Client |
+| Mobil | Flutter, Dart, Material 3, Riverpod |
 | Backend | Python, FastAPI, SQLAlchemy, Alembic |
 | Veritabanı | SQLite (ilişkisel) + MongoDB Atlas (doküman) |
-| Cihaz üstü AI | Google ML Kit (barkod okuma) |
+| Cihaz üstü AI | Google ML Kit (`mobile_scanner` ile barkod okuma) |
 | Yapay zeka | Groq / LLaMA 3 + RAG mimarisi |
 | Dış veri | Open Food Facts API |
 

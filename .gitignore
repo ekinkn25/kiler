@@ -24,23 +24,39 @@ build/
 *.sqlite
 *.sqlite3
 
-# ---------- Node / React Native / Expo ----------
-node_modules/
-.expo/
-.expo-shared/
-dist/
-web-build/
+# ---------- Flutter / Dart ----------
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+coverage/
+
+# ---------- Android ----------
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/key.properties
+mobile/android/app/debug/
+mobile/android/app/profile/
+mobile/android/app/release/
 *.jks
+*.keystore
+
+# ---------- iOS ----------
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/Flutter/Flutter.framework
+mobile/ios/Flutter/Flutter.podspec
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Flutter/flutter_export_environment.sh
+mobile/ios/Runner/GeneratedPluginRegistrant.*
 *.p8
 *.p12
 *.mobileprovision
-*.orig.*
 
-# ---------- Native build çıktıları ----------
-android/app/build/
-android/.gradle/
-ios/Pods/
-ios/build/
+# ---------- Build çıktıları ----------
 *.apk
 *.aab
 *.ipa
