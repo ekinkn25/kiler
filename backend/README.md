@@ -14,3 +14,14 @@ app/
 
 ## Çalıştırma
 uvicorn app.main:app --reload
+
+## Kurulum
+
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy .env.example .env        # sonra SECRET_KEY'i doldur
+uvicorn app.main:app --reload
+
+SECRET_KEY uretmek icin:
+python -c "import secrets; print(secrets.token_urlsafe(48))"
