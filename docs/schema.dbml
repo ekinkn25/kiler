@@ -1,0 +1,592 @@
+Project kalori_sayaci {
+  database_type: 'SQLite'
+  Note: '''
+    Kalori Sayaci + Akilli Kiler Asistani - iliskisel sema (SQLite).
+    Tarifler MongoDB "recipes" koleksiyonunda tutulur.
+    Iki taraf su iki alan uzerinden eslesir:
+      ingredients.canonical_name  <->  recipes.ingredients[].canonical_name
+      recipe_id (TEXT)            <->  recipes._id (ObjectId string)
+  '''
+}
+
+// ====================== ENUM'LAR ======================
+// SQLite'ta native ENUM yok. Uygulamada TEXT + CHECK kisiti olarak yazilir.
+
+Enum gender {
+  erkek
+  kadin
+  belirtilmedi
+}
+
+Enum activity_level {
+  sedanter
+  hafif
+  orta
+  yuksek
+  cok_yuksek
+}
+
+Enum goal {
+  kilo_verme
+  koruma
+  kilo_alma
+}
+
+Enum unit_type {
+  mass
+  volume
+  count
+}
+
+Enum unit_code {
+  g
+  kg
+  ml
+  l
+  adet
+  paket
+  yemek_kasigi
+  tatli_kasigi
+  cay_kasigi
+  su_bardagi
+  demet
+  dilim
+}
+
+Enum product_source {
+  openfoodfacts
+  user
+  admin
+}
+
+Enum shopping_source {
+  manuel
+  esik
+  tarif
+  ongoru
+}
+
+Enum meal_type {
+  kahvalti
+  ogle
+  aksam
+  atistirma
+}
+
+Enum log_source {
+  manuel
+  barkod
+  tarif
+}
+
+Enum feedback_action {
+  begendim
+  begenmedim
+  yaptim
+  atladim
+}
+
+Enum taste_dimension {
+  cuisine
+  diet_tag
+  ingredient
+  difficulty
+}
+
+Enum chat_role {
+  user
+  assistant
+}
+
+Enum pantry_event_type {
+  eklendi
+  arttirildi
+  tuketildi_tarif
+  tuketildi_manuel
+  bozuldu_atildi
+  duzeltme
+  silindi
+}
+
+// ====================== A. KULLANICI ======================
+
+Table users {
+  id                   integer  [pk, increment]
+  email                varchar  [not null, unique]
+  hashed_password      varchar  [not null]
+  full_name            varchar
+  is_active            boolean  [not null, default: true]
+  onboarding_completed boolean  [not null, default: false]
+  created_at           datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at           datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    email [unique]
+  }
+  Note: 'Kimlik ve giris. Sifre bcrypt ile hashlenir, duz metin ASLA saklanmaz. Hesap silinince tum iliskili kayitlar CASCADE ile silinir (KVKK).'
+}
+
+Table user_profiles {
+  id                   integer  [pk, increment]
+  user_id              integer  [not null, unique]
+  birth_year           integer
+  gender               gender
+  height_cm            real
+  weight_kg            real
+  activity_level       activity_level [default: 'orta']
+  goal                 goal           [default: 'koruma']
+  bmr                  real
+  tdee                 real
+  daily_calorie_target real     [not null, default: 2000]
+  protein_target_g     real
+  carb_target_g        real
+  fat_target_g         real
+  household_size       integer  [not null, default: 1]
+  created_at           datetime
+  updated_at           datetime
+
+  Note: 'users ile 1:1. Onboarding anketinin (W1-T19) ciktisi. birth_year yas yerine tutulur, boylece veri bayatlamaz. household_size = R11 varsayilan porsiyon sayisi.'
+}
+
+Table diet_tags {
+  id           integer [pk, increment]
+  code         varchar [not null, unique]
+  display_name varchar [not null]
+  description  varchar
+
+  Note: 'Sabit sozluk: vegan, vejetaryen, glutensiz, laktozsuz, ketojenik, dusuk_karbonhidrat. MongoDB recipes.diet_tags ile ayni kod setini kullanir.'
+}
+
+Table user_diet_tags {
+  user_id     integer  [not null]
+  diet_tag_id integer  [not null]
+  created_at  datetime
+
+  indexes {
+    (user_id, diet_tag_id) [pk]
+  }
+  Note: 'R8: N:N iliski. Kullanici hem vegan hem glutensiz olabilir.'
+}
+
+Table allergens {
+  id           integer [pk, increment]
+  code         varchar [not null, unique]
+  display_name varchar [not null]
+
+  Note: 'GUVENLIK KRITIK sozluk: gluten, laktoz, findik, yer_fistigi, yumurta, soya, deniz_urunu, susam. Bu filtre hicbir kosulda atlanmaz.'
+}
+
+Table user_allergens {
+  user_id     integer  [not null]
+  allergen_id integer  [not null]
+  severity    varchar
+  created_at  datetime
+
+  indexes {
+    (user_id, allergen_id) [pk]
+  }
+  Note: 'severity: hafif / siddetli. Siddetli olanlar mutlak filtredir.'
+}
+
+// ====================== B. SOZLUK / KATALOG ======================
+
+Table categories {
+  id           integer [pk, increment]
+  code         varchar [not null, unique]
+  display_name varchar [not null]
+  icon         varchar
+  sort_order   integer [default: 0]
+
+  Note: 'bakliyat, sut_urunleri, et_tavuk, manav, kuru_gida, baharat, icecek, dondurulmus, diger'
+}
+
+Table ingredients {
+  id                  integer   [pk, increment]
+  canonical_name      varchar   [not null, unique]
+  display_name        varchar   [not null]
+  category_id         integer
+  default_unit_type   unit_type [not null, default: 'mass']
+  default_unit        unit_code [not null, default: 'g']
+  grams_per_piece     real
+  ml_to_gram_factor   real
+  cooked_yield_factor real
+  calories_per_100g   real
+  protein_per_100g    real
+  carb_per_100g       real
+  fat_per_100g        real
+  fiber_per_100g      real
+  sugar_per_100g      real
+  sodium_mg_per_100g  real
+  avg_shelf_life_days integer
+  season_months       varchar
+  avg_price_per_100g  real
+  is_staple           boolean   [default: false]
+  created_at          datetime
+
+  indexes {
+    canonical_name [unique]
+    category_id
+  }
+  Note: '''
+    SISTEMIN KALBI. canonical_name = SQLite <-> MongoDB birlestirme anahtari.
+    R17 (uc durum) ancak bu tablo sayesinde uretilebilir:
+      kilerde var     -> YESIL
+      kilerde yok     -> KIRMIZI
+      bu tabloda yok  -> GRI
+
+    grams_per_piece     : 1 sogan ~ 150 g (adet <-> gram donusumu)
+    ml_to_gram_factor   : yogunluk, 1 ml sivi yag ~ 0.92 g
+    cooked_yield_factor : 100 g cig pirinc != 100 g pilav. Kalori dogrulugu icin.
+    season_months       : "5,6,7,8" -> mevsim bilgisi (V2)
+    avg_price_per_100g  : israf raporunun TL karsiligi
+    is_staple           : tuz, su, karabiber -> eslesmede otomatik VAR sayilir
+  '''
+}
+
+Table ingredient_aliases {
+  id            integer  [pk, increment]
+  ingredient_id integer  [not null]
+  alias         varchar  [not null, unique]
+  source        varchar
+  created_at    datetime
+
+  indexes {
+    alias [unique]
+    ingredient_id
+  }
+  Note: 'k.mercimek / mercimek (kirmizi) / MGRS KRMZ MRCMK hepsi ayni malzemeye baglanir. source: manuel / kullanici_duzeltmesi / fis_ocr. Bulanik eslesme (W3-T02) once burada tam eslesme arar.'
+}
+
+Table unmatched_ingredients {
+  id                     integer  [pk, increment]
+  raw_text               varchar  [not null]
+  normalized_text        varchar  [not null, unique]
+  source                 varchar
+  occurrence_count       integer  [default: 1]
+  resolved_ingredient_id integer
+  resolved_at            datetime
+  first_seen_at          datetime
+  last_seen_at           datetime
+
+  indexes {
+    normalized_text [unique]
+    occurrence_count
+    resolved_ingredient_id
+  }
+  Note: '''
+    EKLEME 2: Kendi kendini iyilestiren sozluk.
+    Eslestirilemeyen her malzeme metni buraya yazilir ve sayilir.
+    Hafta sonu occurrence_count a gore siralanip en sik cikanlar
+    ingredients + ingredient_aliases tablolarina eklenir.
+    V3 fis OCR icin de ayni mekanizma kullanilir.
+  '''
+}
+
+Table products {
+  id                  integer  [pk, increment]
+  barcode             varchar  [unique]
+  name                varchar  [not null]
+  brand               varchar
+  ingredient_id       integer
+  category_id         integer
+  package_quantity    real
+  package_unit        unit_code
+  serving_size_g      real
+  serving_description varchar
+  calories_per_100g   real
+  protein_per_100g    real
+  carb_per_100g       real
+  fat_per_100g        real
+  fiber_per_100g      real
+  sugar_per_100g      real
+  sodium_mg_per_100g  real
+  image_url           varchar
+  source              product_source [not null, default: 'openfoodfacts']
+  is_verified         boolean  [default: false]
+  fetched_at          datetime
+  created_at          datetime
+
+  indexes {
+    barcode [unique]
+    ingredient_id
+    name
+  }
+  Note: '''
+    R2: Barkod onbellegi. Ayni barkod ikinci kez okundugunda
+    Open Food Facts e gidilmez, buradan okunur.
+    barcode NULL olabilir (elle girilen urun); SQLite coklu NULL a izin verir.
+    source=user kayitlari Turk urunlerindeki veri boslugunu doldurur.
+    serving_size_g / serving_description Open Food Facts ten gelir ("1 kutu (330 ml)").
+  '''
+}
+
+// ====================== C. KILER VE ALISVERIS ======================
+
+Table pantry_items {
+  id                 integer   [pk, increment]
+  user_id            integer   [not null]
+  ingredient_id      integer   [not null]
+  product_id         integer
+  custom_name        varchar
+  quantity_base      real      [not null]
+  unit_type          unit_type [not null]
+  display_unit       unit_code [not null]
+  min_threshold_base real      [default: 0]
+  expiry_date        date
+  opened_at          date
+  is_active          boolean   [not null, default: true]
+  last_restocked_at  datetime
+  created_at         datetime
+  updated_at         datetime
+
+  indexes {
+    (user_id, ingredient_id) [unique]
+    (user_id, is_active)
+    expiry_date
+  }
+  Note: '''
+    R3, R4: "5 kg mercimek" -> quantity_base=5000, unit_type=mass, display_unit=kg
+    Miktarlar TEMEL birimde saklanir (mass=g, volume=ml, count=adet).
+    CHECK (quantity_base >= 0)
+    Kullanici basina malzeme basina TEK aktif satir (miktarlar birlestirilir).
+    is_active=false -> tukendi ama gecmis kalsin (soft delete).
+  '''
+}
+
+Table pantry_events {
+  id                  integer   [pk, increment]
+  user_id             integer   [not null]
+  ingredient_id       integer   [not null]
+  pantry_item_id      integer
+  event_type          pantry_event_type [not null]
+  quantity_base_delta real      [not null]
+  unit_type           unit_type [not null]
+  recipe_id           varchar
+  estimated_cost      real
+  event_note          varchar
+  created_at          datetime  [not null]
+
+  indexes {
+    (user_id, created_at)
+    (user_id, ingredient_id, created_at)
+    (user_id, event_type)
+  }
+  Note: '''
+    EKLEME 1: Append-only kiler hareket gunlugu. ASLA guncellenmez, silinmez.
+    quantity_base_delta: pozitif = giris, negatif = cikis.
+
+    Actigi ozellikler:
+      - Gida israfi raporu      : event_type=bozuldu_atildi toplami
+      - Tuketim hizi tahmini    : son 30 gunun tuketildi_* olaylari
+      - Akilli esik             : sabit min_threshold yerine tuketim hizina gore
+      - Ongorulu alisveris      : bitmeden ONCE listeye ekleme
+
+    Bu tablo olmadan bu ozellikler GERIYE DONUK URETILEMEZ.
+  '''
+}
+
+Table shopping_list_items {
+  id               integer  [pk, increment]
+  user_id          integer  [not null]
+  ingredient_id    integer
+  custom_name      varchar
+  quantity         real
+  unit             unit_code
+  source           shopping_source [not null, default: 'manuel']
+  source_recipe_id varchar
+  is_checked       boolean  [not null, default: false]
+  checked_at       datetime
+  item_note        varchar
+  created_at       datetime
+
+  indexes {
+    (user_id, ingredient_id) [unique]
+    (user_id, is_checked)
+  }
+  Note: 'R5: source = manuel / esik / tarif / ongoru. Ayni urun iki kez eklenirse miktar birlestirilir (upsert).'
+}
+
+// ====================== D. KALORI TAKIBI ======================
+
+Table meal_logs {
+  id            integer    [pk, increment]
+  user_id       integer    [not null]
+  logged_date   date       [not null]
+  meal_type     meal_type  [not null]
+  source        log_source [not null, default: 'manuel']
+  product_id    integer
+  ingredient_id integer
+  recipe_id     varchar
+  item_name     varchar    [not null]
+  servings      real       [default: 1]
+  quantity_g    real
+  calories      real       [not null]
+  protein_g     real
+  carb_g        real
+  fat_g         real
+  fiber_g       real
+  sugar_g       real
+  sodium_mg     real
+  created_at    datetime
+
+  indexes {
+    (user_id, logged_date)
+    (user_id, logged_date, meal_type)
+  }
+  Note: '''
+    R1, R6: Gunluk toplam ve "yediklerine gore oneri" bu tablodan beslenir.
+    ANLIK GORUNTU ILKESI: item_name, calories ve makrolar kayit aninda KOPYALANIR.
+    Boylece urun 3 ay sonra duzeltilse bile gecmis gunlerin toplami degismez.
+  '''
+}
+
+Table weight_logs {
+  id          integer  [pk, increment]
+  user_id     integer  [not null]
+  logged_date date     [not null]
+  weight_kg   real     [not null]
+  created_at  datetime
+
+  indexes {
+    (user_id, logged_date) [unique]
+  }
+  Note: 'OPSIYONEL. Hedef ilerlemesini gosterir, kalori sayacini anlamli kilar.'
+}
+
+// ====================== E. TARIF ETKILESIMI ======================
+
+Table recipe_feedback {
+  id              integer  [pk, increment]
+  user_id         integer  [not null]
+  recipe_id       varchar  [not null]
+  action          feedback_action [not null]
+  rating          integer
+  servings_cooked real
+  comment         varchar
+  created_at      datetime
+
+  indexes {
+    (user_id, recipe_id)
+    (user_id, created_at)
+  }
+  Note: 'R10: Append-only olay gunlugu. Ogrenen AI nin egitim sinyali. CHECK (rating BETWEEN 1 AND 5).'
+}
+
+Table recipe_favorites {
+  user_id    integer  [not null]
+  recipe_id  varchar  [not null]
+  created_at datetime
+
+  indexes {
+    (user_id, recipe_id) [pk]
+  }
+  Note: 'OPSIYONEL. Kaydedilen tarifler.'
+}
+
+Table user_taste_weights {
+  id          integer  [pk, increment]
+  user_id     integer  [not null]
+  dimension   taste_dimension [not null]
+  taste_key   varchar  [not null]
+  weight      real     [not null, default: 0]
+  event_count integer  [default: 0]
+  updated_at  datetime
+
+  indexes {
+    (user_id, dimension, taste_key) [unique]
+  }
+  Note: '''
+    R9, R10: OGRENILEN zevk vektoru (-1 .. +1).
+    taste_key ornekleri: turk, italyan, vegan, kirmizi_mercimek
+    recipe_feedback ve meal_logs olaylarindan ustel hareketli ortalama ile guncellenir.
+    W3-T05 skorlamasinda %15 agirlikla kullanilir.
+
+    ONEMLI: Bu tablo user_diet_tags / user_allergens i ASLA gecersiz kilamaz.
+    Ogrenilen tercih, beyan edilen kisiti ezemez (alerjen guvenligi).
+  '''
+}
+
+// ====================== F. CHATBOT VE AI ======================
+
+Table chat_conversations {
+  id              integer  [pk, increment]
+  user_id         integer  [not null]
+  title           varchar
+  created_at      datetime
+  last_message_at datetime
+
+  indexes {
+    (user_id, last_message_at)
+  }
+}
+
+Table chat_messages {
+  id                   integer   [pk, increment]
+  conversation_id      integer   [not null]
+  role                 chat_role [not null]
+  content              text      [not null]
+  suggested_recipe_ids text
+  prompt_tokens        integer
+  completion_tokens    integer
+  from_cache           boolean   [default: false]
+  created_at           datetime
+
+  indexes {
+    (conversation_id, created_at)
+  }
+  Note: 'R14: Sohbet gecmisi. suggested_recipe_ids = JSON dizi (MongoDB tarif _id leri). token alanlari W3-T16 maliyet olcumu icin.'
+}
+
+Table llm_cache {
+  id            integer  [pk, increment]
+  cache_key     varchar  [not null, unique]
+  response_json text     [not null]
+  model         varchar
+  hit_count     integer  [default: 0]
+  created_at    datetime
+  expires_at    datetime
+
+  indexes {
+    cache_key [unique]
+    expires_at
+  }
+  Note: 'MALIYET DUSURME: cache_key = sha256(normalize_soru + kiler_parmak_izi + profil_parmak_izi). Ayni baglamda ayni soru API ye gitmeden yanitlanir.'
+}
+
+// ====================== ILISKILER ======================
+
+Ref: user_profiles.user_id            - users.id   [delete: cascade]
+Ref: user_diet_tags.user_id           > users.id   [delete: cascade]
+Ref: user_diet_tags.diet_tag_id       > diet_tags.id
+Ref: user_allergens.user_id           > users.id   [delete: cascade]
+Ref: user_allergens.allergen_id       > allergens.id
+
+Ref: ingredients.category_id          > categories.id
+Ref: ingredient_aliases.ingredient_id > ingredients.id [delete: cascade]
+Ref: unmatched_ingredients.resolved_ingredient_id > ingredients.id
+Ref: products.ingredient_id           > ingredients.id
+Ref: products.category_id             > categories.id
+
+Ref: pantry_items.user_id             > users.id   [delete: cascade]
+Ref: pantry_items.ingredient_id       > ingredients.id
+Ref: pantry_items.product_id          > products.id
+
+Ref: pantry_events.user_id            > users.id   [delete: cascade]
+Ref: pantry_events.ingredient_id      > ingredients.id
+Ref: pantry_events.pantry_item_id     > pantry_items.id
+
+Ref: shopping_list_items.user_id      > users.id   [delete: cascade]
+Ref: shopping_list_items.ingredient_id > ingredients.id
+
+Ref: meal_logs.user_id                > users.id   [delete: cascade]
+Ref: meal_logs.product_id             > products.id
+Ref: meal_logs.ingredient_id          > ingredients.id
+
+Ref: weight_logs.user_id              > users.id   [delete: cascade]
+
+Ref: recipe_feedback.user_id          > users.id   [delete: cascade]
+Ref: recipe_favorites.user_id         > users.id   [delete: cascade]
+Ref: user_taste_weights.user_id       > users.id   [delete: cascade]
+
+Ref: chat_conversations.user_id       > users.id   [delete: cascade]
+Ref: chat_messages.conversation_id    > chat_conversations.id [delete: cascade]
