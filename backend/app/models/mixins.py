@@ -21,7 +21,7 @@ def enum_col(py_enum, **kwargs):
             native_enum=False,
             create_constraint=True,
             validate_strings=True,
-            name=f"ck_{py_enum.__name__.lower()}",
+            name=py_enum.__name__.lower(),
             values_callable=lambda e: [member.value for member in e],
         ),
         **kwargs

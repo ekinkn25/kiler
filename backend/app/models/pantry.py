@@ -26,7 +26,7 @@ class PantryItem(TimestampMixin, Base):
     __tablename__ = "pantry_items"
     __table_args__ = (
         UniqueConstraint("user_id", "ingredient_id", name="uq_pantry_user_ingredient"),
-        CheckConstraint("quantity_base >= 0", name="ck_pantry_quantity_nonnegative"),
+        CheckConstraint("quantity_base >= 0", name="quantity_nonnegative"),
         Index("ix_pantry_user_active", "user_id", "is_active"),
         Index("ix_pantry_expiry", "expiry_date"),
     )

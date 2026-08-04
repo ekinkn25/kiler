@@ -26,7 +26,7 @@ class RecipeFeedback(Base):
     """
     __tablename__ = "recipe_feedback"
     __table_args__ = (
-        CheckConstraint("rating IS NULL OR (rating BETWEEN 1 AND 5)", name="ck_feedback_rating"),
+        CheckConstraint("rating IS NULL OR (rating BETWEEN 1 AND 5)", name="rating_range"),
         Index("ix_feedback_user_recipe", "user_id", "recipe_id"),
         Index("ix_feedback_user_time", "user_id", "created_at"),
     )
@@ -76,7 +76,7 @@ class UserTasteWeight(Base):
     __tablename__ = "user_taste_weights"
     __table_args__ = (
         UniqueConstraint("user_id", "dimension", "taste_key", name="uq_taste_user_dim_key"),
-        CheckConstraint("weight BETWEEN -1 AND 1", name="ck_taste_weight_range"), #makine öğrenmesi modelinde işimize yarayacak 
+        CheckConstraint("weight BETWEEN -1 AND 1", name="weight_range"), #makine öğrenmesi modelinde işimize yarayacak 
         #ayrıca kullanıcı bir tarife önceden puan verip vermediğini anında bulur ve kullanıcının zaman içindeki davranış değişimini (trend) analiz etmek için (user_id, recipe_id) ve (user_id, crated_at) indeksleri yerleştirildi.
     )
 
