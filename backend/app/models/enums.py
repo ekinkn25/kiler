@@ -55,7 +55,7 @@ class ShoppingSource(str, enum.Enum):
     ONGORU = "ongoru"
 
 class MealType(str, enum.Enum):
-    KAHVALTI = "kahvaltı"
+    KAHVALTI = "kahvalti"
     OGLE = "ogle"
     AKSAM = "aksam"
     ATISTIRMA = "atistirma"
