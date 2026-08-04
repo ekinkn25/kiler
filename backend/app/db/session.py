@@ -1,6 +1,7 @@
 from collections.abc import Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import settings
@@ -18,6 +19,22 @@ engine = create_engine( #iletişim motoru:SQLAlchemy kütüphanesinin kalbidir. 
     echo=settings.DEBUG,   # DEBUG modda uretilen SQL sorgularini loga basar
     future=True,
 )
+
+@event.listens_for(Engine, "connect") # burada kullanılan yapı decorator(süsleyici): bu satırla sqlalchemy'e şunu emrediyoruz arka planda ne zaman yeni bir veri tabanı motoru(engine) bağlanıtıs kurulursa, araya gir ve bağlantı havuza dönmeden hemen bu fonksiyonu çalıştır
+def _set_sqlite_pragma(dbapi_connection, connection_record) -> None: 
+    """SQLite bağlantılarında foreign key zorlaması ve WAL modunu açar
+    SQLite'da fk zorlaması varsayılan olarak kapalıdır. Bu ayar olmadan ON DELETE CASCADE çalışmaz
+    Kullanıcı silindiğinde ilişkili kayıtlar yetim kalır ayrıca kvkk veri imhasını karşılamaz"""
+
+    #postreSQL'e geçilirse bu blok atılmalı
+    if "sqlite" not in engine.url.drivername:
+        return
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.execute("PRAGMA journal_mode=WAL")
+#WAL: write ahead logging
+#Geleneksel Model (Rollback Journal): Biri veritabanına küçücük bir veri yazarken, SQLite tüm veritabanı dosyasını kilitler. O sırada okuma yapmak isteyen herkes bekler. FastAPI gibi asenkron ve çoklu istek alan yapılarda bu anında darboğaz (bottleneck) yaratır ve meşhur "database is locked" hatasını alırsın.
+#WAL Modu: Veritabanını kilitlemek yerine, yazılacak verileri önce geçici bir -wal uzantılı dosyaya kaydeder. Bu harika mimari sayesinde aynı anda birçok okuyucu (reader) ve bir yazar (writer) birbirini beklemeden çalışabilir. Performans dramatik şekilde artar.
 
 SessionLocal = sessionmaker(    #oturum fabrikası:engine anabağlantı hattı fakat her müşteri için bu hattı sürekli açık tutmak yorar her yeni istek geldiğinde kısa süreli bir session açılıp kapatılmalıdır, sessionmaker da bunun fabrikasıdır
     bind=engine,
