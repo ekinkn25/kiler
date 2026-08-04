@@ -3,7 +3,7 @@ fastapi
 uvicorn[standard]
 
 # ---------- Veri doğrulama / yapılandırma ----------
-pydantic
+pydantic[email]
 pydantic-settings
 python-dotenv
 

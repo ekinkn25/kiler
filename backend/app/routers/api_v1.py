@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
+from app.schemas import ErrorResponse, PantryItemCreate
 
 api_router = APIRouter()
 
@@ -6,6 +7,18 @@ api_router = APIRouter()
 @api_router.get("/ping", tags=["system"], summary="Versiyonlu API canlilik testi")
 def ping() -> dict[str, bool]:
     return {"pong": True}
+
+# TODO(W2-T01): Bu gecici uc, gercek kiler endpoint'leri yazilinca SILINECEK.
+@api_router.post(
+    "/_schema-check/pantry",
+    tags=["system"],
+    summary="[GECICI] Sema dogrulama testi",
+    response_model=PantryItemCreate,
+    responses={status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ErrorResponse}},
+)
+def schema_check(payload: PantryItemCreate) -> PantryItemCreate:
+    """Gonderilen govdeyi dogrular ve aynen geri doner."""
+    return payload
 
 
 # ------------------------------------------------------------------
