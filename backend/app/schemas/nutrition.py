@@ -32,7 +32,9 @@ class MealLogCreate(AppBaseModel):
 
 class MealLogRead(AppBaseModel):
     id: int
-    logged_date: date
+    logged_date: date = Field(
+        description="kullanıcının YEREL tarihi. İşlemci gönderir; sunucu varsayılanı kullanılmaz"
+    )
     meal_type: MealType
     source: LogSource
     item_name: str
