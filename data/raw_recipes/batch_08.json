@@ -1,0 +1,360 @@
+[
+{
+"title": "Karnabahar Kızartması",
+"description": "Dışı çıtır, içi yumuşacık ve hafif bir sebze atıştırmalığı.",
+"ingredients": [
+{"name": "Karnabahar", "canonical_name": "karnabahar", "quantity": 1, "unit": "adet", "optional": false, "note": "Orta boy"}
+,
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 2, "unit": "adet", "optional": false, "note": null}
+,
+{"name": "Un", "canonical_name": "un", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": null}
+,
+{"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "Kızartmak için"}
+,
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+
+
+],
+"steps": [
+  "Karnabaharları çiçeklerine ayırarak hafifçe yumuşayana kadar kaynar suda haşlayın ve süzün.",
+  "Derin bir kasede yumurta, süt, un ve tuzu çırparak pürüzsüz bir kaplama harcı elde edin.",
+  "Haşlanan karnabaharları hazırladığınız sıvı harca bulayın.",
+  "Kızgın yağda her tarafı altın sarısı olana dek kızartıp havlu kağıt üzerine alın."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 15,
+"difficulty": "kolay",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz", "yumurta"],
+"cuisine": "turk"
+
+
+
+},
+{
+"title": "Patates Kızartması",
+"description": "Her yemeğin yanına yakışan klasik ve çıtır bir lezzet.",
+"ingredients": [
+{"name": "Patates", "canonical_name": "patates", "quantity": 4, "unit": "adet", "optional": false, "note": "Büyük boy"}
+,
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": "Kızartmak için"}
+,
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+
+
+],
+"steps": [
+  "Patateslerin kabuklarını soyarak eşit kalınlıkta çubuklar halinde dilimleyin.",
+  "Dilimlenen patatesleri soğuk suda bir süre bekleterek fazla nişastasından arındırın ve temiz bir bezle iyice kurulayın.",
+  "Derin ve kızgın yağda dışları çıtır çıtır olana kadar kızartın.",
+  "Yağdan aldıktan sonra üzerine tuz serpin ve sıcak olarak servis edin."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 20,
+"difficulty": "kolay",
+"diet_tags": ["vegan", "vejetaryen", "glutensiz", "laktozsuz"],
+"allergens": [],
+"cuisine": "turk"
+
+
+
+},
+{
+"title": "Patlıcan Kızartması",
+"description": "Yaz aylarının vazgeçilmezi olan enfes domates soslu kızartma.",
+"ingredients": [
+{"name": "Patlıcan", "canonical_name": "patlican", "quantity": 3, "unit": "adet", "optional": false, "note": null}
+,
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "Kızartmak için"}
+,
+{"name": "Domates", "canonical_name": "domates", "quantity": 3, "unit": "adet", "optional": false, "note": "Sos için"}
+,
+{"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": false, "note": "Sos için"}
+,
+{"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": "Sos için"}
+,
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+
+
+],
+"steps": [
+  "Patlıcanları alacalı şekilde soyduktan sonra halka halka doğrayın.",
+  "Acısını alması için tuzlu suda yaklaşık yirmi dakika bekletin ve ardından havlu kağıt ile tamamen kurulayın.",
+  "Kızgın ayçiçek yağında arkalı önlü kızartıp yağını çekmesi için kağıt havlu üzerine alın.",
+  "Ayrı bir tavada zeytinyağı, ezilmiş sarımsak ve rendelenmiş domatesi suyunu çekene kadar pişirerek patlıcanların üzerine dökün."
+],
+"servings": 4,
+"prep_time": 30,
+"cook_time": 25,
+"difficulty": "kolay",
+"diet_tags": ["vegan", "vejetaryen", "glutensiz", "laktozsuz"],
+"allergens": [],
+"cuisine": "turk"
+
+
+
+},
+{
+"title": "Mücver",
+"description": "Kabak ve taze yeşilliklerin buluştuğu nefis ve pratik bir lezzet.",
+"ingredients": [
+{"name": "Kabak", "canonical_name": "kabak", "quantity": 3, "unit": "adet", "optional": false, "note": null}
+,
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 2, "unit": "adet", "optional": false, "note": null}
+,
+{"name": "Un", "canonical_name": "un", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null}
+,
+{"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": false, "note": null}
+,
+{"name": "Dereotu", "canonical_name": "dereotu", "quantity": 0.5, "unit": "demet", "optional": false, "note": null}
+,
+{"name": "Beyaz Peynir", "canonical_name": "beyaz_peynir", "quantity": 100, "unit": "g", "optional": true, "note": null}
+,
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "Kızartmak için"}
+,
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+,
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+
+
+],
+"steps": [
+  "Kabakları rendeleyip fazla sularını avucunuzla iyice sıkarak geniş bir karıştırma kabına alın.",
+  "Üzerine yumurta, ince kıyılmış yeşillikler, ezilmiş beyaz peynir ve baharatları ekleyip harmanlayın.",
+  "Unu azar azar ilave ederek tüm malzemelerin birbirine bağlandığı kıvamlı bir harç elde edin.",
+  "Hazırladığınız karışımdan kaşık yardımıyla parçalar alıp kızgın yağda her iki tarafını da kızartın."
+],
+"servings": 4,
+"prep_time": 20,
+"cook_time": 20,
+"difficulty": "orta",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz", "yumurta"],
+"cuisine": "turk"
+
+
+
+},
+{
+"title": "Krep",
+"description": "Kahvaltıların yıldızı olan, tatlı veya tuzlu tüketilebilen incecik hamur işi.",
+"ingredients": [
+{"name": "Un", "canonical_name": "un", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Süt", "canonical_name": "sut", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 2, "unit": "adet", "optional": false, "note": null}
+,
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null}
+,
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+
+
+],
+"steps": [
+  "Yumurta ve sütü geniş bir kapta tel çırpıcı yardımıyla tamamen karışana kadar çırpın.",
+  "Karışıma un, tuz ve az miktarda sıvı yağ ekleyerek içinde topak kalmayan akışkan bir hamur hazırlayın.",
+  "Hafifçe yağlanmış sıcak ve yapışmaz bir tavaya bir kepçe harç dökerek tavanın tabanına ince bir tabaka halinde yayın.",
+  "Kreplerin her iki yüzünü de orta ateşte hafifçe renk alana dek pişirin."
+],
+"servings": 4,
+"prep_time": 10,
+"cook_time": 15,
+"difficulty": "kolay",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz", "yumurta"],
+"cuisine": "turk"
+
+
+
+},
+{
+"title": "Sütlaç",
+"description": "Hafifliğiyle öne çıkan, ferahlatıcı geleneksel sütlü tatlı.",
+"ingredients": [
+{"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "l", "optional": false, "note": null}
+,
+{"name": "Pirinç", "canonical_name": "pirinc", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Su", "canonical_name": "su", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null}
+
+
+],
+"steps": [
+  "Yıkanmış pirinçleri geniş bir tencereye alın ve üzerini geçecek kadar suyla tamamen yumuşayana dek haşlayın.",
+  "Haşlanıp suyunu çeken pirinçlerin üzerine soğuk sütü ilave edip ara sıra karıştırarak kaynamaya bırakın.",
+  "Karışım kaynadıktan sonra şekeri ekleyin ve tatlının kıvamı koyulaşana kadar kısık ateşte pişirmeye devam edin.",
+  "Kıvam alan sütlacı kaselere eşit oranda paylaştırın ve oda sıcaklığına geldikten sonra buzdolabında soğutun."
+],
+"servings": 4,
+"prep_time": 5,
+"cook_time": 40,
+"difficulty": "kolay",
+"diet_tags": ["glutensiz"],
+"allergens": ["laktoz"],
+"cuisine": "turk"
+
+
+
+},
+{
+"title": "İrmik Helvası",
+"description": "Tereyağı kokusuyla baş döndüren, tane tane dökülen tam ölçülü helva.",
+"ingredients": [
+{"name": "İrmik", "canonical_name": "irmik", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null}
+,
+{"name": "Süt", "canonical_name": "sut", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Su", "canonical_name": "su", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null}
+
+
+],
+"steps": [
+  "Ayrı bir sos tenceresinde su, süt ve şekeri ısıtarak şekerin tamamen erimesini sağlayın ancak kaynatmayın.",
+  "Geniş bir tencerede tereyağını eritip irmiği ekleyerek rengi dönene kadar kısık ateşte sürekli kavurun.",
+  "Kavrulan irmiğin üzerine hazırladığınız sıcak şerbeti yavaşça ve dikkatlice dökün.",
+  "Helva şerbetini tamamen çekene kadar karıştırdıktan sonra tencerenin kapağını kapatıp demlenmeye bırakın."
+],
+"servings": 4,
+"prep_time": 10,
+"cook_time": 35,
+"difficulty": "orta",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz"],
+"cuisine": "turk"
+
+
+
+},
+{
+"title": "Un Helvası",
+"description": "Ağızda dağılan kıvamı ve yoğun kavrulmuş lezzetiyle klasik bir tatlı.",
+"ingredients": [
+{"name": "Un", "canonical_name": "un", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 100, "unit": "g", "optional": false, "note": null}
+,
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Su", "canonical_name": "su", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null}
+
+
+],
+"steps": [
+  "Su ve şekeri derin bir kasede şeker tamamen eriyene kadar sürekli karıştırarak soğuk bir şerbet hazırlayın.",
+  "Tereyağı ve sıvı yağı tencereye alıp unu ekleyerek kokusu çıkana ve rengi kahverengiye dönene kadar kavurun.",
+  "Kavrulan unun üzerine hazırladığınız soğuk şerbeti ilave edip topaklanmaması için hızlıca karıştırmaya devam edin.",
+  "Helva toparlanıp kaşığa yapışmayacak kıvama geldiğinde ocaktan alın ve şekil vererek servis tabağına dizin."
+],
+"servings": 4,
+"prep_time": 10,
+"cook_time": 30,
+"difficulty": "orta",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz"],
+"cuisine": "turk"
+
+
+
+},
+{
+"title": "Revani",
+"description": "Şerbetini tam çeken, sünger dokulu meşhur irmik tatlısı.",
+"ingredients": [
+{"name": "İrmik", "canonical_name": "irmik", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Un", "canonical_name": "un", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 3, "unit": "adet", "optional": false, "note": null}
+,
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "Hamur için"}
+,
+{"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Kabartma Tozu", "canonical_name": "kabartma_tozu", "quantity": 1, "unit": "paket", "optional": false, "note": null}
+,
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"}
+,
+{"name": "Su", "canonical_name": "su", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"}
+,
+{"name": "Limon Suyu", "canonical_name": "limon", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null}
+
+
+],
+"steps": [
+  "Şerbet için su ve şekeri tencerede kaynatıp içerisine limon suyu ekleyin ve ılıması için kenarda bekletin.",
+  "Hamur için yumurta ve şekeri mikserle rengi beyazlaşıp köpük köpük olana kadar uzun süre çırpın.",
+  "Sıvı yağ, yoğurt, irmik, un ve kabartma tozunu ilave ederek spatula yardımıyla karışımı söndürmeden içten dışa karıştırın.",
+  "Yağlanmış fırın kabına döktüğünüz hamuru önceden ısıtılmış fırında üzeri güzelce kızarana dek pişirin.",
+  "Fırından çıkan sıcak kekin ilk sıcağı geçtikten sonra üzerine ılık şerbeti dökerek şerbetini çekmesi için dinlendirin."
+],
+"servings": 4,
+"prep_time": 20,
+"cook_time": 35,
+"difficulty": "orta",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz", "yumurta"],
+"cuisine": "turk"
+
+
+
+},
+{
+"title": "Şekerpare",
+"description": "Ortasında bütün fındık bulunan, kıyır kıyır şerbetli kurabiye tatlısı.",
+"ingredients": [
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 125, "unit": "g", "optional": false, "note": "Oda sıcaklığında"}
+,
+{"name": "Pudra Şekeri", "canonical_name": "pudra_sekeri", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 2, "unit": "adet", "optional": false, "note": null}
+,
+{"name": "İrmik", "canonical_name": "irmik", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Un", "canonical_name": "un", "quantity": 2.5, "unit": "su_bardagi", "optional": false, "note": null}
+,
+{"name": "Kabartma Tozu", "canonical_name": "kabartma_tozu", "quantity": 1, "unit": "paket", "optional": false, "note": null}
+,
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 2.5, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"}
+,
+{"name": "Su", "canonical_name": "su", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"}
+,
+{"name": "Limon Suyu", "canonical_name": "limon", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null}
+,
+{"name": "Fındık", "canonical_name": "findik", "quantity": 16, "unit": "adet", "optional": false, "note": "Üzeri için"}
+
+
+],
+"steps": [
+  "Şerbeti hazırlamak için su ve şekeri tencerede kaynatın, ardından ocaktan almadan önce limon suyunu ekleyip tamamen soğumaya bırakın.",
+  "Oda sıcaklığındaki tereyağı, yumurta ve pudra şekerini geniş bir yoğurma kabında pürüzsüz olana dek krema gibi karıştırın.",
+  "İrmik, un ve kabartma tozunu azar azar ekleyerek ele yapışmayan yumuşak kıvamlı bir hamur elde edene kadar yoğurun.",
+  "Hamurdan ceviz büyüklüğünde parçalar koparıp yuvarlayın ve aralıklı olarak fırın tepsisine dizerek ortalarına birer fındık yerleştirin.",
+  "Önceden ısıtılmış fırında tatlılar altın sarısı renk alana kadar pişirin ve fırından çıkar çıkmaz sıcak tatlıların üzerine soğuk şerbeti gezdirin."
+],
+"servings": 4,
+"prep_time": 25,
+"cook_time": 30,
+"difficulty": "orta",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz", "yumurta", "findik"],
+"cuisine": "turk"
+
+
+
+}
+]

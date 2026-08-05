@@ -1,0 +1,319 @@
+[
+  {
+    "title": "Su Böreği",
+    "description": "Haşlanmış yufka katlarının peynirli harçla dizildiği, tereyağı kokan geleneksel börek.",
+    "ingredients": [
+      {"name": "Un", "canonical_name": "un", "quantity": 600, "unit": "g", "optional": false, "note": "hamur için"},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 4, "unit": "adet", "optional": false, "note": "üçü hamura, biri sosa"},
+      {"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "hamur için ılık"},
+      {"name": "Beyaz Peynir", "canonical_name": "beyaz_peynir", "quantity": 400, "unit": "g", "optional": false, "note": "ezilmiş"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 1, "unit": "demet", "optional": false, "note": "ince kıyılmış"},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 150, "unit": "g", "optional": false, "note": "eritilmiş"},
+      {"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "sos için"},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 4, "unit": "yemek_kasigi", "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Un, yumurta, tuz ve ılık suyla ele yapışmayan bir hamur yoğurup 30 dakika dinlendirin.",
+      "Hamuru bezelere ayırıp her birini tepsi boyunda incecik açın.",
+      "Geniş bir tencerede su kaynatıp yufkaları teker teker yarım dakika haşlayın ve soğuk suya alıp süzün.",
+      "Eritilmiş tereyağı, süt ve bir yumurtayı çırparak sos hazırlayın.",
+      "Yağlanmış tepsiye yufkaları dizin, her katın arasına sostan gezdirin.",
+      "Orta katta peynir ve maydanoz harcını yayıp kalan yufkalarla üstünü kapatın.",
+      "Kalan sosu üzerine dökerek 180 derece fırında üstü kızarana dek yaklaşık 40 dakika pişirin."
+    ],
+    "servings": 4,
+    "prep_time": 60,
+    "cook_time": 45,
+    "difficulty": "zor",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "yumurta", "laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Peynirli Börek",
+    "description": "Yufka katlarının peynirli harç ve sosla buluştuğu, pratik fırın böreği.",
+    "ingredients": [
+      {"name": "Yufka", "canonical_name": "yufka", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+      {"name": "Beyaz Peynir", "canonical_name": "beyaz_peynir", "quantity": 350, "unit": "g", "optional": false, "note": "ezilmiş"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": true, "note": null},
+      {"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 2, "unit": "adet", "optional": false, "note": "biri üzerine sürmek için"},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": true, "note": "eritilmiş"},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": true, "note": "peynir tuzluysa eklemeyin"}
+    ],
+    "steps": [
+      "Süt, sıvı yağ, eritilmiş tereyağı ve bir yumurtayı çırparak sos hazırlayın.",
+      "Peyniri maydanoz ve karabiberle karıştırıp iç harcı yapın.",
+      "Bir yufkayı yağlanmış tepsiye serip sostan gezdirin.",
+      "Diğer yufkaları buruşturarak katlar halinde yerleştirin ve aralarına hem sos hem peynir harcı dağıtın.",
+      "En üst katı yufkayla kapatıp kalan sosu iyice yayın.",
+      "Üzerine çırpılmış yumurta sürüp 180 derece fırında yaklaşık 35 dakika kızartın.",
+      "Fırından çıkınca 10 dakika dinlendirip dilimleyerek servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 20,
+    "cook_time": 35,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "laktoz", "yumurta"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Ispanaklı Börek",
+    "description": "Soğanda kavrulmuş ıspanak harcıyla hazırlanan, yufkadan yapılan doyurucu börek.",
+    "ingredients": [
+      {"name": "Yufka", "canonical_name": "yufka", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+      {"name": "Ispanak", "canonical_name": "ispanak", "quantity": 700, "unit": "g", "optional": false, "note": "ayıklanmış ve doğranmış"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": true, "note": "diş"},
+      {"name": "Lor Peyniri", "canonical_name": "lor_peyniri", "quantity": 150, "unit": "g", "optional": true, "note": null},
+      {"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "sos için"},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 2, "unit": "adet", "optional": false, "note": "biri üzerine"},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": "harç için"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Zeytinyağında soğan ve sarımsağı yumuşayana dek çevirin.",
+      "Doğranmış ıspanakları ekleyip suyunu tamamen çekene kadar pişirin ve baharatlayın.",
+      "Harç soğuduktan sonra dilerseniz lor peynirini karıştırın.",
+      "Süt, sıvı yağ ve bir yumurtayı çırparak sos hazırlayın.",
+      "Yufkaları tepsiye katlar halinde serip aralarına sos gezdirin ve ıspanak harcını dağıtın.",
+      "Üstünü yufkayla kapatıp kalan sosu yayın ve çırpılmış yumurta sürün.",
+      "180 derece fırında üzeri kızarana dek yaklaşık 35 dakika pişirin."
+    ],
+    "servings": 4,
+    "prep_time": 25,
+    "cook_time": 40,
+    "difficulty": "orta",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "laktoz", "yumurta"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Poğaça",
+    "description": "Yumuşacık mayalı hamurdan hazırlanan, peynirli klasik kahvaltılık.",
+    "ingredients": [
+      {"name": "Un", "canonical_name": "un", "quantity": 600, "unit": "g", "optional": false, "note": null},
+      {"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "ılık"},
+      {"name": "Yaş Maya", "canonical_name": "yas_maya", "quantity": 1, "unit": "paket", "optional": false, "note": "ya da 1 paket instant maya"},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 2, "unit": "yemek_kasigi", "optional": true, "note": null},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 2, "unit": "adet", "optional": false, "note": "biri üzerine sürmek için"},
+      {"name": "Şeker", "canonical_name": "seker", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": "mayayı beslemek için"},
+      {"name": "Beyaz Peynir", "canonical_name": "beyaz_peynir", "quantity": 250, "unit": "g", "optional": false, "note": "iç harç"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Ilık süt, şeker ve mayayı karıştırıp birkaç dakika köpürmesini bekleyin.",
+      "Yağ, yoğurt, bir yumurta ve tuzu ekleyip unu azar azar ilave ederek yumuşak bir hamur yoğurun.",
+      "Hamurun üzerini örtüp ılık ortamda iki katına çıkana dek yaklaşık 1 saat mayalandırın.",
+      "Peyniri maydanozla karıştırarak iç harcı hazırlayın.",
+      "Hamurdan ceviz büyüklüğünde parçalar alıp elinizle açın ve ortasına harç koyup kapatın.",
+      "Poğaçaları yağlı kâğıt serili tepsiye dizip aralarında boşluk bırakın ve 15 dakika dinlendirin.",
+      "Üzerlerine çırpılmış yumurta sürüp 180 derece fırında altın rengi olana dek 25 dakika pişirin."
+    ],
+    "servings": 4,
+    "prep_time": 90,
+    "cook_time": 25,
+    "difficulty": "orta",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "laktoz", "yumurta"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Açma",
+    "description": "Yumuşak dokusuyla bilinen, halka şeklinde bükülen mayalı fırın hamuru.",
+    "ingredients": [
+      {"name": "Un", "canonical_name": "un", "quantity": 700, "unit": "g", "optional": false, "note": null},
+      {"name": "Süt", "canonical_name": "sut", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": "ılık"},
+      {"name": "Yaş Maya", "canonical_name": "yas_maya", "quantity": 1, "unit": "paket", "optional": false, "note": null},
+      {"name": "Şeker", "canonical_name": "seker", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 100, "unit": "g", "optional": false, "note": "yumuşamış, iç yağlama için"},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 2, "unit": "adet", "optional": false, "note": "biri üzerine"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Ilık süte maya ve şekeri ekleyip köpürene dek bekletin.",
+      "Yağ, bir yumurta ve tuzu ilave edip unla birlikte kulak memesi kıvamında hamur yoğurun.",
+      "Hamuru örtüp iki katına çıkana kadar yaklaşık 1 saat mayalandırın.",
+      "Bezelere ayırıp her birini oval açın ve yumuşamış tereyağını yüzeye sürün.",
+      "Hamuru rulo yapıp uçlarını birleştirerek halka şekli verin.",
+      "Tepsiye dizip 20 dakika daha kabarmalarını bekleyin.",
+      "Üzerlerine yumurta sürüp 180 derece fırında yaklaşık 25 dakika pişirin."
+    ],
+    "servings": 4,
+    "prep_time": 100,
+    "cook_time": 25,
+    "difficulty": "orta",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "laktoz", "yumurta"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Simit",
+    "description": "Pekmezli suya batırılıp susamla kaplanan, dışı çıtır halka ekmek.",
+    "ingredients": [
+      {"name": "Un", "canonical_name": "un", "quantity": 600, "unit": "g", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": "ılık"},
+      {"name": "Yaş Maya", "canonical_name": "yas_maya", "quantity": 1, "unit": "paket", "optional": false, "note": null},
+      {"name": "Şeker", "canonical_name": "seker", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": true, "note": null},
+      {"name": "Pekmez", "canonical_name": "pekmez", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": "batırma suyu için"},
+      {"name": "Susam", "canonical_name": "susam", "quantity": 200, "unit": "g", "optional": false, "note": "kaplamak için"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Ilık suya maya ve şekeri ekleyip köpürmesini bekleyin.",
+      "Un, tuz ve zeytinyağını ekleyerek pürüzsüz, orta sertlikte bir hamur yoğurun.",
+      "Hamuru örterek iki katına çıkana dek yaklaşık 1 saat mayalandırın.",
+      "Bezelere ayırıp her birini uzun ip halinde açın, ikiye katlayıp burarak halka yapın.",
+      "Pekmezi biraz suyla seyreltip simitleri bu karışıma batırın.",
+      "Susama iki tarafını da iyice bulayıp yağlı kâğıtlı tepsiye dizin.",
+      "200 derece fırında kızarana kadar yaklaşık 20-25 dakika pişirin."
+    ],
+    "servings": 4,
+    "prep_time": 90,
+    "cook_time": 25,
+    "difficulty": "orta",
+    "diet_tags": ["vegan", "vejetaryen"],
+    "allergens": ["gluten", "susam"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Menemen Tost",
+    "description": "Menemen harcının peynirle birlikte ekmek arasında kızartıldığı pratik atıştırmalık.",
+    "ingredients": [
+      {"name": "Ekmek", "canonical_name": "ekmek", "quantity": 8, "unit": "dilim", "optional": false, "note": "tost ekmeği"},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 2, "unit": "adet", "optional": false, "note": "kabuğu soyulmuş"},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+      {"name": "Kaşar Peyniri", "canonical_name": "kasar_peyniri", "quantity": 150, "unit": "g", "optional": false, "note": "rendelenmiş"},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Biberleri küçük doğrayıp tereyağının bir kısmında yumuşayana dek kavurun.",
+      "Küp doğranmış domatesleri ekleyip suyunu iyice çekene kadar pişirin.",
+      "Yumurtaları kırıp karıştırarak katı bir menemen harcı elde edin ve baharatlayın.",
+      "Harcı biraz soğutup ekmek dilimlerinin üzerine yayın.",
+      "Rendelenmiş kaşarı ekleyip diğer dilimle kapatın.",
+      "Tost makinesinde ya da tavada tereyağıyla, ekmekler kızarıp peynir eriyene dek pişirin."
+    ],
+    "servings": 4,
+    "prep_time": 10,
+    "cook_time": 15,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "yumurta", "laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Kısır",
+    "description": "İnce bulgurun salça, limon ve bol yeşillikle yoğrulduğu klasik meze salatası.",
+    "ingredients": [
+      {"name": "İnce Bulgur", "canonical_name": "bulgur", "quantity": 400, "unit": "g", "optional": false, "note": "köftelik"},
+      {"name": "Su", "canonical_name": "su", "quantity": 500, "unit": "ml", "optional": false, "note": "kaynar"},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Biber Salçası", "canonical_name": "biber_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": true, "note": null},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": true, "note": "ince doğranmış"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 1, "unit": "demet", "optional": false, "note": null},
+      {"name": "Salatalık", "canonical_name": "salatalik", "quantity": 1, "unit": "adet", "optional": true, "note": "küp doğranmış"},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 1, "unit": "adet", "optional": true, "note": null},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 5, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Kimyon", "canonical_name": "kimyon", "quantity": null, "unit": null, "optional": true, "note": null},
+      {"name": "Kuru Nane", "canonical_name": "kuru_nane", "quantity": null, "unit": null, "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Bulguru geniş bir kaba alıp üzerine kaynar suyu dökün ve kapağını kapatıp 20 dakika şişmeye bırakın.",
+      "Bulgur ılıyınca salçaları ekleyip elinizle iyice yedirin.",
+      "Zeytinyağı, limon suyu ve baharatları ilave ederek yoğurmaya devam edin.",
+      "İnce kıyılmış maydanoz, soğan, salatalık ve domatesi ekleyip karıştırın.",
+      "Tuz ve limon dengesini tadarak ayarlayın.",
+      "Marul yaprakları eşliğinde soğuk servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 30,
+    "cook_time": 0,
+    "difficulty": "kolay",
+    "diet_tags": ["vegan", "vejetaryen"],
+    "allergens": ["gluten"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Çoban Salata",
+    "description": "Domates, salatalık ve biberin iri doğranıp limonlu sosla harmanlandığı klasik salata.",
+    "ingredients": [
+      {"name": "Domates", "canonical_name": "domates", "quantity": 4, "unit": "adet", "optional": false, "note": "olgun"},
+      {"name": "Salatalık", "canonical_name": "salatalik", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": "ince doğranmış"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": false, "note": null},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Beyaz Peynir", "canonical_name": "beyaz_peynir", "quantity": 100, "unit": "g", "optional": true, "note": "isteğe bağlı"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Sebzeleri yıkayıp benzer büyüklükte küpler halinde doğrayın.",
+      "Soğanı ince doğrayıp tuzla ovarak keskinliğini azaltın ve durulayın.",
+      "Tüm sebzeleri geniş bir kâsede birleştirip kıyılmış maydanozu ekleyin.",
+      "Zeytinyağı, limon suyu, tuz ve karabiberi çırpıp sos hazırlayın.",
+      "Sosu salataya gezdirip nazikçe karıştırın.",
+      "Dilerseniz üzerine beyaz peynir ufalayarak hemen servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 0,
+    "difficulty": "kolay",
+    "diet_tags": ["glutensiz"],
+    "allergens": ["laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Gavurdağı Salatası",
+    "description": "İnce doğranmış sebzelerin cevizle buluştuğu, nar ekşili güneydoğu salatası.",
+    "ingredients": [
+      {"name": "Domates", "canonical_name": "domates", "quantity": 4, "unit": "adet", "optional": false, "note": "çok küçük doğranmış"},
+      {"name": "Salatalık", "canonical_name": "salatalik", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 2, "unit": "adet", "optional": false, "note": "sivri"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Ceviz", "canonical_name": "ceviz", "quantity": 100, "unit": "g", "optional": false, "note": "iri kırılmış"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": false, "note": null},
+      {"name": "Nar Ekşisi", "canonical_name": "nar_eksisi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 0.5, "unit": "adet", "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Domates, salatalık, biber ve soğanı olabildiğince küçük ve eşit küpler halinde doğrayın.",
+      "Soğanı tuzla ovup durulayarak acılığını alın.",
+      "Sebzeleri geniş bir kâsede birleştirip kıyılmış maydanozu ekleyin.",
+      "Nar ekşisi, zeytinyağı, limon suyu ve tuzu çırparak sos hazırlayın.",
+      "Sosu salataya ekleyip karıştırın ve kısa süre buzdolabında dinlendirin.",
+      "Servis etmeden hemen önce iri kırılmış cevizleri ekleyip karıştırın."
+    ],
+    "servings": 4,
+    "prep_time": 20,
+    "cook_time": 0,
+    "difficulty": "kolay",
+    "diet_tags": ["vegan", "vejetaryen", "glutensiz"],
+    "allergens": ["findik"],
+    "cuisine": "turk"
+  }
+]

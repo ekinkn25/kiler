@@ -1,0 +1,314 @@
+[
+  {
+    "title": "Etli Bezelye",
+    "description": "Kuşbaşı etle pişen, havuçlu ve salçalı klasik bir ev yemeği.",
+    "ingredients": [
+      {"name": "Bezelye", "canonical_name": "bezelye", "quantity": 600, "unit": "g", "optional": false, "note": "taze ya da dondurulmuş"},
+      {"name": "Dana Eti", "canonical_name": "dana_eti", "quantity": 400, "unit": "g", "optional": false, "note": "kuşbaşı"},
+      {"name": "Havuç", "canonical_name": "havuc", "quantity": 2, "unit": "adet", "optional": false, "note": "yuvarlak doğranmış"},
+      {"name": "Patates", "canonical_name": "patates", "quantity": 1, "unit": "adet", "optional": true, "note": "küp doğranmış"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 1, "unit": "adet", "optional": true, "note": "rendelenmiş"},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 750, "unit": "ml", "optional": false, "note": "sıcak"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Tencerede yağı ısıtıp eti mühürleyin ve suyunu salıp çekene dek pişirin.",
+      "Doğranmış soğanı ekleyip pembeleşene kadar kavurun.",
+      "Salçayı ve rendelenmiş domatesi ilave edip birkaç dakika çevirin.",
+      "Havuç ve patatesi ekleyip kısa süre kavurduktan sonra sıcak suyu dökün.",
+      "Et yumuşayana kadar kısık ateşte pişirin, ardından bezelyeleri ekleyin.",
+      "Tuz ve karabiberi ekleyip bezelyeler yumuşayana dek 15-20 dakika daha pişirin."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 60,
+    "difficulty": "kolay",
+    "diet_tags": ["glutensiz"],
+    "allergens": [],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Etli Kabak",
+    "description": "Kabakların kıymayla birlikte kendi suyunda piştiği hafif bir yemek.",
+    "ingredients": [
+      {"name": "Kabak", "canonical_name": "kabak", "quantity": 5, "unit": "adet", "optional": false, "note": "orta boy"},
+      {"name": "Kıyma", "canonical_name": "kiyma", "quantity": 300, "unit": "g", "optional": false, "note": null},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": true, "note": "diş"},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 2, "unit": "adet", "optional": true, "note": null},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Dereotu", "canonical_name": "dereotu", "quantity": 0.5, "unit": "demet", "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Kıymayı yağsız bir tencerede suyunu çekene kadar pişirin.",
+      "Soğan, sarımsak ve biberi ekleyip yağla birlikte kavurun.",
+      "Salçayı ve doğranmış domatesi ilave edip sosu koyulaştırın.",
+      "Yarım ay doğranmış kabakları ekleyip sosla harmanlayın.",
+      "Az su ekleyip kapağı kapalı halde kabaklar yumuşayana dek pişirin.",
+      "Tuz, karabiber ve kıyılmış dereotunu ekleyip ocaktan alın."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 30,
+    "difficulty": "kolay",
+    "diet_tags": ["glutensiz"],
+    "allergens": [],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Şehriyeli Pilav",
+    "description": "Tereyağında kavrulan şehriyeyle hazırlanan, tane tane klasik pirinç pilavı.",
+    "ingredients": [
+      {"name": "Pirinç", "canonical_name": "pirinc", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": "yıkanıp ılık suda bekletilmiş"},
+      {"name": "Arpa Şehriye", "canonical_name": "sehriye", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 1, "unit": "yemek_kasigi", "optional": true, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "sıcak"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Pirinci bol suyla yıkayıp ılık tuzlu suda 20 dakika bekletin ve süzün.",
+      "Tencerede tereyağı ile sıvı yağı ısıtıp şehriyeyi altın rengi olana dek kavurun.",
+      "Süzülmüş pirinci ekleyip taneler şeffaflaşana kadar karıştırarak çevirin.",
+      "Sıcak suyu ve tuzu ilave edip bir taşım kaynatın.",
+      "Ateşi kısıp kapağı kapalı şekilde suyunu çekene dek yaklaşık 12 dakika pişirin.",
+      "Ocaktan alıp kapağın altına bez örterek 15 dakika demlendirin ve karıştırarak servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 25,
+    "cook_time": 20,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Bulgur Pilavı",
+    "description": "Salçalı ve soğanlı sosuyla demlenen, doyurucu bir yan yemek.",
+    "ingredients": [
+      {"name": "Pilavlık Bulgur", "canonical_name": "bulgur", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": "iri taneli"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 1, "unit": "adet", "optional": true, "note": null},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 1, "unit": "adet", "optional": true, "note": "rendelenmiş"},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 1, "unit": "yemek_kasigi", "optional": true, "note": null},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 3.5, "unit": "su_bardagi", "optional": false, "note": "sıcak"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Yağları tencerede ısıtıp ince doğranmış soğan ve biberi yumuşayana kadar kavurun.",
+      "Salçayı ve rendelenmiş domatesi ekleyip kokusu çıkana dek çevirin.",
+      "Bulguru ekleyip yağı çekmesi için birkaç dakika karıştırın.",
+      "Sıcak suyu ve tuzu ilave edip kaynamaya bırakın.",
+      "Ateşi kısarak bulgur suyunu tamamen çekene dek yaklaşık 15 dakika pişirin.",
+      "Ocaktan alıp kapağı kapalı şekilde 15 dakika demlendirin, sonra kabartarak servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 10,
+    "cook_time": 25,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Nohutlu Pilav",
+    "description": "Haşlanmış nohutlarla zenginleştirilen, lokantalarda sevilen tereyağlı pirinç pilavı.",
+    "ingredients": [
+      {"name": "Pirinç", "canonical_name": "pirinc", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Nohut", "canonical_name": "nohut", "quantity": 200, "unit": "g", "optional": false, "note": "haşlanmış"},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "sıcak"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Pirinci yıkayıp ılık tuzlu suda bekletin ve iyice süzün.",
+      "Kuru nohut kullanıyorsanız önceden ıslatıp yumuşayana dek haşlayın.",
+      "Tereyağını tencerede eritip pirinci taneleri parlayana kadar kavurun.",
+      "Haşlanmış nohutları ekleyip nazikçe karıştırın.",
+      "Sıcak suyu ve tuzu ilave edip kaynattıktan sonra ateşi kısın.",
+      "Suyunu çekene dek yaklaşık 12 dakika pişirip ocaktan alın ve 15 dakika demlendirin."
+    ],
+    "servings": 4,
+    "prep_time": 20,
+    "cook_time": 20,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen", "glutensiz"],
+    "allergens": ["laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Sebzeli Bulgur Pilavı",
+    "description": "Havuç, biber ve bezelyeyle renklenen, tek başına yenebilecek doyurucu bir pilav.",
+    "ingredients": [
+      {"name": "Pilavlık Bulgur", "canonical_name": "bulgur", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Havuç", "canonical_name": "havuc", "quantity": 1, "unit": "adet", "optional": false, "note": "küp doğranmış"},
+      {"name": "Bezelye", "canonical_name": "bezelye", "quantity": 100, "unit": "g", "optional": false, "note": null},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Kırmızı Biber", "canonical_name": "kirmizi_biber", "quantity": 1, "unit": "adet", "optional": true, "note": null},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 1, "unit": "adet", "optional": true, "note": "rendelenmiş"},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 3.5, "unit": "su_bardagi", "optional": false, "note": "sıcak"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Zeytinyağında soğan, havuç ve biberleri birkaç dakika çevirin.",
+      "Bezelyeyi ekleyip kısa süre kavurmayı sürdürün.",
+      "Salça ve rendelenmiş domatesi ilave edip kokusu çıkana dek karıştırın.",
+      "Bulguru ekleyip sebzelerle harmanlayın.",
+      "Sıcak su ve tuzu ekleyip kaynattıktan sonra ateşi kısın.",
+      "Bulgur suyunu çekene kadar pişirip ocaktan alın ve 15 dakika demlendirerek servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 25,
+    "difficulty": "kolay",
+    "diet_tags": ["vegan", "vejetaryen"],
+    "allergens": ["gluten"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Mantı",
+    "description": "El açması hamura kıymalı iç konularak hazırlanan, yoğurtlu ve salçalı yağıyla servis edilen klasik.",
+    "ingredients": [
+      {"name": "Un", "canonical_name": "un", "quantity": 500, "unit": "g", "optional": false, "note": "hamur için"},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "ılık"},
+      {"name": "Kıyma", "canonical_name": "kiyma", "quantity": 300, "unit": "g", "optional": false, "note": "iç harç için"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": "rendelenip suyu sıkılmış"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": true, "note": null},
+      {"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 500, "unit": "g", "optional": false, "note": "servis için"},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 3, "unit": "adet", "optional": false, "note": "yoğurda ezilecek"},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": "sos için"},
+      {"name": "Kuru Nane", "canonical_name": "kuru_nane", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Un, yumurta, tuz ve ılık suyla sert bir hamur yoğurup üzerini örterek 30 dakika dinlendirin.",
+      "Kıymayı rendelenmiş soğan, maydanoz, tuz ve karabiberle karıştırıp iç harcı hazırlayın.",
+      "Hamuru bezelere ayırıp ince açın ve küçük kareler halinde kesin.",
+      "Her karenin ortasına nohut tanesinden küçük harç koyup köşeleri birleştirerek kapatın.",
+      "Mantıları tuzlu kaynar suda yaklaşık 12-15 dakika, yumuşayana dek haşlayın.",
+      "Yoğurdu ezilmiş sarımsakla karıştırıp süzülmüş mantıların üzerine dökün.",
+      "Tereyağında salça, nane ve pul biberi kısaca ısıtıp sosu mantının üstünde gezdirin."
+    ],
+    "servings": 4,
+    "prep_time": 90,
+    "cook_time": 20,
+    "difficulty": "zor",
+    "diet_tags": [],
+    "allergens": ["gluten", "yumurta", "laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Domates Soslu Makarna",
+    "description": "Taze domates ve sarımsakla hazırlanan sade, hızlı bir makarna tabağı.",
+    "ingredients": [
+      {"name": "Makarna", "canonical_name": "makarna", "quantity": 400, "unit": "g", "optional": false, "note": null},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 5, "unit": "adet", "optional": false, "note": "kabuğu soyulup rendelenmiş"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": true, "note": null},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 3, "unit": "adet", "optional": false, "note": "diş"},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "tatli_kasigi", "optional": true, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Şeker", "canonical_name": "seker", "quantity": 1, "unit": "cay_kasigi", "optional": true, "note": "asidi dengelemek için"},
+      {"name": "Kekik", "canonical_name": "kekik", "quantity": 1, "unit": "cay_kasigi", "optional": true, "note": null},
+      {"name": "Kaşar Peyniri", "canonical_name": "kasar_peyniri", "quantity": 100, "unit": "g", "optional": true, "note": "rendelenmiş, servis için"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Bol tuzlu suyu kaynatıp makarnayı paket süresine göre diri kalacak şekilde haşlayın.",
+      "Zeytinyağında ince doğranmış soğan ve sarımsağı yakmadan yumuşatın.",
+      "Rendelenmiş domates ve salçayı ekleyip sos koyulaşana dek 15 dakika pişirin.",
+      "Tuz, karabiber, kekik ve şekerle tadını dengeleyin.",
+      "Süzülmüş makarnayı sosa alıp bir iki dakika birlikte çevirin.",
+      "Rendelenmiş kaşar serperek sıcak servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 10,
+    "cook_time": 25,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Fırın Makarna",
+    "description": "Beşamel sosla harmanlanıp peynirle üzeri kızartılan, çocukların sevdiği fırın yemeği.",
+    "ingredients": [
+      {"name": "Makarna", "canonical_name": "makarna", "quantity": 400, "unit": "g", "optional": false, "note": "boru ya da kalem"},
+      {"name": "Süt", "canonical_name": "sut", "quantity": 750, "unit": "ml", "optional": false, "note": null},
+      {"name": "Un", "canonical_name": "un", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Kaşar Peyniri", "canonical_name": "kasar_peyniri", "quantity": 200, "unit": "g", "optional": false, "note": "rendelenmiş"},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 1, "unit": "adet", "optional": true, "note": "sos için"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Makarnayı tuzlu suda diri kalacak şekilde haşlayıp süzün.",
+      "Tereyağını eritip unu ekleyin ve rengi dönene dek kavurun.",
+      "Sütü azar azar ekleyerek topak kalmayacak biçimde çırpın ve kıvam alana dek pişirin.",
+      "Sosu ocaktan alıp tuz, karabiber ve dilerseniz çırpılmış yumurtayı ılıkken karıştırın.",
+      "Makarnayı sosun bir kısmıyla harmanlayıp yağlanmış fırın kabına aktarın.",
+      "Kalan sosu üzerine yayıp rendelenmiş kaşarı serpin.",
+      "180 derece fırında üzeri kızarana kadar yaklaşık 25 dakika pişirin."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 35,
+    "difficulty": "orta",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "laktoz", "yumurta"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Sigara Böreği",
+    "description": "Peynirli harçla sarılıp çıtır çıtır kızartılan, ikramlık yufka böreği.",
+    "ingredients": [
+      {"name": "Yufka", "canonical_name": "yufka", "quantity": 3, "unit": "adet", "optional": false, "note": "ince yufka"},
+      {"name": "Beyaz Peynir", "canonical_name": "beyaz_peynir", "quantity": 300, "unit": "g", "optional": false, "note": "ezilmiş"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": false, "note": "ince kıyılmış"},
+      {"name": "Dereotu", "canonical_name": "dereotu", "quantity": 0.25, "unit": "demet", "optional": true, "note": null},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 1, "unit": "adet", "optional": true, "note": "kenarları yapıştırmak için"},
+      {"name": "Su", "canonical_name": "su", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": "yufkayı nemlendirmek için"},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 60, "unit": "ml", "optional": false, "note": "kızartmak için"},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Peyniri çatalla ezip maydanoz, dereotu ve baharatlarla karıştırarak harcı hazırlayın.",
+      "Yufkaları üçgen dilimler halinde kesin ve kurumamaları için üzerlerini örtün.",
+      "Her üçgenin geniş kenarına bir miktar harç koyup kenarları içeri katlayın.",
+      "Sıkıca rulo yapıp uçlarını çırpılmış yumurta veya suyla yapıştırın.",
+      "Yağı orta ateşte kızdırıp böreklerin her tarafını çevirerek altın rengi olana kadar kızartın.",
+      "Fazla yağını kâğıt havluda süzdürüp ılıkken servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 25,
+    "cook_time": 20,
+    "difficulty": "orta",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "laktoz", "yumurta"],
+    "cuisine": "turk"
+  }
+]

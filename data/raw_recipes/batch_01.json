@@ -1,0 +1,319 @@
+[
+  {
+    "title": "Mercimek Çorbası",
+    "description": "Kırmızı mercimekle hazırlanan, süzme kıvamında klasik bir Türk çorbası.",
+    "ingredients": [
+      {"name": "Kırmızı Mercimek", "canonical_name": "kirmizi_mercimek", "quantity": 200, "unit": "g", "optional": false, "note": "yıkanmış"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Havuç", "canonical_name": "havuc", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Patates", "canonical_name": "patates", "quantity": 1, "unit": "adet", "optional": false, "note": "küçük boy"},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1.5, "unit": "l", "optional": false, "note": null},
+      {"name": "Kimyon", "canonical_name": "kimyon", "quantity": 1, "unit": "cay_kasigi", "optional": true, "note": null},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 1, "unit": "adet", "optional": true, "note": "servis için"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Soğanı, havucu ve patatesi iri parçalar halinde doğrayın.",
+      "Tencerede zeytinyağını ısıtıp soğanı yumuşayana kadar çevirin, ardından salçayı ekleyip kısa süre kavurun.",
+      "Havuç, patates ve mercimeği tencereye alın, üzerine suyu dökün.",
+      "Kaynamaya başlayınca ateşi kısıp mercimekler dağılana dek yaklaşık 25 dakika pişirin.",
+      "Çorbayı blender ile pürüzsüz hale getirin, tuz, karabiber ve kimyonla tatlandırın.",
+      "Dilerseniz limon sıkarak sıcak servis yapın."
+    ],
+    "servings": 4,
+    "prep_time": 10,
+    "cook_time": 30,
+    "difficulty": "kolay",
+    "diet_tags": ["vegan", "vejetaryen", "glutensiz"],
+    "allergens": [],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Ezogelin Çorbası",
+    "description": "Mercimek, bulgur ve pirincin bir arada pişirildiği baharatlı Anadolu çorbası.",
+    "ingredients": [
+      {"name": "Kırmızı Mercimek", "canonical_name": "kirmizi_mercimek", "quantity": 150, "unit": "g", "optional": false, "note": null},
+      {"name": "İnce Bulgur", "canonical_name": "bulgur", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Pirinç", "canonical_name": "pirinc", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": true, "note": "diş"},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Biber Salçası", "canonical_name": "biber_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1.5, "unit": "l", "optional": false, "note": null},
+      {"name": "Kuru Nane", "canonical_name": "kuru_nane", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": 1, "unit": "cay_kasigi", "optional": false, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Soğanı ve sarımsağı ince doğrayıp zeytinyağının bir kısmında pembeleşene kadar kavurun.",
+      "Her iki salçayı ekleyip kokusu çıkana dek karıştırın.",
+      "Mercimek, bulgur ve pirinci ekleyip suyu ilave edin.",
+      "Kısık ateşte taneler iyice yumuşayana kadar yaklaşık 30 dakika pişirin.",
+      "Kalan yağı ayrı bir tavada ısıtıp nane ve pul biberi kısaca çevirin.",
+      "Hazırladığınız yağı çorbanın üzerine gezdirip tuzunu ayarlayarak servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 10,
+    "cook_time": 35,
+    "difficulty": "kolay",
+    "diet_tags": ["vegan", "vejetaryen"],
+    "allergens": ["gluten"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Yayla Çorbası",
+    "description": "Yoğurtla terbiye edilen, nane yağıyla tamamlanan geleneksel bir çorba.",
+    "ingredients": [
+      {"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 400, "unit": "g", "optional": false, "note": null},
+      {"name": "Pirinç", "canonical_name": "pirinc", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 1, "unit": "adet", "optional": false, "note": "sarısı"},
+      {"name": "Un", "canonical_name": "un", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Kuru Nane", "canonical_name": "kuru_nane", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1.2, "unit": "l", "optional": false, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Pirinci yıkayıp tencereye alın, suyla birlikte yumuşayana kadar haşlayın.",
+      "Ayrı bir kapta yoğurt, un ve yumurta sarısını topak kalmayacak şekilde çırpın.",
+      "Karışıma tencereden birkaç kepçe sıcak su ekleyerek yavaşça ılıtın.",
+      "Terbiyeyi tencereye ince bir şekilde dökerken sürekli karıştırın.",
+      "Kısık ateşte kaynama noktasına gelene dek karıştırmayı bırakmadan pişirin ve tuzunu ekleyin.",
+      "Tereyağını eritip naneyi ekleyin, çorbanın üstüne gezdirerek servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 10,
+    "cook_time": 30,
+    "difficulty": "orta",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["laktoz", "yumurta", "gluten"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Domates Çorbası",
+    "description": "Taze domateslerden hazırlanan, sütle kremamsı kıvam kazanan sıcak bir çorba.",
+    "ingredients": [
+      {"name": "Domates", "canonical_name": "domates", "quantity": 800, "unit": "g", "optional": false, "note": "olgun"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": true, "note": "diş"},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Un", "canonical_name": "un", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 750, "unit": "ml", "optional": false, "note": null},
+      {"name": "Şeker", "canonical_name": "seker", "quantity": 1, "unit": "cay_kasigi", "optional": true, "note": "asidi dengelemek için"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Domatesleri kabuklarını soyup rendeleyin ya da küp küp doğrayın.",
+      "Tereyağını tencerede eritip ince doğranmış soğan ve sarımsağı yumuşatın.",
+      "Unu ekleyip rengi dönene kadar birkaç dakika kavurun.",
+      "Domatesleri ilave edip suyunu salıp çekene dek pişirin, ardından suyu ekleyin.",
+      "Yaklaşık 20 dakika kaynattıktan sonra blenderdan geçirip pürüzsüzleştirin.",
+      "Sütü ekleyip ısıtın, tuz, karabiber ve şekerle tadını dengeleyerek servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 30,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["laktoz", "gluten"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Tarhana Çorbası",
+    "description": "Kurutulmuş tarhanadan hazırlanan, ekşimsi ve doyurucu kış çorbası.",
+    "ingredients": [
+      {"name": "Tarhana", "canonical_name": null, "quantity": 5, "unit": "yemek_kasigi", "optional": false, "note": "kuru toz tarhana"},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": true, "note": "diş"},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1.2, "unit": "l", "optional": false, "note": null},
+      {"name": "Ekmek", "canonical_name": "ekmek", "quantity": 2, "unit": "dilim", "optional": true, "note": "kızartılmış kruton için"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Tarhanayı bir kâsede ılık suyun bir kısmıyla karıştırıp yaklaşık 15 dakika bekletin.",
+      "Tencerede tereyağını eritip ezilmiş sarımsak ve salçayı kısaca çevirin.",
+      "Islatılmış tarhanayı ve kalan suyu ekleyerek telle karıştırın.",
+      "Kısık ateşte, dibi tutmaması için sık sık karıştırarak 20 dakika kadar pişirin.",
+      "Tuzunu ayarlayıp pul biber serpin.",
+      "Ekmek dilimlerini küp doğrayıp kızartarak çorbanın üzerinde servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 25,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen"],
+    "allergens": ["gluten", "laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Şehriye Çorbası",
+    "description": "Kısa sürede hazırlanan, hafif ve çocukların sevdiği pratik bir çorba.",
+    "ingredients": [
+      {"name": "Arpa Şehriye", "canonical_name": "sehriye", "quantity": 100, "unit": "g", "optional": false, "note": null},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": "küçük"},
+      {"name": "Havuç", "canonical_name": "havuc", "quantity": 1, "unit": "adet", "optional": true, "note": "rendelenmiş"},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1.2, "unit": "l", "optional": false, "note": null},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.25, "unit": "demet", "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Soğanı küçük küpler halinde doğrayıp zeytinyağında şeffaflaşana dek kavurun.",
+      "Rendelenmiş havucu ve salçayı ekleyip birkaç dakika daha çevirin.",
+      "Şehriyeyi ilave edip hafifçe renk alana kadar kavurmayı sürdürün.",
+      "Suyu ekleyip şehriyeler yumuşayana dek yaklaşık 15 dakika pişirin.",
+      "Tuz ve karabiberle tatlandırın, ince kıyılmış maydanozla servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 5,
+    "cook_time": 20,
+    "difficulty": "kolay",
+    "diet_tags": ["vegan", "vejetaryen"],
+    "allergens": ["gluten"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Sebze Çorbası",
+    "description": "Mevsim sebzeleriyle hazırlanan hafif ve besleyici bir çorba.",
+    "ingredients": [
+      {"name": "Patates", "canonical_name": "patates", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+      {"name": "Havuç", "canonical_name": "havuc", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+      {"name": "Kabak", "canonical_name": "kabak", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Pırasa", "canonical_name": "pirasa", "quantity": 1, "unit": "adet", "optional": true, "note": null},
+      {"name": "Bezelye", "canonical_name": "bezelye", "quantity": 100, "unit": "g", "optional": true, "note": null},
+      {"name": "Taze Fasulye", "canonical_name": "taze_fasulye", "quantity": 100, "unit": "g", "optional": true, "note": null},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1.5, "unit": "l", "optional": false, "note": null},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Bütün sebzeleri yıkayıp benzer büyüklükte küpler halinde doğrayın.",
+      "Zeytinyağında soğan ve pırasayı yumuşayana dek çevirin.",
+      "Rendelenmiş domatesi ekleyip suyunu çekmesini bekleyin.",
+      "Sert sebzelerden başlayarak hepsini tencereye alın ve suyu ekleyin.",
+      "Sebzeler diri kalacak şekilde yaklaşık 25 dakika kaynatın.",
+      "Tuz ve karabiberle tatlandırıp maydanozla süsleyerek servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 30,
+    "difficulty": "kolay",
+    "diet_tags": ["vegan", "vejetaryen", "glutensiz"],
+    "allergens": [],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Brokoli Çorbası",
+    "description": "Brokolinin patatesle birlikte ezilmesiyle kadifemsi bir kıvam kazanan çorba.",
+    "ingredients": [
+      {"name": "Brokoli", "canonical_name": null, "quantity": 500, "unit": "g", "optional": false, "note": "çiçeklerine ayrılmış"},
+      {"name": "Patates", "canonical_name": "patates", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": true, "note": "diş"},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Krema", "canonical_name": "krema", "quantity": 100, "unit": "ml", "optional": true, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "l", "optional": false, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Tereyağını tencerede eritip doğranmış soğan ve sarımsağı yumuşatın.",
+      "Küp doğranmış patates ve brokoli çiçeklerini ekleyip kısa süre çevirin.",
+      "Suyu ilave edip sebzeler çatalla ezilecek kıvama gelene dek yaklaşık 20 dakika pişirin.",
+      "Blender yardımıyla karışımı pürüzsüz hale getirin.",
+      "Sütü ve dilerseniz kremayı ekleyip kaynatmadan ısıtın.",
+      "Tuz ve karabiberle tatlandırıp sıcak servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 10,
+    "cook_time": 25,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen", "glutensiz"],
+    "allergens": ["laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Karnıyarık",
+    "description": "Kızartılmış patlıcanların kıymalı harçla doldurulup fırınlandığı klasik Türk yemeği.",
+    "ingredients": [
+      {"name": "Patlıcan", "canonical_name": "patlican", "quantity": 6, "unit": "adet", "optional": false, "note": "orta boy"},
+      {"name": "Kıyma", "canonical_name": "kiyma", "quantity": 400, "unit": "g", "optional": false, "note": null},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 3, "unit": "adet", "optional": false, "note": "diş"},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 3, "unit": "adet", "optional": false, "note": null},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": "sos için"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": false, "note": null},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 200, "unit": "ml", "optional": false, "note": "kızartmak için"},
+      {"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Patlıcanları alacalı soyup tuzlu suda yaklaşık 15 dakika bekletin, sonra iyice kurulayın.",
+      "Yağı kızdırıp patlıcanları her tarafı yumuşayana dek kızartın ve fazla yağını kâğıt havluda süzdürün.",
+      "Ayrı bir tavada soğan ve sarımsağı kavurup kıymayı ekleyin, suyunu çekene kadar pişirin.",
+      "Doğranmış domateslerin bir kısmını, tuz ve baharatları ekleyip harcı 5 dakika daha pişirin, kıyılmış maydanozu karıştırın.",
+      "Patlıcanları fırın kabına dizip ortalarını uzunlamasına yarın ve harcı içlerine doldurun.",
+      "Üzerlerine domates dilimi ve yeşil biber yerleştirin.",
+      "Salçayı suyla çırpıp tepsinin kenarından dökün ve 180 dereceye ısıtılmış fırında 25-30 dakika pişirin."
+    ],
+    "servings": 4,
+    "prep_time": 30,
+    "cook_time": 45,
+    "difficulty": "orta",
+    "diet_tags": ["glutensiz"],
+    "allergens": [],
+    "cuisine": "turk"
+  },
+  {
+    "title": "İmambayıldı",
+    "description": "Bol soğanlı iç harcıyla hazırlanan, zeytinyağıyla soğuk servis edilen patlıcan yemeği.",
+    "ingredients": [
+      {"name": "Patlıcan", "canonical_name": "patlican", "quantity": 6, "unit": "adet", "optional": false, "note": "orta boy"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 4, "unit": "adet", "optional": false, "note": "piyazlık doğranmış"},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 6, "unit": "adet", "optional": false, "note": "diş"},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 1, "unit": "demet", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 150, "unit": "ml", "optional": false, "note": null},
+      {"name": "Şeker", "canonical_name": "seker", "quantity": 1, "unit": "cay_kasigi", "optional": true, "note": null},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 0.5, "unit": "adet", "optional": true, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Patlıcanları alacalı soyup tuzlu suda bekletin, ardından kurulayın.",
+      "Az zeytinyağında patlıcanları her yönünü çevirerek yumuşatın ve tencereye dizin.",
+      "Aynı tavada soğanları uzun uzun, tatlanana kadar kısık ateşte kavurun.",
+      "Sarımsak, doğranmış domates ve biberleri ekleyip harç sulanmayacak kıvama gelene dek pişirin, maydanozu son anda karıştırın.",
+      "Patlıcanların ortasını yarıp harcı bolca doldurun.",
+      "Tencereye su, kalan zeytinyağı, tuz, şeker ve limon suyunu ekleyip kapağı kapalı şekilde kısık ateşte 30 dakika pişirin.",
+      "Ocaktan alıp ılıyana kadar dinlendirin ve oda sıcaklığında servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 30,
+    "cook_time": 50,
+    "difficulty": "orta",
+    "diet_tags": ["vegan", "vejetaryen", "glutensiz"],
+    "allergens": [],
+    "cuisine": "turk"
+  }
+]
