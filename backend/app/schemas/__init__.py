@@ -21,8 +21,9 @@ from app.schemas.pantry import (
     ShoppingItemUpdate,
 )
 from app.schemas.recipe import (
-    IngredientStatus, RecipeCookRequest, RecipeFeedbackCreate,
-    RecipeFeedbackRead, RecipeIngredientStatus,
+    IngredientStatus, RecipeBase, RecipeCard, RecipeCookRequest, RecipeCreate,
+    RecipeFeedbackCreate, RecipeFeedbackRead, RecipeIngredient,
+    RecipeIngredientStatus, RecipeMacros, RecipeRead,
 )
 from app.schemas.user import (
     AllergenRead, DietTagRead, OnboardingRequest, UserProfileCreate,
@@ -48,4 +49,6 @@ __all__ = [
     "RecipeFeedbackRead", "RecipeIngredientStatus",
     "ChatMessageRead", "ChatRequest", "ChatResponse",
     "RefreshRequest", "ChangePasswordRequest"
+    "RecipeBase", "RecipeCard", "RecipeCreate", "RecipeIngredient", "RecipeMacros", 
+    "RecipeRead"
 ]
