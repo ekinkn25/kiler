@@ -9,8 +9,7 @@ from datetime import datetime
 from pydantic import EmailStr, Field, computed_field
 
 from app.models.enums import ActivityLevel, Gender, Goal
-from app.schemas.common import AppBaseModel
-
+from app.schemas.common import AppBaseModel, UtcDatetime
 
 # ------------------------------------------------------------------ lookup schemas
 class DietTagRead(AppBaseModel):
@@ -81,7 +80,7 @@ class UserRead(AppBaseModel):
     full_name: str | None = None
     is_active: bool
     onboarding_completed: bool
-    created_at: datetime
+    created_at: UtcDatetime
 
     profile: UserProfileRead | None = None
     diet_tags: list[DietTagRead] = []

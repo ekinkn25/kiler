@@ -28,6 +28,10 @@ from app.schemas.user import (
     AllergenRead, DietTagRead, OnboardingRequest, UserProfileCreate,
     UserProfileRead, UserProfileUpdate, UserRead, UserUpdate,
 )
+from app.schemas.auth import (
+    ChangePasswordRequest, LoginRequest, RefreshRequest,
+    RegisterRequest, Token, TokenPayload,
+)
 
 __all__ = [
     "AppBaseModel", "ErrorResponse", "HealthResponse", "Message", "Page", "PageParams",
@@ -43,4 +47,5 @@ __all__ = [
     "IngredientStatus", "RecipeCookRequest", "RecipeFeedbackCreate",
     "RecipeFeedbackRead", "RecipeIngredientStatus",
     "ChatMessageRead", "ChatRequest", "ChatResponse",
+    "RefreshRequest", "ChangePasswordRequest"
 ]

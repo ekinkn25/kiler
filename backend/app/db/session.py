@@ -16,7 +16,7 @@ connect_args = ( #trafik kontrolü
 engine = create_engine( #iletişim motoru:SQLAlchemy kütüphanesinin kalbidir. Python'un yazdığı kodları, veritabanının anlayacağı SQL dillerine çeviren ana motordur.
     settings.DATABASE_URL,
     connect_args=connect_args,
-    echo=settings.DEBUG,   # DEBUG modda uretilen SQL sorgularini loga basar
+    echo=settings.SQL_ECHO,   # DEBUG modda uretilen SQL sorgularini loga basar
     future=True,
 )
 

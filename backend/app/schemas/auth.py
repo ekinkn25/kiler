@@ -43,3 +43,11 @@ class TokenPayload(AppBaseModel):
 
     sub: str
     exp: int
+
+class RefreshRequest(AppBaseModel):
+    refresh_token: str
+
+
+class ChangePasswordRequest(AppBaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=72)
