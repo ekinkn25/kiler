@@ -1,0 +1,286 @@
+[
+{
+"title": "Tavuk Haşlama",
+"description": "Sebzelerle zenginleştirilmiş, suyu şifa dolu yumuşacık bir tavuk yemeği.",
+"ingredients": [
+{"name": "Tavuk But", "canonical_name": "tavuk_but", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+{"name": "Patates", "canonical_name": "patates", "quantity": 2, "unit": "adet", "optional": false, "note": "İri doğranmış"},
+{"name": "Havuç", "canonical_name": "havuc", "quantity": 2, "unit": "adet", "optional": false, "note": "Halka doğranmış"},
+{"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+{"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Limon Suyu", "canonical_name": "limon", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 4, "unit": "su_bardagi", "optional": false, "note": "Sıcak"},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Geniş bir tencerede zeytinyağını ısıtıp tavuk butlarını arkalı önlü hafifçe mühürleyin.",
+"Üzerine iri doğranmış patates, havuç, bütün soğan ve sarımsakları ekleyerek birkaç dakika daha kavurun.",
+"Sıcak su, limon suyu, tuz ve karabiberi ilave edip tencerenin kapağını kapatın.",
+"Tavuklar ve sebzeler iyice yumuşayana kadar kısık ateşte pişirip sıcak olarak servis yapın."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 40,
+"difficulty": "kolay",
+"diet_tags": ["glutensiz", "laktozsuz"],
+"allergens": [],
+"cuisine": "turk"
+},
+{
+"title": "Sebzeli Tavuk",
+"description": "Rengarenk sebzeler ve tavuğun harika bir sosla buluştuğu pratik lezzet.",
+"ingredients": [
+{"name": "Tavuk Göğsü", "canonical_name": "tavuk_gogsu", "quantity": 500, "unit": "g", "optional": false, "note": "Küp doğranmış"},
+{"name": "Patates", "canonical_name": "patates", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+{"name": "Havuç", "canonical_name": "havuc", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+{"name": "Kırmızı Biber", "canonical_name": "kirmizi_biber", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Kekik", "canonical_name": "kekik", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Küp şeklinde doğranmış tavuk etlerini geniş bir tavaya alarak kendi suyunu salıp çekene kadar sıvı yağ ile soteleyin.",
+"Doğranmış havuç, patates ve biberleri tavuğun üzerine ilave ederek sebzeler hafifçe diriliğini kaybedene dek kavurmaya devam edin.",
+"Ayrı bir kasede salça, su, tuz ve baharatları karıştırarak hazırladığınız sosu yemeğin üzerine dökün.",
+"Tavanın kapağını kapatıp sebzeler tamamen yumuşayana kadar orta ateşte pişirin."
+],
+"servings": 4,
+"prep_time": 20,
+"cook_time": 35,
+"difficulty": "kolay",
+"diet_tags": ["glutensiz", "laktozsuz"],
+"allergens": [],
+"cuisine": "turk"
+},
+{
+"title": "Yoğurtlu Mantı",
+"description": "İncecik hamuru ve lezzetli iç harcıyla üzerine sarımsaklı yoğurt dökülen geleneksel tat.",
+"ingredients": [
+{"name": "Un", "canonical_name": "un", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "Hamur için"},
+{"name": "Dana Kıyma", "canonical_name": "kiyma", "quantity": 250, "unit": "g", "optional": false, "note": "İç harcı için"},
+{"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": "Rendelenmiş"},
+{"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": "Üzeri için"},
+{"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": false, "note": "Üzeri için"},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": "Sos için"},
+{"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": "Sos için"},
+{"name": "Kuru Nane", "canonical_name": "kuru_nane", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": "Sos için"},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Un, yumurta, su ve bir miktar tuzu sert ve pürüzsüz bir hamur elde edene kadar yoğurup dinlenmeye bırakın.",
+"Rendelenmiş soğan, kıyma, tuz ve karabiberi iyice yoğurarak mantının iç harcını hazırlayın.",
+"Dinlenen hamuru oklava ile incecik açıp küçük kareler halinde kesin, içlerine kıymalı harçtan koyarak bohça şeklinde kapatın.",
+"Mantıları tuzlu kaynar suda haşlayıp süzün, üzerine ezilmiş sarımsaklı yoğurt ve kızdırılmış baharatlı tereyağı gezdirerek servis yapın."
+],
+"servings": 4,
+"prep_time": 45,
+"cook_time": 15,
+"difficulty": "zor",
+"diet_tags": [],
+"allergens": ["gluten", "yumurta", "laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Ezogelin",
+"description": "Kırmızı mercimek ve bulgurun harmanlandığı doyurucu, naneli klasik Türk çorbası.",
+"ingredients": [
+{"name": "Kırmızı Mercimek", "canonical_name": "kirmizi_mercimek", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Bulgur", "canonical_name": "bulgur", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Pirinç", "canonical_name": "pirinc", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Kuru Nane", "canonical_name": "kuru_nane", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 6, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Geniş bir tencerede tereyağını eritip ince doğranmış soğanı yumuşayana kadar hafifçe kavurun.",
+"Üzerine domates salçası, kuru nane ve pul biberi ilave ederek kokusu çıkana dek karıştırın.",
+"Yıkanmış mercimek, bulgur ve pirinci tencereye ekleyip birkaç tur çevirdikten sonra sıcak suyunu ilave edin.",
+"Tüm bakliyatlar iyice yumuşayıp çorba kıvam alana dek pişirin ve gerekirse pürüzsüzleşmesi için hafifçe blenderdan geçirin."
+],
+"servings": 4,
+"prep_time": 10,
+"cook_time": 35,
+"difficulty": "kolay",
+"diet_tags": ["vejetaryen"],
+"allergens": ["gluten", "laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Keşkek",
+"description": "Düğünlerin vazgeçilmezi, tahta kaşıkla dövülerek hazırlanan nefis buğday ve et yemeği.",
+"ingredients": [
+{"name": "Aşurelik Buğday", "canonical_name": null, "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Kuzu Eti", "canonical_name": "kuzu_eti", "quantity": 500, "unit": "g", "optional": false, "note": "Kemiksiz"},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": "Üzeri için"},
+{"name": "Su", "canonical_name": "su", "quantity": 6, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Buğdayı bir gece önceden ıslatın ve ertesi gün suyunu süzerek kuzu etiyle birlikte düdüklü tencereye alın.",
+"Üzerini geçecek kadar sıcak su ve tuz ilave edip, etler ve buğdaylar tamamen ezilecek kıvama gelene dek uzun süre haşlayın.",
+"Pişen karışımın içindeki etleri didikleyin ve geniş tahta bir kaşık yardımıyla ezerek sakız gibi bir kıvam alana kadar kuvvetlice dövün.",
+"Hazırladığınız keşkeği servis tabaklarına alın ve üzerine kızdırılmış tereyağı dökerek sıcak sunum yapın."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 90,
+"difficulty": "zor",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Islak Keşkek",
+"description": "Geleneksel keşkeğin daha bol sulu ve salçalı tereyağı sosuyla servis edilen uyarlaması.",
+"ingredients": [
+{"name": "Aşurelik Buğday", "canonical_name": null, "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Dana Eti", "canonical_name": "dana_eti", "quantity": 300, "unit": "g", "optional": false, "note": "Kuşbaşı"},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 7, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Akşamdan ıslattığınız buğdayları süzüp, dana eti ve bol miktarda sıcak su ile etler lif lif ayrılana kadar pişirin.",
+"İyice pişen ve suyunu biraz bırakan yemeği tahta kaşıkla çok kurutmadan hafif sulu ve pürüzlü kalacak şekilde karıştırıp ezin.",
+"Ayrı bir tavada tereyağını eritip salça ve pul biberi kokusu çıkana kadar kavurun.",
+"Salçalı sosu sulu bırakılmış keşkeğin üzerine dökün ve tüm lezzetler bütünleşene kadar karıştırıp hemen servis edin."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 80,
+"difficulty": "orta",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Pizza",
+"description": "Ev ortamında kolayca hazırlayabileceğiniz, Türk damak tadına uygun zengin malzemeli hamur işi.",
+"ingredients": [
+{"name": "Un", "canonical_name": "un", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "Ilık"},
+{"name": "Kuru Maya", "canonical_name": null, "quantity": 1, "unit": "paket", "optional": false, "note": null},
+{"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": "Sos için"},
+{"name": "Kaşar Peyniri", "canonical_name": "kasar_peyniri", "quantity": 200, "unit": "g", "optional": false, "note": "Rendelenmiş"},
+{"name": "Sucuk", "canonical_name": "sucuk", "quantity": 100, "unit": "g", "optional": false, "note": "Dilimlenmiş"},
+{"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Un, ılık su, maya, zeytinyağı ve tuzu geniş bir kasede pürüzsüz bir hamur olana dek yoğurup üzerini kapatarak mayalanmaya bırakın.",
+"Mayalanan hamuru tepsi büyüklüğünde açarak fırın tepsisine yerleştirin ve üzerine biraz suyla açtığınız salçalı sosu sürün.",
+"Sosun üzerine sırasıyla bolca rendelenmiş kaşar peyniri, dilimlenmiş sucuk ve yeşil biberleri dizin.",
+"Önceden ısıtılmış fırında peynirler eriyip hamurun kenarları kızarana kadar pişirin."
+],
+"servings": 4,
+"prep_time": 40,
+"cook_time": 20,
+"difficulty": "orta",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Hamburger",
+"description": "Ev yapımı köftesi ve taptaze malzemeleriyle hazırlanan doyurucu bir sokak lezzeti klasiği.",
+"ingredients": [
+{"name": "Dana Kıyma", "canonical_name": "kiyma", "quantity": 400, "unit": "g", "optional": false, "note": null},
+{"name": "Hamburger Ekmeği", "canonical_name": "ekmek", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+{"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Domates", "canonical_name": "domates", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Salatalık Turşusu", "canonical_name": null, "quantity": 4, "unit": "adet", "optional": false, "note": null},
+{"name": "Kaşar Peyniri", "canonical_name": "kasar_peyniri", "quantity": 4, "unit": "dilim", "optional": false, "note": null},
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": "Kızartmak için"},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Kıymayı sadece tuz ve karabiber ile iyice yoğurup porsiyonluk yuvarlak yassı köfteler haline getirin.",
+"Az yağlı kızgın bir tavada köftelerin her iki yüzünü de pişirin, ocaktan almaya yakın üzerlerine kaşar peyniri dilimlerini koyarak erimelerini sağlayın.",
+"Ortadan ikiye kestiğiniz hamburger ekmeklerinin iç kısımlarını tavada hafifçe ısıtıp kızartın.",
+"Ekmeklerin arasına pişmiş köfteyi, halka doğranmış soğan, domates ve turşuyu yerleştirerek hemen servis yapın."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 15,
+"difficulty": "kolay",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Fırında Patates Köfte",
+"description": "Klasikleşmiş patates ve köfte ikilisinin salçalı sosla fırında bütünleştiği enfes bir ana yemek.",
+"ingredients": [
+{"name": "Dana Kıyma", "canonical_name": "kiyma", "quantity": 400, "unit": "g", "optional": false, "note": null},
+{"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": "Rendelenmiş"},
+{"name": "Galeta Unu", "canonical_name": "galeta_unu", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Patates", "canonical_name": "patates", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+{"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": "Sos için"},
+{"name": "Su", "canonical_name": "su", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": "Sos için"},
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": "Sos için"},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Kimyon", "canonical_name": "kimyon", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Kıyma, rendelenmiş soğan, galeta unu, yumurta, tuz ve baharatları derin bir kapta yoğurarak şekilli köfteler hazırlayın.",
+"Patatesleri soyup elma dilimi veya kalın halkalar şeklinde doğrayın.",
+"Köfteleri ve patatesleri fırın kabına aralıklı olarak dizin.",
+"Salça, su, sıvı yağ ve biraz tuzu karıştırarak hazırladığınız sosu yemeğin üzerine gezdirip, patatesler kızarana kadar fırında pişirin."
+],
+"servings": 4,
+"prep_time": 20,
+"cook_time": 45,
+"difficulty": "orta",
+"diet_tags": ["laktozsuz"],
+"allergens": ["gluten", "yumurta"],
+"cuisine": "turk"
+},
+{
+"title": "Döner",
+"description": "Ev şartlarında marine edilip incecik kesilen etlerle hazırlanan meşhur yemeğimiz.",
+"ingredients": [
+{"name": "Dana Eti", "canonical_name": "dana_eti", "quantity": 500, "unit": "g", "optional": false, "note": "Bütün parça"},
+{"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": "Marinasyon için"},
+{"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": "Suyu kullanılacak"},
+{"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": "Marinasyon için"},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": "Pişirmek için"},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Kekik", "canonical_name": "kekik", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Rendelenmiş soğanın suyunu sıkın ve yoğurt, zeytinyağı, karabiber, kekik ile karıştırarak pürüzsüz bir sos hazırlayın.",
+"Bütün eti bu sosa iyice bulayıp streç filme sararak dondurucuda iyice sertleşene kadar en az birkaç saat bekletin.",
+"Dondurulmuş eti keskin bir bıçakla ince yapraklar halinde dilimleyin.",
+"Geniş bir tavada tereyağını eritip incecik et dilimlerini tuz ilave ederek yüksek ateşte hızla çevirip kızartın."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 15,
+"difficulty": "zor",
+"diet_tags": ["glutensiz"],
+"allergens": ["laktoz"],
+"cuisine": "turk"
+}
+]
