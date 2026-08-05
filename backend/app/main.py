@@ -8,6 +8,7 @@ from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.routers import health
 from app.routers.api_v1 import api_router
+from app.db.mongodb import close_mongo_connection, connect_to_mongo
 
 logging.basicConfig(
     # Uygulamada olan biten her şeyi (kim girdi, nerede hata oldu, hangi veri çekildi) terminale veya bir dosyaya yazdırmak içindir
@@ -24,13 +25,12 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Uygulama acilis/kapanis yasam dongusu.
-
-    W1-T09'da MongoDB baglantisi burada acilip kapatilacak.
-    """
+    """Uygulama acilis/kapanis yasam dongusu."""
     logger.info("%s v%s baslatiliyor...", settings.PROJECT_NAME, settings.VERSION)
+    await connect_to_mongo()
     yield
-    logger.info("%s kapatiliyor...", settings.PROJECT_NAME)
+    await close_mongo_connection()
+    logger.info("%s kapatildi.", settings.PROJECT_NAME)
 
 
 def create_app() -> FastAPI:
