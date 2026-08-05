@@ -1,0 +1,310 @@
+[
+  {
+    "title": "Mevsim Salata",
+    "description": "Taze yeşilliklerin limonlu zeytinyağı sosuyla harmanlandığı hafif salata.",
+    "ingredients": [
+      {"name": "Marul", "canonical_name": "marul", "quantity": 1, "unit": "adet", "optional": false, "note": "ince kıyılmış"},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 3, "unit": "adet", "optional": false, "note": null},
+      {"name": "Salatalık", "canonical_name": "salatalik", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+      {"name": "Havuç", "canonical_name": "havuc", "quantity": 1, "unit": "adet", "optional": true, "note": "rendelenmiş"},
+      {"name": "Kırmızı Biber", "canonical_name": "kirmizi_biber", "quantity": 1, "unit": "adet", "optional": true, "note": null},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": true, "note": "ince halka"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": true, "note": null},
+      {"name": "Dereotu", "canonical_name": "dereotu", "quantity": 0.25, "unit": "demet", "optional": true, "note": null},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Marulu yıkayıp iyice süzdürün ve ince şeritler halinde kıyın.",
+      "Domates, salatalık ve biberi dilediğiniz büyüklükte doğrayıp geniş bir kâseye alın.",
+      "Rendelenmiş havucu ve kıyılmış yeşillikleri ekleyin.",
+      "Zeytinyağı, limon suyu, tuz ve karabiberi ayrı bir kapta çırpın.",
+      "Sosu servis etmeden hemen önce salataya gezdirip nazikçe karıştırın."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 0,
+    "difficulty": "kolay",
+    "diet_tags": ["vegan", "vejetaryen", "glutensiz"],
+    "allergens": [],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Piyaz",
+    "description": "Haşlanmış kuru fasulyenin soğan ve limonla buluştuğu klasik meze salatası.",
+    "ingredients": [
+      {"name": "Kuru Fasulye", "canonical_name": "kuru_fasulye", "quantity": 300, "unit": "g", "optional": false, "note": "ıslatılmış ve haşlanmış"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 2, "unit": "adet", "optional": false, "note": "piyazlık doğranmış"},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 2, "unit": "adet", "optional": true, "note": null},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 2, "unit": "adet", "optional": true, "note": null},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 2, "unit": "adet", "optional": true, "note": "haşlanmış, üzerine"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": false, "note": null},
+      {"name": "Tahin", "canonical_name": "tahin", "quantity": 2, "unit": "yemek_kasigi", "optional": true, "note": "Antalya usulü için"},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Sirke", "canonical_name": "sirke", "quantity": 1, "unit": "yemek_kasigi", "optional": true, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Bir gece ıslatılmış fasulyeleri dağılmayacak şekilde haşlayıp süzün ve soğutun.",
+      "Soğanları ince doğrayıp tuzla ovun, sonra durulayarak keskinliğini alın.",
+      "Zeytinyağı, limon suyu, sirke ve tuzu çırparak sos hazırlayın; dilerseniz tahini biraz suyla açıp sosa ekleyin.",
+      "Fasulye, soğan, doğranmış domates ve biberi geniş bir kâsede birleştirin.",
+      "Sosu gezdirip kıyılmış maydanozla karıştırın.",
+      "Üzerine haşlanmış yumurta dilimleri yerleştirip soğuk servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 20,
+    "cook_time": 45,
+    "difficulty": "kolay",
+    "diet_tags": ["glutensiz"],
+    "allergens": ["yumurta", "susam"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Haydari",
+    "description": "Süzme yoğurdun sarımsak ve naneyle koyulaştığı, kıvamlı bir meze.",
+    "ingredients": [
+      {"name": "Süzme Yoğurt", "canonical_name": "yogurt", "quantity": 500, "unit": "g", "optional": false, "note": "suyu süzülmüş"},
+      {"name": "Lor Peyniri", "canonical_name": "lor_peyniri", "quantity": 100, "unit": "g", "optional": true, "note": "kıvam için"},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 3, "unit": "adet", "optional": false, "note": "ezilmiş"},
+      {"name": "Dereotu", "canonical_name": "dereotu", "quantity": 0.5, "unit": "demet", "optional": false, "note": "ince kıyılmış"},
+      {"name": "Kuru Nane", "canonical_name": "kuru_nane", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null},
+      {"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 1, "unit": "yemek_kasigi", "optional": true, "note": "üzerine gezdirmek için"},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Yoğurdu tülbentte birkaç saat süzdürerek suyunu iyice alın.",
+      "Süzme yoğurdu lor peyniriyle birlikte çatalla ezerek pürüzsüzleştirin.",
+      "Ezilmiş sarımsak, tuz ve kuru naneyi ekleyip karıştırın.",
+      "İnce kıyılmış dereotunu ilave edip harmanlayın ve buzdolabında 30 dakika dinlendirin.",
+      "Servis tabağına alıp üzerine zeytinyağı gezdirin.",
+      "Dilerseniz tereyağında ısıtılmış pul biberi üstüne dökerek sunun."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 0,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen", "glutensiz"],
+    "allergens": ["laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Cacık",
+    "description": "Rendelenmiş salatalıkla sulandırılan, serinletici yoğurtlu klasik.",
+    "ingredients": [
+      {"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 500, "unit": "g", "optional": false, "note": null},
+      {"name": "Salatalık", "canonical_name": "salatalik", "quantity": 2, "unit": "adet", "optional": false, "note": "rendelenmiş ya da küp doğranmış"},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": false, "note": "ezilmiş"},
+      {"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "soğuk"},
+      {"name": "Dereotu", "canonical_name": "dereotu", "quantity": 0.25, "unit": "demet", "optional": true, "note": null},
+      {"name": "Kuru Nane", "canonical_name": "kuru_nane", "quantity": 1, "unit": "cay_kasigi", "optional": true, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 1, "unit": "yemek_kasigi", "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Salatalıkları rendeleyip fazla suyunu hafifçe sıkın.",
+      "Yoğurdu bir kâsede çırpıp soğuk suyla istediğiniz kıvama getirin.",
+      "Ezilmiş sarımsağı ve tuzu ekleyip iyice karıştırın.",
+      "Salatalıkları ve kıyılmış dereotunu ilave edin.",
+      "Buzdolabında en az 30 dakika soğutun.",
+      "Servis ederken üzerine kuru nane serpip zeytinyağı gezdirin."
+    ],
+    "servings": 4,
+    "prep_time": 10,
+    "cook_time": 0,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen", "glutensiz"],
+    "allergens": ["laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Şakşuka",
+    "description": "Kızarmış patlıcan ve biberlerin domates sosuyla buluştuğu zeytinyağlı meze.",
+    "ingredients": [
+      {"name": "Patlıcan", "canonical_name": "patlican", "quantity": 3, "unit": "adet", "optional": false, "note": "küp doğranmış"},
+      {"name": "Patates", "canonical_name": "patates", "quantity": 2, "unit": "adet", "optional": true, "note": null},
+      {"name": "Kabak", "canonical_name": "kabak", "quantity": 1, "unit": "adet", "optional": true, "note": null},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 3, "unit": "adet", "optional": false, "note": null},
+      {"name": "Domates", "canonical_name": "domates", "quantity": 3, "unit": "adet", "optional": false, "note": "rendelenmiş"},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 3, "unit": "adet", "optional": false, "note": "diş"},
+      {"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "tatli_kasigi", "optional": true, "note": null},
+      {"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 250, "unit": "ml", "optional": false, "note": "kızartmak için"},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": "sos için"},
+      {"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 200, "unit": "g", "optional": true, "note": "servis için"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Patlıcanları küp doğrayıp tuzlu suda bekletin ve iyice kurulayın.",
+      "Kızgın yağda patlıcan, patates, kabak ve biberleri ayrı ayrı kızartıp yağını süzdürün.",
+      "Zeytinyağında sarımsağı kavurup rendelenmiş domates ve salçayı ekleyin.",
+      "Sosu koyulaşana dek pişirip tuz ve karabiberle tatlandırın.",
+      "Kızartılmış sebzeleri servis tabağına dizip sosu üzerlerine dökün.",
+      "Ilıdıktan sonra sarımsaklı yoğurt eşliğinde servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 25,
+    "cook_time": 30,
+    "difficulty": "orta",
+    "diet_tags": ["vejetaryen", "glutensiz"],
+    "allergens": ["laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Fava",
+    "description": "Bakla ezmesinin soğuyunca kesilip dilimlendiği, zeytinyağlı bir meze.",
+    "ingredients": [
+      {"name": "Kuru Bakla", "canonical_name": "kuru_bakla", "quantity": 400, "unit": "g", "optional": false, "note": "iç bakla, ıslatılmış"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Şeker", "canonical_name": "seker", "quantity": 1, "unit": "tatli_kasigi", "optional": true, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 5, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "l", "optional": false, "note": null},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Dereotu", "canonical_name": "dereotu", "quantity": 0.5, "unit": "demet", "optional": false, "note": "servis için"},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+    ],
+    "steps": [
+      "Baklaları bir gece suda bekletip süzün.",
+      "Tencerede zeytinyağının bir kısmıyla doğranmış soğanı yumuşatın.",
+      "Baklaları, suyu, şekeri ve tuzu ekleyip kapağı kapalı halde iyice dağılana dek pişirin.",
+      "Karışımı sıcakken blenderdan geçirerek pürüzsüz bir puding kıvamı elde edin.",
+      "Yağlanmış bir kaba dökün ve buzdolabında birkaç saat donmaya bırakın.",
+      "Dilimleyip üzerine zeytinyağı, limon suyu ve kıyılmış dereotu ekleyerek servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 20,
+    "cook_time": 60,
+    "difficulty": "orta",
+    "diet_tags": ["vegan", "vejetaryen", "glutensiz"],
+    "allergens": [],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Humus",
+    "description": "Haşlanmış nohut ve tahinin limonla pürüzsüzleştiği, kaşıkla yenen meze.",
+    "ingredients": [
+      {"name": "Nohut", "canonical_name": "nohut", "quantity": 300, "unit": "g", "optional": false, "note": "ıslatılıp haşlanmış"},
+      {"name": "Tahin", "canonical_name": "tahin", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": false, "note": "diş"},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Su", "canonical_name": "su", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": "nohut haşlama suyu"},
+      {"name": "Kimyon", "canonical_name": "kimyon", "quantity": 1, "unit": "cay_kasigi", "optional": false, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": "üzerine"}
+    ],
+    "steps": [
+      "Nohutları bir gece ıslattıktan sonra çok yumuşayana dek haşlayın ve haşlama suyunu ayırın.",
+      "Daha pürüzsüz bir sonuç için nohutların kabuklarını dilerseniz ayıklayın.",
+      "Nohut, tahin, sarımsak, limon suyu, kimyon ve tuzu mutfak robotuna alın.",
+      "Haşlama suyunu azar azar ekleyerek krema kıvamına gelene dek çekin.",
+      "Karışımı tabağa yayıp ortasını kaşıkla havuz gibi çukurlaştırın.",
+      "Üzerine zeytinyağı gezdirip pul biber serperek servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 20,
+    "cook_time": 60,
+    "difficulty": "kolay",
+    "diet_tags": ["vegan", "vejetaryen", "glutensiz"],
+    "allergens": ["susam"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Yoğurtlu Semizotu",
+    "description": "Semizotunun sarımsaklı yoğurtla karıştırıldığı, ferahlatıcı bir yaz mezesi.",
+    "ingredients": [
+      {"name": "Semizotu", "canonical_name": "semizotu", "quantity": 2, "unit": "demet", "optional": false, "note": "yaprakları ayıklanmış"},
+      {"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 400, "unit": "g", "optional": false, "note": "süzme"},
+      {"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 3, "unit": "adet", "optional": false, "note": "ezilmiş"},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 0.5, "unit": "adet", "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Semizotlarının yapraklarını ayıklayıp bolca yıkayın ve iyice süzdürün.",
+      "İsterseniz yaprakları kaynar suda bir dakika haşlayıp soğuk suya alın, isterseniz çiğ kullanın.",
+      "Yoğurdu ezilmiş sarımsak ve tuzla çırpın.",
+      "Semizotlarını yoğurda ekleyip nazikçe karıştırın.",
+      "Buzdolabında yarım saat dinlendirin.",
+      "Üzerine zeytinyağı ve isteğe bağlı limon suyu gezdirerek soğuk servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 20,
+    "cook_time": 0,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen", "glutensiz"],
+    "allergens": ["laktoz"],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Patates Salatası",
+    "description": "Haşlanmış patateslerin limonlu zeytinyağı sosuyla harmanlandığı sade bir salata.",
+    "ingredients": [
+      {"name": "Patates", "canonical_name": "patates", "quantity": 800, "unit": "g", "optional": false, "note": "haşlanmış"},
+      {"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": "ince doğranmış"},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.5, "unit": "demet", "optional": false, "note": null},
+      {"name": "Dereotu", "canonical_name": "dereotu", "quantity": 0.25, "unit": "demet", "optional": true, "note": null},
+      {"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 1, "unit": "adet", "optional": true, "note": null},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+      {"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 5, "unit": "yemek_kasigi", "optional": false, "note": null},
+      {"name": "Sirke", "canonical_name": "sirke", "quantity": 1, "unit": "yemek_kasigi", "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null},
+      {"name": "Pul Biber", "canonical_name": "pul_biber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Patatesleri kabuklarıyla, çatal batacak kıvama gelene dek haşlayın.",
+      "Ilıkken kabuklarını soyup iri küpler halinde doğrayın.",
+      "Zeytinyağı, limon suyu, sirke, tuz ve baharatları çırparak sos hazırlayın.",
+      "Patatesler hâlâ ılıkken sosu üzerlerine dökün, böylece tadı daha iyi çekerler.",
+      "İnce doğranmış soğan, biber ve yeşillikleri ekleyip nazikçe karıştırın.",
+      "Oda sıcaklığında ya da hafif soğutulmuş olarak servis edin."
+    ],
+    "servings": 4,
+    "prep_time": 15,
+    "cook_time": 25,
+    "difficulty": "kolay",
+    "diet_tags": ["vegan", "vejetaryen", "glutensiz"],
+    "allergens": [],
+    "cuisine": "turk"
+  },
+  {
+    "title": "Rus Salatası",
+    "description": "Küp doğranmış haşlama sebzelerin mayonezli sosla birleştiği klasik meze.",
+    "ingredients": [
+      {"name": "Patates", "canonical_name": "patates", "quantity": 3, "unit": "adet", "optional": false, "note": "haşlanıp küp doğranmış"},
+      {"name": "Havuç", "canonical_name": "havuc", "quantity": 2, "unit": "adet", "optional": false, "note": "haşlanmış"},
+      {"name": "Bezelye", "canonical_name": "bezelye", "quantity": 150, "unit": "g", "optional": false, "note": "haşlanmış"},
+      {"name": "Turşu", "canonical_name": "tursu", "quantity": 100, "unit": "g", "optional": true, "note": "küp doğranmış"},
+      {"name": "Mayonez", "canonical_name": "mayonez", "quantity": 150, "unit": "g", "optional": false, "note": null},
+      {"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 3, "unit": "yemek_kasigi", "optional": true, "note": "sosu hafifletmek için"},
+      {"name": "Yumurta", "canonical_name": "yumurta", "quantity": 2, "unit": "adet", "optional": true, "note": "haşlanmış, süsleme"},
+      {"name": "Limon", "canonical_name": "limon", "quantity": 0.5, "unit": "adet", "optional": true, "note": null},
+      {"name": "Maydanoz", "canonical_name": "maydanoz", "quantity": 0.25, "unit": "demet", "optional": true, "note": null},
+      {"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+      {"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": true, "note": null}
+    ],
+    "steps": [
+      "Patates ve havuçları kabuklarıyla haşlayıp soğuduktan sonra küçük küpler halinde doğrayın.",
+      "Bezelyeyi ayrıca haşlayıp süzün ve soğutun.",
+      "Mayonez, yoğurt, limon suyu, tuz ve karabiberi karıştırarak sos hazırlayın.",
+      "Tüm sebzeleri ve doğranmış turşuyu geniş bir kâsede birleştirin.",
+      "Sosu ekleyip sebzeleri ezmeden nazikçe karıştırın.",
+      "Servis kabına alıp buzdolabında en az 1 saat soğutun ve haşlanmış yumurta ile maydanozla süsleyin."
+    ],
+    "servings": 4,
+    "prep_time": 30,
+    "cook_time": 25,
+    "difficulty": "kolay",
+    "diet_tags": ["vejetaryen", "glutensiz"],
+    "allergens": ["yumurta", "laktoz"],
+    "cuisine": "turk"
+  }
+]

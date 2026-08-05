@@ -1,0 +1,112 @@
+Mercimek Çorbası
+Ezogelin Çorbası
+Yayla Çorbası
+Domates Çorbası
+Tarhana Çorbası
+Şehriye Çorbası
+İşkembe yerine: Sebze Çorbası
+Brokoli Çorbası
+Karnıyarık
+İmambayıldı
+Kuru Fasulye
+Nohut Yemeği
+Etli Türlü
+Menemen
+Sucuklu Yumurta
+Omlet
+Zeytinyağlı Taze Fasulye
+Zeytinyağlı Barbunya
+Zeytinyağlı Pırasa
+Zeytinyağlı Enginar
+Ispanak Yemeği
+Kabak Yemeği
+Patlıcan Musakka
+Fırın Tavuk
+Tavuk Sote
+Tavuk Şiş
+Izgara Köfte
+Sulu Köfte
+Kadınbudu Köfte
+İçli Köfte yerine: Mercimekli Köfte
+Etli Bezelye
+Etli Kabak
+Pilav (Şehriyeli)
+Bulgur Pilavı
+Nohutlu Pilav
+Sebzeli Bulgur Pilavı
+Mantı
+Makarna (Domates Soslu)
+Fırın Makarna
+Sigara Böreği
+Su Böreği
+Peynirli Börek
+Ispanaklı Börek
+Poğaça
+Açma
+Simit
+Menemen Tost
+Kısır
+Çoban Salata
+Gavurdağı Salatası
+Mevsim Salata
+Piyaz
+Haydari
+Cacık
+Şakşuka
+Fava
+Humus
+Yoğurtlu Semizotu
+Patates Salatası
+Rus Salatası
+Pilaki
+Yaprak Sarma
+Lahana Sarma
+Biber Dolması
+Kabak Dolması
+Domates Dolması
+Mercimekli Mantı yerine: Erişte
+Tarhana
+Bulgurlu Ispanak
+Fırında Sebze
+Karnabahar Kızartması
+Patates Kızartması
+Patlıcan Kızartması
+Mücver
+Pancake yerine: Krep
+Sütlaç
+İrmik Helvası
+Un Helvası
+Kemalpaşa yerine: Revani
+Şekerpare
+Kazandibi
+Muhallebi
+Aşure
+Kadayıf
+Baklava
+Lokma
+Ayva Tatlısı
+Kabak Tatlısı
+Tavuk Göğsü Tatlısı
+Fırın Sütlaç
+Cheesecake yerine: Yoğurt Tatlısı
+Meyveli Yoğurt
+Çilekli Smoothie
+Yulaflı Kahvaltı Kasesi
+Peynirli Yumurta
+Haşlanmış Yumurta
+Menemen (Sucuklu)
+Zeytinyağlı Kereviz
+Etli Nohut
+Fırın Köfte
+Tavuk Haşlama
+Sebzeli Tavuk
+Yoğurtlu Mantı
+Ezogelin
+Keşkek
+Islak Keşkek
+Pizza
+Hamburger
+Fırında Patates Köfte
+Döner
+Adana Kebap
+İskender

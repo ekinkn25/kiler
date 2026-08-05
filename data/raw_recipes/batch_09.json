@@ -1,0 +1,255 @@
+[
+{
+"title": "Kazandibi",
+"description": "Altı özenle yakılmış, hafif karamelize aromasıyla yoğun süt lezzetine sahip nefis tatlı.",
+"ingredients": [
+{"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "l", "optional": false, "note": null},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Pirinç Unu", "canonical_name": "pirinc_unu", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Buğday Nişastası", "canonical_name": "bugday_nisastasi", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": "Tepsiyi yağlamak için"},
+{"name": "Pudra Şekeri", "canonical_name": "pudra_sekeri", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": "Tepsinin tabanına serpmek için"}
+],
+"steps": [
+"Süt, şeker, pirinç unu ve nişastayı derin bir tencerede pürüzsüz olana dek çırpıp koyulaşana kadar sürekli karıştırarak pişirin.",
+"Geniş bir tepsinin tabanını tereyağıyla yağlayıp üzerine ince bir tabaka halinde pudra şekeri serpiştirin.",
+"Hazırladığınız muhallebiyi tepsiye dökün ve ocak üzerinde tepsiyi sürekli çevirerek altını eşit şekilde yakın.",
+"Tatlı oda sıcaklığına geldikten sonra buzdolabında iyice soğutun, ardından uzun şeritler halinde keserek rulo şeklinde sarıp servis edin."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 25,
+"difficulty": "orta",
+"diet_tags": ["glutensiz"],
+"allergens": ["laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Muhallebi",
+"description": "Her kaşıkta sadeliği ve ferahlığı hissettiren klasik sütlü tatlı.",
+"ingredients": [
+{"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "l", "optional": false, "note": null},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Un", "canonical_name": "un", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Nişasta", "canonical_name": "nisasta", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Vanilya", "canonical_name": "vanilya", "quantity": 1, "unit": "paket", "optional": false, "note": null}
+],
+"steps": [
+"Tencereye süt, şeker, un ve nişastayı alarak topaklanmaması için tel çırpıcıyla sürekli karıştırın.",
+"Orta ateşte kıvam alıp kaynayana kadar pişirdiğiniz karışıma, ocaktan almadan hemen önce tereyağı ve vanilyayı ekleyin.",
+"Yağ eriyip muhallebi pürüzsüz bir doku kazandığında ocaktan alın ve servis kaselerine eşit şekilde paylaştırın.",
+"Oda ısısına geldikten sonra buzdolabında soğutarak üzerini dilediğiniz gibi süsleyip servis yapın."
+],
+"servings": 4,
+"prep_time": 10,
+"cook_time": 15,
+"difficulty": "kolay",
+"diet_tags": [],
+"allergens": ["laktoz", "gluten"],
+"cuisine": "turk"
+},
+{
+"title": "Aşure",
+"description": "Bakliyatlar ve kuruyemişlerin mükemmel uyumuyla hazırlanan bereketli geleneksel tatlı.",
+"ingredients": [
+{"name": "Aşurelik Buğday", "canonical_name": "asurelik_bugday", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Nohut", "canonical_name": "nohut", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Kuru Fasulye", "canonical_name": "kuru_fasulye", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Kuru Kayısı", "canonical_name": "kuru_kayisi", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Kuru İncir", "canonical_name": "kuru_fasulye", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 2, "unit": "l", "optional": false, "note": null},
+{"name": "Ceviz", "canonical_name": "ceviz", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "Üzeri için"}
+],
+"steps": [
+"Bir gece önceden ıslattığınız buğday, nohut ve kuru fasulyeyi ayrı tencerelerde tamamen yumuşayana dek haşlayın.",
+"Büyük bir tencerede haşlanmış buğdayı suyla kaynatın ve içerisine yumuşayan bakliyatları ilave edin.",
+"Küp küp doğranmış kuru incir, kuru kayısı ve şekeri ekleyerek tüm malzemeler özleşene kadar kısık ateşte pişirin.",
+"Kıvam alan aşureyi kaselere bölüştürüp üzerini bol ceviz ile süsleyerek soğumaya bırakın."
+],
+"servings": 16,
+"prep_time": 30,
+"cook_time": 60,
+"difficulty": "zor",
+"diet_tags": ["vegan", "vejetaryen", "laktozsuz"],
+"allergens": ["gluten"],
+"cuisine": "turk"
+},
+{
+"title": "Kadayıf",
+"description": "Çıtır tel kadayıfların arasında bol ceviz ve sıcak şerbetin buluştuğu eşsiz lezzet.",
+"ingredients": [
+{"name": "Tel Kadayıf", "canonical_name": "tel_kadayif", "quantity": 500, "unit": "g", "optional": false, "note": null},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 200, "unit": "g", "optional": false, "note": null},
+{"name": "Ceviz", "canonical_name": "ceviz", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": "İri çekilmiş"},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"},
+{"name": "Su", "canonical_name": "su", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"},
+{"name": "Limon Suyu", "canonical_name": "limon", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null}
+],
+"steps": [
+"Tel kadayıfları geniş bir kapta elinizle tiftikleyerek birbirinden ayırın ve üzerine eritilmiş ılık tereyağını dökerek iyice harmanlayın.",
+"Yağlanmış kadayıfın yarısını fırın tepsisine iyice bastırarak döşeyin, arasına bol ceviz içi serpip kalan kadayıfı da üzerine sıkıca yerleştirin.",
+"Önceden ısıtılmış fırında altı ve üstü nar gibi kızarana dek pişirin.",
+"Bu esnada şeker ve su ile hazırlayıp ocaktan alırken limon sıktığınız ılık şerbeti, fırından çıkan sıcak kadayıfın üzerine gezdirin."
+],
+"servings": 15,
+"prep_time": 25,
+"cook_time": 40,
+"difficulty": "orta",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Baklava",
+"description": "İncecik yufkaların kat kat dizilmesiyle oluşan saraylara layık çıtır tatlı.",
+"ingredients": [
+{"name": "Baklavalık Yufka", "canonical_name": "baklavalik_yufka", "quantity": 1, "unit": "paket", "optional": false, "note": null},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 250, "unit": "g", "optional": false, "note": null},
+{"name": "Ceviz", "canonical_name": "ceviz", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": "İnce çekilmiş"},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"},
+{"name": "Su", "canonical_name": "su", "quantity": 3.5, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"},
+{"name": "Limon Suyu", "canonical_name": "limon", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": null}
+],
+"steps": [
+"Şerbet için su ve şekeri tencerede on beş dakika kadar kaynatıp limon suyunu ilave edin ve soğuması için kenara alın.",
+"Baklavalık yufkaların aralarına fırçayla eritilmiş tereyağı sürerek yarısını tepsiye dizin ve ortasına bol ceviz serpin.",
+"Kalan yufkaları da aynı şekilde yağlayarak dizdikten sonra baklavayı dilediğiniz boyutta dilimleyip kalan yağı üzerine gezdirin.",
+"Altın sarısı renk alana kadar fırında ağır ağır pişirin ve sıcak tatlının üzerine soğuk şerbeti dökerek şerbetini çekmesini bekleyin."
+],
+"servings": 20,
+"prep_time": 40,
+"cook_time": 45,
+"difficulty": "zor",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Lokma",
+"description": "İçi yumuşacık, dışı çıtır çıtır ve şerbetle parlayan lokmalık tatlı.",
+"ingredients": [
+{"name": "Un", "canonical_name": "un", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": "Ilık su"},
+{"name": "Kuru Maya", "canonical_name": "kuru_maya", "quantity": 1, "unit": "paket", "optional": false, "note": null},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": "Hamur için"},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"},
+{"name": "Su", "canonical_name": "su", "quantity": 2.5, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"},
+{"name": "Limon Suyu", "canonical_name": "limon", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": null},
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 0.4, "unit": "su_bardagi", "optional": false, "note": "Kızartmak için"}
+],
+"steps": [
+"Şerbet için şeker ve suyu koyu bir kıvam alana dek kaynatıp ocaktan alırken limon sıkın ve tamamen soğutun.",
+"Un, ılık su, maya, tuz ve şekeri derin bir kasede pürüzsüz, akışkan ve cıvık bir hamur elde edene kadar çırparak mayalanmaya bırakın.",
+"Mayalanan hamurdan elinizle küçük parçalar koparıp yağlanmış bir tatlı kaşığı yardımıyla derin kızgın yağa bırakın.",
+"Nar gibi kızaran hamurları hiç bekletmeden soğuk şerbete atın, şerbette birkaç saniye karıştırıp süzerek servis tabağına alın."
+],
+"servings": 4,
+"prep_time": 45,
+"cook_time": 20,
+"difficulty": "orta",
+"diet_tags": ["vegan", "vejetaryen", "laktozsuz"],
+"allergens": ["gluten"],
+"cuisine": "turk"
+},
+{
+"title": "Ayva Tatlısı",
+"description": "Kendi çekirdekleriyle doğal rengini alan, karanfil kokulu meyve tatlısı.",
+"ingredients": [
+{"name": "Ayva", "canonical_name": "ayva", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Çubuk Tarçın", "canonical_name": "cubuk_tarcin", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Karanfil", "canonical_name": "karanfil", "quantity": 5, "unit": "adet", "optional": false, "note": null},
+{"name": "Kaymak", "canonical_name": "kaymak", "quantity": 4, "unit": "yemek_kasigi", "optional": true, "note": "Servis için"}
+],
+"steps": [
+"Ayvaların kabuklarını soyup ortadan ikiye bölün ve iç çekirdek kısımlarını dikkatlice çıkararak geniş bir tencereye dizin.",
+"Renk vermesi için ayva çekirdeklerini tencerenin boşluklarına serpiştirin ve her bir ayva yarımının üzerine eşit miktarda şeker dökün.",
+"Tencereye su, çubuk tarçın ve karanfilleri ilave edip ayvalar yumuşayana ve jölemsi bir renk alana kadar kısık ateşte kapağı kapalı pişirin.",
+"Soğuduktan sonra ayvaları servis tabağına alın ve isteğe bağlı olarak ortalarına kaymak yerleştirerek sunum yapın."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 45,
+"difficulty": "kolay",
+"diet_tags": ["glutensiz"],
+"allergens": ["laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Kabak Tatlısı",
+"description": "Balkabağının tahin ve cevizle taçlandığı nefis hafif kış tatlısı.",
+"ingredients": [
+{"name": "Balkabağı", "canonical_name": "balkabagi", "quantity": 1, "unit": "kg", "optional": false, "note": "Soyulmuş ve dilimlenmiş"},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Tahin", "canonical_name": "tahin", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": "Üzeri için"},
+{"name": "Ceviz", "canonical_name": "ceviz", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "Üzeri için"}
+],
+"steps": [
+"Balkabaklarını istediğiniz boyutta dilimleyip geniş bir tencereye dizin ve üzerine toz şekeri dökerek sulanması için en az iki saat bekletin.",
+"Kendi suyunu salan kabakları, kapağı kapalı olarak kısık ateşte iyice yumuşayana ve şerbeti ağda kıvamı alana kadar pişirin.",
+"Ocaktan alıp oda sıcaklığında tamamen soğumaya bıraktığınız tatlıları dikkatlice servis tabaklarına aktarın.",
+"Üzerlerine bolca tahin gezdirip iri dövülmüş ceviz serperek servis yapın."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 40,
+"difficulty": "kolay",
+"diet_tags": ["vegan", "vejetaryen", "glutensiz", "laktozsuz"],
+"allergens": ["susam"],
+"cuisine": "turk"
+},
+{
+"title": "Tavuk Göğsü Tatlısı",
+"description": "Gerçek tavuk eti kullanılarak hazırlanan, sakız gibi uzayan tarihi sütlü tatlı.",
+"ingredients": [
+{"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "l", "optional": false, "note": null},
+{"name": "Tavuk Göğsü", "canonical_name": "tavuk_gogsu", "quantity": 100, "unit": "g", "optional": false, "note": null},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Un", "canonical_name": "un", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Nişasta", "canonical_name": "nisasta", "quantity": 3, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null}
+],
+"steps": [
+"Tavuk göğsünü bol suda iyice haşlayın, suyunu süzüp lif lif ayırarak ince tel haline getirin ve kokusunun çıkması için birkaç kez suyunu değiştirerek soğuk suda bekletin.",
+"Derin bir tencerede süt, şeker, un ve nişastayı sürekli karıştırarak koyu bir muhallebi kıvamına gelene kadar pişirin.",
+"Suda bekleyen tavuk etlerinin suyunu iyice sıkarak kaynayan muhallebiye ekleyin ve blender yardımıyla çırparak sakız gibi bir doku elde edin.",
+"Son olarak tereyağını ekleyip tatlıya yedirdikten sonra suyla hafifçe ıslatılmış bir borcama dökün ve buzdolabında iyice dinlendirip dilimleyin."
+],
+"servings": 4,
+"prep_time": 30,
+"cook_time": 25,
+"difficulty": "zor",
+"diet_tags": [],
+"allergens": ["laktoz", "gluten"],
+"cuisine": "turk"
+},
+{
+"title": "Fırın Sütlaç",
+"description": "Fırında üzeri kızartılan, içi kremsi ve bol sütlü vazgeçilmez lezzet.",
+"ingredients": [
+{"name": "Süt", "canonical_name": "sut", "quantity": 1, "unit": "l", "optional": false, "note": null},
+{"name": "Pirinç", "canonical_name": "pirinc", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Yumurta Sarısı", "canonical_name": "yumurta", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Nişasta", "canonical_name": "nisasta", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": "Pirinci haşlamak için"}
+],
+"steps": [
+"Yıkanmış pirinçleri bir su bardağı su ile tamamen yumuşayıp suyunu çekene kadar tencerede haşlayın.",
+"Üzerine sütü ve şekeri ilave edip kaynamaya bırakın, bu sırada yumurta sarısı ve nişastayı az miktarda suyla ayrı bir kasede pürüzsüz olana dek çırpın.",
+"Kaynayan sütten bir kepçe alıp nişastalı karışıma ekleyerek ılıtın ve bu terbiyeyi yavaşça tencereye döküp sütlaç hafif kıvam alana dek pişirin.",
+"Sütlaçları ısıya dayanıklı güveç kaselerine paylaştırıp, kaseleri yarısına kadar su dolu bir fırın tepsisine oturtun ve fırının ızgara ayarında üzerleri kızarana kadar fırınlayın."
+],
+"servings": 4,
+"prep_time": 10,
+"cook_time": 35,
+"difficulty": "orta",
+"diet_tags": ["glutensiz"],
+"allergens": ["laktoz", "yumurta"],
+"cuisine": "turk"
+}
+]

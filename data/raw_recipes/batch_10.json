@@ -1,0 +1,253 @@
+[
+{
+"title": "Yoğurt Tatlısı",
+"description": "Şerbeti tam çeken, hafif ve gözenekli yapısıyla klasik bir ev tatlısı.",
+"ingredients": [
+{"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Toz Şeker", "canonical_name": "seker", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "1 bardağı hamura, 2 bardağı şerbete"},
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 3, "unit": "adet", "optional": false, "note": null},
+{"name": "İrmik", "canonical_name": "irmik", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Un", "canonical_name": "un", "quantity": 1, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Kabartma Tozu", "canonical_name": null, "quantity": 1, "unit": "paket", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 3, "unit": "su_bardagi", "optional": false, "note": "Şerbet için"},
+{"name": "Limon Suyu", "canonical_name": "limon", "quantity": 1, "unit": "tatli_kasigi", "optional": false, "note": "Şerbet için"}
+],
+"steps": [
+"Şerbet için şeker ve suyu tencerede kaynatın, ocaktan almadan önce limon suyunu ekleyerek soğumaya bırakın.",
+"Derin bir kasede yumurta ve şekeri çırptıktan sonra yoğurt, irmik, un ve kabartma tozunu ilave ederek pürüzsüz bir kek harcı hazırlayın.",
+"Hafifçe yağlanmış fırın tepsisine harcı dökün ve önceden ısıtılmış fırında üzeri altın sarısı olana kadar pişirin.",
+"Fırından çıkardığınız sıcak tatlının üzerine soğuk şerbeti gezdirin ve şerbeti çektikten sonra dilimleyerek servis yapın."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 30,
+"difficulty": "orta",
+"diet_tags": [],
+"allergens": ["gluten", "laktoz", "yumurta"],
+"cuisine": "turk"
+},
+{
+"title": "Meyveli Yoğurt",
+"description": "Taze meyvelerle hazırlanan ferahlatıcı ve sağlıklı bir atıştırmalık.",
+"ingredients": [
+{"name": "Süzme Yoğurt", "canonical_name": "yogurt", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Çilek", "canonical_name": null, "quantity": 200, "unit": "g", "optional": false, "note": "Veya dilediğiniz taze meyve"},
+{"name": "Bal", "canonical_name": null, "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null}
+],
+"steps": [
+"Çilekleri iyice yıkayıp saplarını ayırdıktan sonra küçük küpler halinde doğrayın.",
+"Geniş bir kasede süzme yoğurt ve balı bir tel çırpıcı yardımıyla tamamen pürüzsüz olana kadar çırpın.",
+"Doğradığınız çilekleri ballı yoğurdun içine ekleyerek meyveleri ezmeden nazikçe karıştırın.",
+"Hazırladığınız meyveli yoğurdu servis kaselerine paylaştırıp buzdolabında dinlendirdikten sonra soğuk servis edin."
+],
+"servings": 4,
+"prep_time": 10,
+"cook_time": 0,
+"difficulty": "kolay",
+"diet_tags": ["glutensiz"],
+"allergens": ["laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Çilekli Smoothie",
+"description": "Sıcak yaz günleri için harika bir içecek seçeneği.",
+"ingredients": [
+{"name": "Süt", "canonical_name": "sut", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": "Soğuk"},
+{"name": "Yoğurt", "canonical_name": "yogurt", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Çilek", "canonical_name": null, "quantity": 300, "unit": "g", "optional": false, "note": "Dondurulmuş tercih edilebilir"},
+{"name": "Bal", "canonical_name": null, "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null}
+],
+"steps": [
+"Çilekleri yıkayıp temizleyin ve içeceğin daha serin olması için kısa bir süre dondurucuda bekletin.",
+"Blender haznesine soğuk süt, yoğurt, bal ve hazırladığınız çilekleri alın.",
+"Tüm malzemeler tamamen sıvı, homojen ve pürüzsüz bir hal alana kadar blenderdan geçirin.",
+"Hazırladığınız smoothie içeceğini bekletmeden bardaklara doldurarak taze taze tüketin."
+],
+"servings": 4,
+"prep_time": 5,
+"cook_time": 0,
+"difficulty": "kolay",
+"diet_tags": ["glutensiz"],
+"allergens": ["laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Yulaflı Kahvaltı Kasesi",
+"description": "Güne enerjik başlamanızı sağlayacak besleyici ve doyurucu bir tabak.",
+"ingredients": [
+{"name": "Yulaf Ezmesi", "canonical_name": null, "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Süt", "canonical_name": "sut", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Bal", "canonical_name": null, "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Ceviz", "canonical_name": "ceviz", "quantity": 0.5, "unit": "su_bardagi", "optional": false, "note": "İri dövülmüş"},
+{"name": "Muz", "canonical_name": null, "quantity": 2, "unit": "adet", "optional": false, "note": "Üzeri için"}
+],
+"steps": [
+"Yulaf ezmesi ve sütü küçük bir sos tenceresine alarak yulaflar sütü çekip yumuşayana kadar orta ateşte pişirin.",
+"Lapa kıvamına gelen karışımı ocaktan alın ve ilk sıcaklığı geçtikten sonra bal ilave ederek tatlandırın.",
+"Hazırladığınız lapayı derin kaselere eşit porsiyonlar halinde paylaştırın.",
+"Üzerini dilimlenmiş muz ve dövülmüş ceviz içi ile süsleyerek ılık veya soğuk olarak servis yapın."
+],
+"servings": 4,
+"prep_time": 5,
+"cook_time": 10,
+"difficulty": "kolay",
+"diet_tags": [],
+"allergens": ["laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Peynirli Yumurta",
+"description": "Kahvaltı sofralarının pratik ve protein deposu kurtarıcısı.",
+"ingredients": [
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+{"name": "Beyaz Peynir", "canonical_name": "beyaz_peynir", "quantity": 100, "unit": "g", "optional": false, "note": null},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": "Peynirin tuz oranına göre"}
+],
+"steps": [
+"Geniş bir kasede yumurtaları sarıları ve beyazları birbirine tamamen karışana dek bir çatal yardımıyla çırpın.",
+"Beyaz peyniri elinizle küçük parçalara ayırarak veya ezerek çırpılmış yumurtalara ilave edin.",
+"Tereyağını yanmaz yapışmaz geniş bir tavada eritip köpürttükten sonra hazırladığınız peynirli karışımı tavaya dökün.",
+"Yumurtalar dilediğiniz sertliğe ulaşana kadar tahta bir kaşıkla dıştan içe doğru karıştırarak pişirin ve sıcak servis edin."
+],
+"servings": 4,
+"prep_time": 5,
+"cook_time": 5,
+"difficulty": "kolay",
+"diet_tags": ["glutensiz", "ketojenik", "dusuk_karbonhidrat"],
+"allergens": ["yumurta", "laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Haşlanmış Yumurta",
+"description": "Tam kıvamında, besleyici ve pratik bir kahvaltılık klasiği.",
+"ingredients": [
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 1, "unit": "l", "optional": false, "note": null},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Yumurtaları bir cezveye veya küçük bir tencereye yerleştirip üzerlerini tamamen örtecek kadar soğuk su ilave edin.",
+"Kabukların çatlamaması ve kolay soyulması için suya bir miktar tuz ekleyip tencereyi orta ateşe alın.",
+"Su kaynamaya başladıktan sonra dilediğiniz kıvama göre (kayısı için 4, katı için 7 dakika) ocakta tutun.",
+"Süresi dolduğunda yumurtaları hızla soğuk sudan geçirin, kabuklarını soyarak dilimleyin ve baharatlarla servis edin."
+],
+"servings": 4,
+"prep_time": 2,
+"cook_time": 10,
+"difficulty": "kolay",
+"diet_tags": ["glutensiz", "ketojenik", "dusuk_karbonhidrat", "laktozsuz"],
+"allergens": ["yumurta"],
+"cuisine": "turk"
+},
+{
+"title": "Menemen (Sucuklu)",
+"description": "Domatesin ve sucuğun lezzetini harmanlayan doyumsuz kahvaltılık.",
+"ingredients": [
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+{"name": "Sucuk", "canonical_name": "sucuk", "quantity": 100, "unit": "g", "optional": false, "note": "Dilimlenmiş"},
+{"name": "Domates", "canonical_name": "domates", "quantity": 4, "unit": "adet", "optional": false, "note": "Büyük boy"},
+{"name": "Yeşil Biber", "canonical_name": "yesil_biber", "quantity": 4, "unit": "adet", "optional": false, "note": null},
+{"name": "Tereyağı", "canonical_name": "tereyagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Yeşil biberleri ince ince doğrayın ve kabuklarını soyduğunuz taze domatesleri küçük küpler halinde kesin.",
+"Geniş bir tavada tereyağını eritip biberleri hafifçe kavurun, ardından dilimlenmiş sucukları ekleyerek birkaç dakika pişirin.",
+"Doğranmış domatesleri ve tuzu ilave edip, domatesler suyunu salıp hafifçe çekene kadar kısık ateşte pişirmeye devam edin.",
+"Yumurtaları tavanın içine kırın, sarılarını hafifçe dağıtarak yumurtalar pişene kadar ocakta tutup sıcak servis yapın."
+],
+"servings": 4,
+"prep_time": 10,
+"cook_time": 15,
+"difficulty": "kolay",
+"diet_tags": ["glutensiz", "ketojenik", "dusuk_karbonhidrat"],
+"allergens": ["yumurta", "laktoz"],
+"cuisine": "turk"
+},
+{
+"title": "Zeytinyağlı Kereviz",
+"description": "Limon ve zeytinyağının muhteşem uyumuyla hazırlanan sağlıklı bir sebze yemeği.",
+"ingredients": [
+{"name": "Kereviz", "canonical_name": null, "quantity": 3, "unit": "adet", "optional": false, "note": "Orta boy"},
+{"name": "Havuç", "canonical_name": "havuc", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+{"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Zeytinyağı", "canonical_name": "zeytinyagi", "quantity": 5, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Limon Suyu", "canonical_name": "limon", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Kerevizlerin kabuklarını soyup elma dilimi şeklinde doğrayın ve kararmamaları için tencereye alana dek limonlu suda bekletin.",
+"Kuru soğanı ince yemeklik, havuçları ise hafif kalın halkalar veya verev şeklinde doğrayın.",
+"Geniş bir tencerede zeytinyağı ile soğan ve havuçları hafifçe soteledikten sonra süzülmüş kerevizleri ekleyin.",
+"Üzerine limon suyu, su ve tuz ilave ederek tencerenin kapağını kapatın, sebzeler yumuşayana kadar kısık ateşte pişirip ılık veya soğuk servis edin."
+],
+"servings": 4,
+"prep_time": 20,
+"cook_time": 30,
+"difficulty": "kolay",
+"diet_tags": ["vegan", "vejetaryen", "glutensiz", "laktozsuz"],
+"allergens": [],
+"cuisine": "turk"
+},
+{
+"title": "Etli Nohut",
+"description": "Lokum gibi pişmiş etiyle geleneksel tencere yemeklerinin baş tacı.",
+"ingredients": [
+{"name": "Nohut", "canonical_name": "nohut", "quantity": 2, "unit": "su_bardagi", "optional": false, "note": null},
+{"name": "Dana Kuşbaşı Eti", "canonical_name": "dana_eti", "quantity": 300, "unit": "g", "optional": false, "note": null},
+{"name": "Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Su", "canonical_name": "su", "quantity": 4, "unit": "su_bardagi", "optional": false, "note": "Sıcak"},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Bir gece önceden bol suda beklettiğiniz nohutları ertesi gün süzerek yemeğe hazır hale getirin.",
+"Geniş bir tencerede sıvı yağı ısıtıp etleri kendi suyunu salıp çekene kadar iyice kavurun ve ardından ince doğranmış soğanları ekleyin.",
+"Soğanlar pembeleştiğinde domates salçasını ilave edin ve salçanın kokusu çıkana kadar karıştırarak kavurmaya devam edin.",
+"Süzülmüş nohutları, sıcak suyu ve baharatları tencereye ekleyip, nohut ve etler tamamen yumuşayana dek kapağı kapalı olarak pişirin."
+],
+"servings": 4,
+"prep_time": 15,
+"cook_time": 60,
+"difficulty": "orta",
+"diet_tags": ["glutensiz", "laktozsuz"],
+"allergens": [],
+"cuisine": "turk"
+},
+{
+"title": "Fırın Köfte",
+"description": "Patates ve köftenin muhteşem uyumunu fırın sıcaklığında birleştiren ana yemek.",
+"ingredients": [
+{"name": "Dana Kıyma", "canonical_name": "kiyma", "quantity": 500, "unit": "g", "optional": false, "note": null},
+{"name": "Kuru Soğan", "canonical_name": "sogan", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Sarımsak", "canonical_name": "sarimsak", "quantity": 2, "unit": "adet", "optional": false, "note": null},
+{"name": "Galeta Unu", "canonical_name": "galeta_unu", "quantity": 4, "unit": "yemek_kasigi", "optional": false, "note": null},
+{"name": "Yumurta", "canonical_name": "yumurta", "quantity": 1, "unit": "adet", "optional": false, "note": null},
+{"name": "Patates", "canonical_name": "patates", "quantity": 3, "unit": "adet", "optional": false, "note": null},
+{"name": "Domates Salçası", "canonical_name": "domates_salcasi", "quantity": 1, "unit": "yemek_kasigi", "optional": false, "note": "Sos için"},
+{"name": "Su", "canonical_name": "su", "quantity": 1.5, "unit": "su_bardagi", "optional": false, "note": "Sos için"},
+{"name": "Ayçiçek Yağı", "canonical_name": "aycicek_yagi", "quantity": 2, "unit": "yemek_kasigi", "optional": false, "note": "Sos için"},
+{"name": "Tuz", "canonical_name": "tuz", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Karabiber", "canonical_name": "karabiber", "quantity": null, "unit": null, "optional": false, "note": null},
+{"name": "Kimyon", "canonical_name": "kimyon", "quantity": null, "unit": null, "optional": false, "note": null}
+],
+"steps": [
+"Derin bir yoğurma kabına kıyma, rendelenmiş soğan, ezilmiş sarımsak, yumurta, galeta unu ve baharatları alıp özleşene kadar iyice yoğurun.",
+"Hazırladığınız köfte harcından parçalar koparıp şekil verin ve elma dilimi doğranmış patateslerle birlikte fırın tepsisine dizin.",
+"Ayrı bir kapta salça, su, sıvı yağ ve az miktarda tuzu çırparak hazırladığınız sosu tepsideki malzemelerin üzerine eşit şekilde gezdirin.",
+"Önceden ısıtılmış fırında patatesler yumuşayıp köftelerin üzeri güzelce kızarana kadar pişirin ve sıcak olarak servis yapın."
+],
+"servings": 4,
+"prep_time": 25,
+"cook_time": 40,
+"difficulty": "orta",
+"diet_tags": ["laktozsuz"],
+"allergens": ["gluten", "yumurta"],
+"cuisine": "turk"
+}
+]
