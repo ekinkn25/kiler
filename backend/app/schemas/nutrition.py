@@ -4,7 +4,7 @@ from datetime import date, datetime
 from pydantic import Field, model_validator
 
 from app.models.enums import LogSource, MealType
-from app.schemas.common import AppBaseModel
+from app.schemas.common import AppBaseModel, UtcDatetime
 
 
 class MealLogCreate(AppBaseModel):
@@ -43,7 +43,7 @@ class MealLogRead(AppBaseModel):
     carb_g: float | None = None
     fat_g: float | None = None
     recipe_id: str | None = None
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class MacroBreakdown(AppBaseModel):

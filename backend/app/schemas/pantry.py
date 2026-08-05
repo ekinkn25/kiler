@@ -5,7 +5,7 @@ from pydantic import Field, model_validator
 
 from app.models.enums import PantryEventType, ShoppingSource, UnitCode, UnitType
 from app.schemas.catalog import IngredientRead, ProductRead
-from app.schemas.common import AppBaseModel
+from app.schemas.common import AppBaseModel, UtcDatetime
 
 
 # ------------------------------------------------------------------ kiler
@@ -58,8 +58,8 @@ class PantryItemRead(AppBaseModel):
 
     expiry_date: date | None = None
     is_active: bool
-    created_at: datetime
-    updated_at: datetime
+    created_at: UtcDatetime
+    updated_at: UtcDatetime
 
     is_low: bool = Field(description="quantity_base <= min_threshold_base")
     display_quantity: float = Field(description="display_unit cinsinden gosterim miktari")
@@ -83,7 +83,7 @@ class PantryEventRead(AppBaseModel):
     recipe_id: str | None = None
     estimated_cost: float | None = None
     event_note: str | None = None
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 # ------------------------------------------------------------------ alisveris listesi

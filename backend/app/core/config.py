@@ -21,11 +21,13 @@ class Settings(BaseSettings):
     VERSION: str = "0.1.0"
     API_V1_PREFIX: str = "/api/v1" #mobil uygulama veya web sitesinin) bizimle konuşurken kullanacağı kapı numarasıdır
     DEBUG: bool = True #"Geliştirici Modu" açık, canlıya çıkarken bunu false yapmalıyız
+    SQL_ECHO: bool = False
 
     # ---------- Guvenlik ---------- : sisteme giriş yapan kullanıcılara dijital token verilir bu token SECRET_KEY sadece senin bildiğin bir şifreyle mühürlenir
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # ---------- Veritabanlari ----------
     DATABASE_URL: str = f"sqlite:///{BASE_DIR / 'kalori.db'}"

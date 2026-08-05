@@ -5,7 +5,7 @@ from enum import Enum
 from pydantic import Field
 
 from app.models.enums import FeedbackAction
-from app.schemas.common import AppBaseModel
+from app.schemas.common import AppBaseModel, UtcDatetime
 
 
 class IngredientStatus(str, Enum):
@@ -38,7 +38,7 @@ class RecipeFeedbackRead(AppBaseModel):
     recipe_id: str
     action: FeedbackAction
     rating: int | None = None
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class RecipeCookRequest(AppBaseModel):

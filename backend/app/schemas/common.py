@@ -3,8 +3,10 @@
 
 from typing import Generic, TypeVar
 from math import ceil
+from datetime import datetime, timezone
+from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, PlainSerializer
 
 T = TypeVar("T")
 
@@ -68,3 +70,13 @@ class Page(BaseModel, Generic[T]):
             size=params.size,
             pages=ceil(total / params.size) if params.size else 0,
         )
+
+def _to_utc_iso(value: datetime) -> str:
+    """veri tabanından gelen naive zaman damgasını açıkca UTC olarak işaretler"""
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+UtcDatetime = Annotated[
+    datetime, PlainSerializer(_to_utc_iso, return_type=str, when_used="json")
+]

@@ -1,5 +1,6 @@
 """Chatbot semalari. W3-T12'de RAG cikti sozlesmesi bunlara oturur."""
 from datetime import datetime
+from app.schemas.common import AppBaseModel, UtcDatetime
 
 from pydantic import Field
 
@@ -23,7 +24,7 @@ class ChatMessageRead(AppBaseModel):
     content: str
     suggested_recipe_ids: list[str] = []
     from_cache: bool = False
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class ChatResponse(AppBaseModel):

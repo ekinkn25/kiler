@@ -11,9 +11,14 @@ from app.routers.api_v1 import api_router
 
 logging.basicConfig(
     # Uygulamada olan biten her şeyi (kim girdi, nerede hata oldu, hangi veri çekildi) terminale veya bir dosyaya yazdırmak içindir
-    level=logging.INFO if not settings.DEBUG else logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
 )
+
+logging.getLogger("app").setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
+for gurultu in ("asynvio", "passlib", "httpx", "watchfiles", "multipart"):
+    logging.getLogger(gurultu).setLevel(logging.WARNING)
+
 logger = logging.getLogger(__name__)
 
 
