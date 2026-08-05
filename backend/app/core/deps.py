@@ -11,6 +11,8 @@ from app.core.security import decode_token
 from app.db.session import get_db
 from app.models import User
 from app.services import user_service
+from motor.motor_asyncio import AsyncIOMotorDatabase
+from app.db.mongodb import get_database
 
 # tokenUrl, Swagger'daki "Authorize" butonunun hangi uca istek atacagini soyler.
 # Buradaki yol GERCEK login ucuyla birebir ayni olmali, yoksa Authorize calismaz.
@@ -18,6 +20,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_PREFIX}/auth/to
 
 DbSession = Annotated[Session, Depends(get_db)]
 TokenStr = Annotated[str, Depends(oauth2_scheme)]
+MongoDb = Annotated[AsyncIOMotorDatabase, Depends(get_database)]
 
 
 def get_current_user(db: DbSession, token: TokenStr) -> User:

@@ -26,6 +26,7 @@ class HealthResponse(BaseModel):
     status: str = "ok"
     service: str
     version: str
+    databases: dict[str, str] = {}
 
 
 class ErrorResponse(BaseModel):

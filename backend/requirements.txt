@@ -13,6 +13,7 @@ alembic
 
 # ---------- Doküman veritabanı (MongoDB) ----------
 motor
+pymongo[srv]
 
 # ---------- Kimlik doğrulama ----------
 python-jose[cryptography]
