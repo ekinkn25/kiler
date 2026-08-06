@@ -52,3 +52,9 @@ _(W4-T14'te doldurulacak)_
 ## Lisans
 
 Özel — staj projesi.
+
+## Çalıştırma
+backend klasör içindeyken -> uvicorn app.main:app --reload --host 0.0.0.0 (venv aktif olmalı)
+mobile klasör içindeyken -> flutter run -d emulator-5554 --dart-define=USE_FAKE_SCANNER=true --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1 YA DA ./flutter_run.ps1
+emülatör kapalıysa -> flutter emulators --launch Pixel_7
+emülatör cold boot -> & "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd Pixel_7 -no-snapshot-load

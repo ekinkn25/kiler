@@ -79,3 +79,7 @@ yarn-error.log*
 *.tmp
 
 data\unmatched_report.txt
+
+# ---------- IDE ----------
+.idea/
+*.iml
