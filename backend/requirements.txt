@@ -30,3 +30,6 @@ rapidfuzz
 # ---------- Test ----------
 pytest
 pytest-asyncio
+
+# ---------- görüntü sıkıştırma---------
+pillow
