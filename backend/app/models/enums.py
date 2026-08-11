@@ -66,10 +66,17 @@ class LogSource(str, enum.Enum):
     TARIF = "tarif"
 
 class FeedbackAction(str, enum.Enum):
+    GORDU = "gordu"
     BEGENDIM = "begendim"
     BEGENMEDIM = "begenmedim"
+    YAPACAGIM = "yapacagim"
+    KAYDETTI = "kaydetti"
     YAPTIM = "yaptim"
-    ATLADIM = "atladim"
+
+class FeedbackReason(str, enum.Enum):
+    SEVMEDIM = "sevmedim"
+    COK_UZUN = "cok_uzun"
+    MALZEME_YOK = "malzeme_yok"
 
 class TasteDimension(str, enum.Enum):
     CUISINE  = "cuisine"
