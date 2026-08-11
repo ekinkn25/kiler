@@ -16,9 +16,9 @@ from app.schemas.nutrition import (
     WeightLogCreate, WeightLogRead,
 )
 from app.schemas.pantry import (
-    PantryEventRead, PantryItemCreate, PantryItemRead, PantryItemUpdate,
+    PantryEventRead, PantryItemCreate, PantryItemRead,
     PantryScanRequest, ShoppingBulkAdd, ShoppingItemCreate, ShoppingItemRead,
-    ShoppingItemUpdate,
+    ShoppingItemUpdate, PantryItemConfirm, DetectedIngredient, PantryConfirmDetectedRequest
 )
 from app.schemas.recipe import (
     IngredientStatus, RecipeBase, RecipeCard, RecipeCookRequest, RecipeCreate,
@@ -40,7 +40,7 @@ __all__ = [
     "AllergenRead", "DietTagRead", "OnboardingRequest", "UserProfileCreate",
     "UserProfileRead", "UserProfileUpdate", "UserRead", "UserUpdate",
     "CategoryRead", "IngredientCreate", "IngredientRead", "ProductCreate", "ProductRead",
-    "PantryEventRead", "PantryItemCreate", "PantryItemRead", "PantryItemUpdate",
+    "PantryEventRead", "PantryItemCreate", "PantryItemRead", "PantryItemConfirm", "DetectedIngredient", "PantryConfirmDetectedRequest"
     "PantryScanRequest", "ShoppingBulkAdd", "ShoppingItemCreate", "ShoppingItemRead",
     "ShoppingItemUpdate",
     "DailySummary", "MacroBreakdown", "MealLogCreate", "MealLogRead",

@@ -90,3 +90,29 @@ class PantryEventType(str, enum.Enum):
     BOZULDU_ATILDI = "bozuldu_atildi"
     DUZELTME = "duzeltme"
     SILINDI = "silindi"
+
+class Availability(str, enum.Enum):
+    """Bir malzemenin kilerde bulunma durumuna dair INANC seviyesi.
+
+    Bu bir envanter degil, bir guven ifadesidir:
+      VAR         : son 7 gun icinde barkod veya fotografla dogrulandi
+      BILINMIYOR  : bir zamanlar vardi, guven suresi doldu; kullaniciya soruyoruz
+      BITTI       : kullanici acikca 'bitti' dedi
+    """
+
+    VAR = "var"
+    BILINMIYOR = "bilinmiyor"
+    BITTI = "bitti"
+
+
+class PantrySource(str, enum.Enum):
+    """Kiler kaydinin nereden geldigi.
+
+    DIKKAT: 'manuel' degeri BILEREK YOK. Yeni kapsamda kullanici kilere
+    elle metin girmiyor; yalnizca barkod okutuyor veya fotograf cekiyor.
+    """
+
+    BARKOD = "barkod"        # barkod okutuldu
+    FOTO = "foto"            # gorme modeli tespit etti, kullanici onayladi
+    TARIF = "tarif"          # bir tarif yapildi, malzeme guveni degisti
+    SISTEM = "sistem"        # gecis/seed kaydi (eski verilerin tasindigi durum)

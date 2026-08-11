@@ -3,7 +3,7 @@ from datetime import date, datetime
 
 from pydantic import Field, model_validator
 
-from app.models.enums import PantryEventType, ShoppingSource, UnitCode, UnitType
+from app.models.enums import PantryEventType, ShoppingSource, UnitCode, UnitType, Availability, PantrySource
 from app.schemas.catalog import IngredientRead, ProductRead
 from app.schemas.common import AppBaseModel, UtcDatetime
 
@@ -37,24 +37,33 @@ class PantryItemCreate(AppBaseModel):
         return self
 
 
-class PantryItemUpdate(AppBaseModel):
-    quantity: float | None = Field(default=None, ge=0)
-    unit: UnitCode | None = None
-    min_threshold: float | None = Field(default=None, ge=0)
-    expiry_date: date | None = None
-    is_active: bool | None = None
+# class PantryItemUpdate(AppBaseModel):
+#     quantity: float | None = Field(default=None, ge=0)
+#     unit: UnitCode | None = None
+#     min_threshold: float | None = Field(default=None, ge=0)
+#     expiry_date: date | None = None
+#     is_active: bool | None = None
 
 
 class PantryItemRead(AppBaseModel):
     id: int
-    ingredient: IngredientRead | None = None
+    ingredient: IngredientRead
     product: ProductRead | None = None
-    custom_name: str | None = None
+    # custom_name: str | None = None
+    availability: Availability = Field(
+        description="Guven suresi dikkate alinmis GERCEK durum"
+    )
 
-    quantity_base: float = Field(description="Temel birimde saklanan miktar (g / ml / adet)")
-    unit_type: UnitType
-    display_unit: UnitCode
-    min_threshold_base: float
+    # min_threshold_base: float
+    source: PantrySource
+    confirmed_at: UtcDatetime | None = None
+    confidence_expires_at: UtcDatetime | None = None
+    days_remaining: int | None = Field(
+        default=None, description="Guven suresinin bitmesine kalan gun"
+    )
+    detected_confidence: float | None = Field(default=None, ge=0, le=1)
+    quantity_base: float | None = None
+    display_unit: UnitCode | None = None
 
     expiry_date: date | None = None
     is_active: bool
@@ -71,6 +80,9 @@ class PantryScanRequest(AppBaseModel):
     barcode: str = Field(min_length=8, max_length=20, examples=["8690504010203"])
     quantity: float | None = Field(default=None, gt=0)
     unit: UnitCode | None = None
+class PantryItemConfirm(AppBaseModel):
+    """[Var]/ [Bitti] hızlı aksiyonu"""
+    still_have : bool = Field(description="true -> süre yenilenir, false -> bitti")
 
 
 # ------------------------------------------------------------------ hareket gunlugu
@@ -126,3 +138,19 @@ class ShoppingBulkAdd(AppBaseModel):
 
     recipe_id: str = Field(min_length=24, max_length=24)
     items: list[ShoppingItemCreate] = Field(min_length=1, max_length=50)
+
+
+
+class DetectedIngredient(AppBaseModel):
+    "görme modelinin tespit  ettiği tek bir malzeme"
+    raw_name: str = Field(description="modelin dondurdugu ham ad")
+    canonical_name: str | None = Field(
+        default=None, description="sozlukte eslesen kanonik ad, yok ise null(gri)"
+    )
+    display_name: str
+    confidence: float = Field(ge=0, le=1)
+
+class PantryConfirmDetectedRequest(AppBaseModel):
+    "onay ekranından secilen malzemelerin kilere yazılması W2-T10"
+    canonical_name: list[str] = Field(min_length=1, max_length=40)
+    source: PantrySource = PantrySource.FOTO

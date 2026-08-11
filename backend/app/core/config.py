@@ -44,6 +44,16 @@ class Settings(BaseSettings):
     # Flutter Web ile gelistirme yaparken gerekli olur.
     CORS_ORIGINS: list[str] = ["*"]
 
+    # ---------- Kiler davranisi ----------
+    # Bir malzeme kilere eklendiginde kac gun boyunca 'var' sayilir.
+    # Sure dolunca otomatik 'bilinmiyor'a duser ve oneri agirligi azalir.
+    # Sabit kodlanmadi: gercek kullanimda 5 mi 10 mu daha iyi, denenebilsin.
+    PANTRY_CONFIDENCE_DAYS: int = 7
+
+    # 'bilinmiyor' durumundaki malzemenin oneri skorundaki agirligi.
+    # 'var' = 1.0 kabul edilir.
+    PANTRY_UNKNOWN_WEIGHT: float = 0.4
+
 
 @lru_cache
 def get_settings() -> Settings:
