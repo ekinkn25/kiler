@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    Date, DateTime, Float, ForeignKey, Index, String, UniqueConstraint, func,
+    Date, DateTime, Float, ForeignKey, Index, String, UniqueConstraint, func, Integer, Text, CheckConstraint
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -30,6 +30,10 @@ class MealLog(Base):
         #Buraya koyduğun bu bileşik indeksler (Composite Index) sayesinde veritabanı motoru tüm tabloyu baştan sona taramak (Full Table Scan) yerine, doğrudan indeks ağacına (B-Tree) giderek veriyi milisaniyeler içinde bulur. Bu, sunucu maliyetlerini (CPU/RAM) inanılmaz derecede düşüren usta işi bir dokunuştur.
         Index("ix_meals_user_date", "user_id", "logged_date"),
         Index("ix_meals_user_date_type", "user_id", "logged_date", "meal_type"),
+        CheckConstraint(
+            "local_hour IS NULL OR (local_hour BETWEEN 0 AND 23)", 
+            name="local_hour_range",
+        ),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -59,8 +63,17 @@ class MealLog(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )
+    ingredients_json: Mapped[str | None] = mapped_column(Text)
+    local_hour: Mapped[int | None] = mapped_column(Integer)
 
     user: Mapped["User"] = relationship(back_populates="meal_logs")
+
+    @property
+    def ingredients(self) -> list[str]:
+        return json.loads(self.ingredients_json) if self.ingredients_json else []
+
+    def set_ingredients(self, isimler: list[str]) -> None:
+        self.ingredients_json = json.dumps(isimler, ensure_ascii=False) if isimler else None
 
 
 class WeightLog(Base):
