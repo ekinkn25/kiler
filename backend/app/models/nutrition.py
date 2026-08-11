@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from typing import TYPE_CHECKING
+import json
 
 from sqlalchemy import (
-    Date, DateTime, Float, ForeignKey, Index, String, UniqueConstraint, func, Integer, Text, CheckConstraint
+    Date, DateTime, Float, ForeignKey, Index, String, UniqueConstraint, func, Integer, Text, CheckConstraint, 
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
