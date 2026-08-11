@@ -15,7 +15,8 @@ if TYPE_CHECKING:
     from app.models.chat import ChatConversation
     from app.models.nutrition import MealLog, WeightLog
     from app.models.pantry import PantryEvent, PantryItem, ShoppingListItem
-    from app.models.recipe import RecipeFavorite, RecipeFeedback, UserTasteWeight
+    from app.models.recipe import RecipeFavorite, RecipeFeedback, UserTasteWeight, SwipeSession
+    from app.models.recipe import RecipeFavorite, RecipeFeedback, SwipeSession, UserTasteWeight
 
 
 # ----------------------------------------------------------------- N:N tablolari
@@ -88,6 +89,9 @@ class User(TimestampMixin, Base):
         back_populates="user", cascade="all, delete-orphan"
     )
     conversations: Mapped[list["ChatConversation"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    swipe_sessions: Mapped[list["SwipeSession"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
 
