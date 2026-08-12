@@ -13,6 +13,9 @@ from app.core.constants import CUISINES, DIFFICULTIES
 from app.models.enums import FeedbackAction, UnitCode
 from app.schemas.common import AppBaseModel, UtcDatetime
 
+from pydantic import Field, field_validator, model_validator
+from app.models.enums import FeedbackAction, FeedbackReason, UnitCode
+
 
 # ==================================================================
 # Malzeme durum gosterimi (W4-T01)
@@ -208,3 +211,62 @@ class ScoredRecipeCard(AppBaseModel):
     unknown_ingredients: list[str] = []
     missing_ingredients: list[str] = []
     total_required: int = 0
+
+# ==================================================================
+# Swipe destesi 
+# ==================================================================
+class DeckResponse(AppBaseModel):
+    session_id: int
+    items: list[ScoredRecipeCard]
+    returned: int
+    requested: int
+    exhausted: bool = Field(
+        description="Istenen sayida kart uretilemedi; istemci 'filtreleri gevset' der."
+    )
+    session_filters: dict = Field(
+        default_factory=dict,
+        description="Oturum boyunca daralan filtreler, orn. {'max_total_time': 30}",
+    )
+    excluded_count: int = 0
+
+
+class SwipeRequest(AppBaseModel):
+    """Tek bir kart üzerindeki geri bildirim.
+
+    DİKKAT: 'sevmedim' bir action DEGIL, reason'dir. Kalıcı eleme için
+    action='begenmedim' + reason='sevmedim' gönderilmeli. Yalnızca
+    'begenmedim' gönderilirse tarif kalıcı olarak elenmez.
+    """
+    action: FeedbackAction
+    reason: FeedbackReason | None = None
+    session_id: int | None = None
+    missing_ingredient_id: int | None = None
+    rating: int | None = Field(default=None, ge=1, le=5)
+    servings_cooked: float | None = Field(default=None, gt=0, le=20)
+    comment: str | None = Field(default=None, max_length=500)
+
+    @model_validator(mode="after")
+    def kisitlar(self):
+        """Veritabanindaki CHECK kisitlarinin API karsiligi.
+
+        Bu dogrulama olmasaydi ayni hatalar IntegrityError olarak 500
+        donerdi; buradan 422 ve anlasilir mesaj cikiyor.
+        """
+        if self.reason is not None and self.action != FeedbackAction.BEGENMEDIM:
+            raise ValueError("reason yalnizca action='begenmedim' ile gonderilebilir.")
+        if (self.missing_ingredient_id is not None
+                and self.reason != FeedbackReason.MALZEME_YOK):
+            raise ValueError(
+                "missing_ingredient_id yalnizca reason='malzeme_yok' ile gonderilebilir."
+            )
+        return self
+
+
+class SwipeResponse(AppBaseModel):
+    feedback_id: int
+    session_id: int | None = None
+    recipe_id: str
+    action: FeedbackAction
+    reason: FeedbackReason | None = None
+    session_filters: dict = Field(default_factory=dict)
+    effect: str = Field(description="Geri bildirimin sonucunun insan okunur ozeti.")

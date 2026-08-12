@@ -41,7 +41,8 @@ class ScoringContext:
     taste: tuple[dict[str, Any], ...] = () # [{dim, key, w}, ...]
     calorie_target: float = 650.0          # ogun basina
     target_minutes: int = 45
-    max_calories: float | None = None      # sert tavan (opsiyonel)
+    max_calories: float | None = None   
+    max_total_minutes: int | None = None   # sert tavan (opsiyonel)
 
 
 def build_context(
@@ -50,8 +51,14 @@ def build_context(
     *,
     max_calories: float | None = None,
     target_minutes: int | None = None,
+    max_total_minutes: int | None = None,
 ) -> ScoringContext:
     #Kullanıcının kilerini, kısıtlarını ve zevk vektörünü SQLite'tan toplar.
+    hedef_dk = target_minutes or settings.SCORE_TARGET_MINUTES
+    if max_total_minutes:
+        # Sert tavan 30 dk iken 45 dk'yi 'ideal' saymak tutarsiz olurdu.
+        hedef_dk = min(hedef_dk, max_total_minutes)
+
     var = tuple(db.scalars(
         select(Ingredient.canonical_name)
         .join(PantryItem, PantryItem.ingredient_id == Ingredient.id)
@@ -82,8 +89,9 @@ def build_context(
         allergens=tuple(a.code for a in user.allergens),
         taste=taste,
         calorie_target=ogun_basi,
-        target_minutes=target_minutes or settings.SCORE_TARGET_MINUTES,
+        target_minutes=hedef_dk,
         max_calories=max_calories,
+        max_total_minutes=max_total_minutes,
     )
     logger.info(
         "Skorlama baglami | kullanici=%s var=%d bilinmiyor=%d diyet=%s alerjen=%s "
@@ -117,6 +125,17 @@ def _match_stage(ctx: ScoringContext, exclude_ids: Sequence[str]) -> dict:
 
     if ctx.max_calories:
         kosul["calories_per_serving"] = {"$lte": float(ctx.max_calories)}
+
+    if ctx.max_total_minutes:
+        # prep_time + cook_time toplamı bir alan degil, bu yuzden $expr şart.
+        # DİKKAT: $expr indeks kullanamaz. Tarif sayısı binlerle ölçüyken sorun degil; yuz binlere çıkarsa dökümana 'total_time' alanı eklenip indekslenmeli.
+        kosul["$expr"] = {"$lte": [
+            {"$add": [
+                {"$ifNull": ["$prep_time", 0]},
+                {"$ifNull": ["$cook_time", 0]},
+            ]},
+            float(ctx.max_total_minutes),
+        ]}
 
     if exclude_ids:
         gecerli = []
@@ -298,12 +317,12 @@ def build_scoring_pipeline(
                 "calorie": {"$round": ["$_s_kalori", 4]},
                 "taste": {"$round": ["$_s_zevk", 4]},
                 "time": {"$round": ["$_s_sure", 4]},
-                "weights": {
+                "weights": {"$literal":{
                     "pantry": settings.SCORE_W_PANTRY,
                     "calorie": settings.SCORE_W_CALORIE,
                     "taste": settings.SCORE_W_TASTE,
                     "time": settings.SCORE_W_TIME,
-                },
+                }},
             },
             "matched_ingredients": "$_var",
             "unknown_ingredients": "$_bilinmiyor",
