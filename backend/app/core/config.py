@@ -54,6 +54,36 @@ class Settings(BaseSettings):
     # 'var' = 1.0 kabul edilir.
     PANTRY_UNKNOWN_WEIGHT: float = 0.4
 
+        # ---------- Gorme modeli (cok kipli LLM) ----------
+    # fake | groq | openai   -- VARSAYILAN 'fake': API anahtari olmadan da
+    # uygulama calisir, testler ag baglantisi istemez.
+    VISION_PROVIDER: str = "fake"
+    VISION_API_KEY: str = ""
+    # Model kimligi saglayiciya gore degisir ve zamanla guncellenir.
+    # Kullanmadan once saglayicinin guncel model listesinden DOGRULA.
+    VISION_MODEL: str = ""
+    VISION_TIMEOUT_SECONDS: int = 20
+    VISION_MAX_RETRIES: int = 2
+
+    # Goruntu on isleme: token maliyetini dogrudan etkiler.
+    # 1600 px + %80 kalite, 3 MB'lik bir fotografi ~400 KB'a indirir.
+    VISION_MAX_IMAGE_PX: int = 1600
+    VISION_JPEG_QUALITY: int = 80
+
+    # Kullanici basina gunluk fotograf limiti (maliyet korumasi)
+    VISION_DAILY_LIMIT_PER_USER: int = 30
+    # Bu esigin altindaki sonuclar onay ekranina hic gelmez.
+    # 0.15: model "belki bir sey var" dediginde gostermek kullaniciyi yorar.
+    VISION_MIN_CONFIDENCE: float = 0.15
+    # Tek fotograftan donecek en fazla malzeme sayisi (UI kalabaligi korumasi)
+    VISION_MAX_ITEMS: int = 25
+    # Akil yurutme modelleri response_format=json_object ile calismiyor:
+    # <think> blogu dogrulamayi patlatiyor. Kapatildiginda extract_json
+    # ayristirir.
+    VISION_JSON_MODE: bool = True
+    VISION_MAX_TOKENS: int = 6000
+    VISION_REASONING_EFFORT: str = "none"
+
 
 @lru_cache
 def get_settings() -> Settings:

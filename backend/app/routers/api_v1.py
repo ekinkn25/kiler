@@ -1,10 +1,12 @@
 from fastapi import APIRouter, status
 from app.schemas import ErrorResponse, PantryItemCreate
-from app.routers import auth
+from app.routers import auth, vision
 
 api_router = APIRouter()
 
-api_router.include_router(auth.router, prefix="/auth", tags=["auth"])   # W1-T08
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(vision.router, prefix="/vision", tags=["vision"])
+
 
 @api_router.get("/ping", tags=["system"], summary="Versiyonlu API canlilik testi")
 def ping() -> dict[str, bool]:

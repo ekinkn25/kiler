@@ -13,6 +13,7 @@ from app.models.catalog import (
 from app.models.chat import ChatConversation, ChatMessage, LlmCache
 from app.models.nutrition import MealLog, WeightLog
 from app.models.pantry import PantryEvent, PantryItem, ShoppingListItem
+from app.models.visions import VisionRequest, VisionRequestType
 from app.models.recipe import RecipeFavorite, RecipeFeedback, UserTasteWeight, SwipeSession
 from app.models.user import (
     Allergen,
@@ -36,5 +37,5 @@ __all__ = [
     # E. Tarif
     "RecipeFeedback", "RecipeFavorite", "UserTasteWeight", "SwipeSession"
     # F. AI
-    "ChatConversation", "ChatMessage", "LlmCache",
+    "ChatConversation", "ChatMessage", "LlmCache", "VisionRequest", "VisionRequestType"
 ]
