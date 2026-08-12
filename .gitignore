@@ -23,6 +23,10 @@ build/
 *.db
 *.sqlite
 *.sqlite3
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
 
 # ---------- Flutter / Dart ----------
 .dart_tool/
