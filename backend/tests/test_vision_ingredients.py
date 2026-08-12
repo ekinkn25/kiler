@@ -66,14 +66,14 @@ def test_guven_normalizasyonu(girdi, beklenen):
 
 # ---------------------------------------------------------------- eslestirme
 @pytest.mark.parametrize("ham, beklenen_canonical, beklenen_yontem", [
-    ("domates", "domates", "exact"),
-    ("DOMATES", "domates", "exact"),
-    ("Kırmızı Mercimek", "kirmizi_mercimek", "exact"),
-    ("k mercimek", "kirmizi_mercimek", "exact"),          # alias
-    ("domatesler", "domates", "suffix"),
-    ("taze domates", "domates", "partial"),
+    ("domates", "domates", "canonical"),
+    ("DOMATES", "domates", "canonical"),
+    ("Kırmızı Mercimek", "kirmizi_mercimek", "canonical"),
+    ("k mercimek", "kirmizi_mercimek", "alias"),          # alias
+    ("domatesler", "domates", "canonical_ek"),
+    ("taze domates", "domates", "fuzzy"),
     ("domats", "domates", "fuzzy"),                        # yazim hatasi
-    ("yoğurt", "yogurt", "exact"),                         # TR karakter
+    ("yoğurt", "yogurt", "canonical"),                         # TR karakter
 ])
 def test_eslesme_yontemleri(db, ham, beklenen_canonical, beklenen_yontem):
     sonuc = match_one(db, ham)
