@@ -166,3 +166,45 @@ class RecipeCookRequest(AppBaseModel):
     servings: float = Field(default=1, gt=0, le=20)
     log_meal: bool = Field(default=True, description="Kalori gunlugune de yazilsin mi?")
     meal_type: str | None = None
+
+# ==================================================================
+# Skorlanmis tarif karti (W2-T06)
+# ==================================================================
+class ScoreWeights(AppBaseModel):
+    pantry: float
+    calorie: float
+    taste: float
+    time: float
+
+
+class ScoreBreakdown(AppBaseModel):
+    """Skorun bilesenleri. ACIKLANABILIRLIK icin yanitta doner:
+    'bu tarif ust sirada cunku kilerinin %80'i uyuyor' denebilsin."""
+    pantry: float = Field(ge=0, le=1)
+    calorie: float = Field(ge=0, le=1)
+    taste: float = Field(ge=0, le=1)
+    time: float = Field(ge=0, le=1)
+    weights: ScoreWeights
+
+
+class ScoredRecipeCard(AppBaseModel):
+    id: str
+    title: str
+    slug: str
+    image_url: str | None = None
+    calories_per_serving: float
+    servings: int
+    prep_time: int | None = None
+    cook_time: int | None = None
+    difficulty: str | None = None
+    cuisine: str | None = None
+    diet_tags: list[str] = []
+    allergens: list[str] = []
+
+    final_score: float = Field(ge=0, le=1)
+    score_breakdown: ScoreBreakdown
+
+    matched_ingredients: list[str] = []
+    unknown_ingredients: list[str] = []
+    missing_ingredients: list[str] = []
+    total_required: int = 0

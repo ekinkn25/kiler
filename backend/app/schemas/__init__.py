@@ -24,6 +24,7 @@ from app.schemas.recipe import (
     IngredientStatus, RecipeBase, RecipeCard, RecipeCookRequest, RecipeCreate,
     RecipeFeedbackCreate, RecipeFeedbackRead, RecipeIngredient,
     RecipeIngredientStatus, RecipeMacros, RecipeRead,
+    ScoreBreakdown, ScoredRecipeCard, ScoreWeights
 )
 from app.schemas.user import (
     AllergenRead, DietTagRead, OnboardingRequest, UserProfileCreate,
@@ -51,4 +52,5 @@ __all__ = [
     "RefreshRequest", "ChangePasswordRequest"
     "RecipeBase", "RecipeCard", "RecipeCreate", "RecipeIngredient", "RecipeMacros", 
     "RecipeRead"
+    "ScoreBreakdown", "ScoreWeights", "ScoredRecipeCard"
 ]

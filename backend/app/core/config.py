@@ -54,6 +54,20 @@ class Settings(BaseSettings):
     # 'var' = 1.0 kabul edilir.
     PANTRY_UNKNOWN_WEIGHT: float = 0.4
 
+        # ---------- Tarif skorlama (W2-T06) ----------
+    # Toplamlari 1.0 olmali. Sabit kodlanmadi: A/B denemesi yapilabilsin.
+    SCORE_W_PANTRY: float = 0.50
+    SCORE_W_CALORIE: float = 0.20
+    SCORE_W_TASTE: float = 0.20
+    SCORE_W_TIME: float = 0.10
+
+    # Gunluk kalori hedefinin kaca bolunecegi (3 ogun varsayimi).
+    SCORE_MEALS_PER_DAY: int = 3
+
+    # Bu surenin altindaki tarifler tam puan alir; ustunde dogrusal duser
+    # ve 3 katinda sifirlanir.
+    SCORE_TARGET_MINUTES: int = 45
+
         # ---------- Gorme modeli (cok kipli LLM) ----------
     # fake | groq | openai   -- VARSAYILAN 'fake': API anahtari olmadan da
     # uygulama calisir, testler ag baglantisi istemez.
