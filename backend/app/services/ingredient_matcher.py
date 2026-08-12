@@ -1,136 +1,333 @@
-"""ham malzeme -> sözlük isim olarak eşleştirme yapar 
-foto/fiş/tarif metninden gelen her türlü ham adı Ingredient sözlüğüne bağlar
-görme modeline bağımlı değildir 
-eşleştirme sırası: 
-1- exact: normalize edilmiş ad doğrudan sözlükte aranız 
-2- suffix: türkçe çoğul eki ile aratılır
-3- partial: son 1-2 kelime benzer olursa
-4- fuzzy: difflib benzerlik >= 0.86 olursa (örn: domats -> domates)
+"""Malzeme adi eslestirme ve bulanik arama. W2-T05.
+
+UC ASAMA (ilk tutan kazanir):
+  1) canonical : ingredients.canonical_name / display_name tam eslesme
+  2) alias     : ingredient_aliases.alias tam eslesme
+  3) fuzzy     : rapidfuzz token_set_ratio >= 85
+
+Cekirdek fonksiyon match_name() SAFTIR: veritabani, ag, saat veya rastgelelik
+kullanmaz. Ayni girdi + ayni sozluk daima ayni sonucu verir. Bu sayede 30+
+vaka DB olmadan, milisaniyede ve deterministik olarak test edilebiliyor.
+
+DB'ye dokunan her sey dosyanin alt yarisinda; ust yari tamamen saf.
+Hem gorme modeli ciktisi (W2-T04) hem chatbot metni (W3-T12) buradan gecer.
 """
 from __future__ import annotations
-# future: pythonun zaman makinesi, geecekteki sürümlerinde standart/varsayılan olacak özellikler kullandığım kodda erkenden aktif edebilmeyi sağlar
-#annotation: tip belirteçlerinin(type hints) python tarafından okunma şeklini değiştiren özellik: kod aktif edilince type hintsler kod tanımladığı an işlenmez hepsi bellekte birer string olarak tutulur
 
-import difflib #metin/liste/veri dizilerini karşılaştırmaya yarar
-import logging #programın geçtiği aşamalar hatalar olayları sistemli şekilde kayıt altına alma(loglama) kütüphanesi print()'in yerini alır mesajları önem seviyesine göre debug, info, warning, error, critical diye sınıflandırmaya yarar, kayıtları sadece ekrana basmaz metine dbye sunucuta kaydedebilir
+import logging
 import time
-from dataclasses import dataclass #teme amacı veri tutmak olan class oluştururken kullanılan decorator | class içinde otomatik __init__(başlatıcı), __repr__(yazdırılabilir temsili), __eq__(eşitlik kontrolü) gibi std metodları benim yerime arka planda yazar 
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Iterable, Iterator #type hinting(tip belirleyici)| Iterable: üzerinde for döngüsü dönülenilen nesneleri temsil eder, | Iterator: verileri tek tek üreten ve nerede kaldığını hatırlayan (next() ile bir sonrakini çağıran) nesneleri temsil eder 
+from typing import Iterable
 
+from rapidfuzz import fuzz, process
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError # db kuralları ihlal edilince fırlatılan hatadır 
-from sqlalchemy.orm import Session # db ile kod arası çalışma masası, veri tabanına veri ekleme güncellem silme işlemlerini toplar ve ben session.commit() diyene kadar bekletir, eğer bir hata olursa session.rollback() ile tüm işlemleri geri alarak db bozulmaktan korur
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
-from app.models import Ingredient, IngredientAlias, UnmatchedIngredient 
+from app.models import Ingredient, IngredientAlias, UnmatchedIngredient
 from app.services.unit_service import normalize_text
 
 logger = logging.getLogger(__name__)
 
-FUZZY_ESIK = 0.86 #bulanık eşleştirme eşiği
+# ==================================================================
+# Ayarlar
+# ==================================================================
+# 85: gorev tanimindaki esik. Deneysel olarak da makul - 80'de
+# 'kabak'<->'kavak', 'kimyon'<->'kimyon' disi eslesmeler basliyor;
+# 90'da yazim hatalari kaciriyor.
+FUZZY_ESIK = 85
 
-_COGUL_EKLERI = ("lari", "leri", "ları", "lerı", "lar", "ler")
+# token_set_ratio birden fazla adaya 100 verebildigi icin tek aday degil
+# kisa bir liste aliyoruz; dogru olani ikincil olcutle seciyoruz.
+FUZZY_ADAY_SAYISI = 5
 
-_ONBELLEK_SURESI = 300 #saniye
-_onbellek: tuple[float, dict[str, tuple[str, str]]] | None = None
+# 3 harften kisa girdide her sey her seye benzer ('un' <-> 'up').
+FUZZY_MIN_UZUNLUK = 4
 
+# Uzun ekler once denenmeli: 'domateslari' -> 'lari' atilmali, 'lar' degil.
+# normalize_text Turkce harfleri zaten ASCII'ye katladigi icin
+# 'ları' yerine 'lari' yazmak yeterli.
+_COGUL_EKLERI = ("lari", "leri", "lar", "ler")
+
+
+# ==================================================================
+# Sonuc tipi
+# ==================================================================
 @dataclass(frozen=True, slots=True)
 class MatchResult:
-    """tek bir ham adın eşleştrime sonucu"""
+    """Tek bir ham adin eslestirme sonucu.
+
+    matched_by ve score API yanitinda YER ALMAZ; log, hata ayiklama ve
+    W4-T11 dogruluk olcumu icin tutulur.
+    """
     raw_name: str
     canonical_name: str | None
     display_name: str
     confidence: float
-    matched_by: str  # exact | suffix | partial | fuzzy | none
+    matched_by: str   # canonical | alias | canonical_ek | alias_ek | fuzzy | none
+    score: float      # 0-100 benzerlik puani; tam eslesmede 100, eslesmeyende 0
 
-#SÖZLÜK ÖNBELLEĞİ
+    @property
+    def matched(self) -> bool:
+        return self.canonical_name is not None
 
-def _sozlugu_yukle(db: Session) -> dict[str, tuple[str, str]]:
-    """{normalize_edilmis_anahtar: (canonical_name, display_name)} tablosu.
 
-    Uc kaynaktan beslenir: canonical_name, display_name, tum alias'lar.
-    setdefault kullaniliyor - canonical/display, alias'a gore ONCELIKLI.
+# ==================================================================
+# Sozluk yapisi (saf veri)
+# ==================================================================
+@dataclass(frozen=True, slots=True)
+class IngredientLookup:
+    """Eslestirme icin hazirlanmis, salt-okunur sozluk.
+
+    canonical : normalize(canonical_name veya display_name) -> canonical_name
+    alias     : normalize(alias)                            -> canonical_name
+    display   : canonical_name                              -> display_name
+    fuzzy_keys: 1. ve 2. asamadaki TUM anahtarlar (rapidfuzz aday havuzu)
     """
-    tablo : dict[str, tuple[str, str]] = {}
+    canonical: dict[str, str]
+    alias: dict[str, str]
+    display: dict[str, str]
+    fuzzy_keys: tuple[str, ...]
 
-    for canonical, display in db.execute(
+    def __len__(self) -> int:
+        return len(self.display)
+
+    def canonical_of(self, anahtar: str) -> str | None:
+        return self.canonical.get(anahtar) or self.alias.get(anahtar)
+
+
+def build_lookup(
+    ingredients: Iterable[tuple[str, str]],
+    aliases: Iterable[tuple[str, str]] = (),
+) -> IngredientLookup:
+    """Sozlugu ham satirlardan kurar. SAF: veritabani gormez.
+
+    ingredients: (canonical_name, display_name) ciftleri
+    aliases    : (alias, canonical_name) ciftleri
+
+    Testler bu fonksiyona elle liste verir, uretim kodu DB'den okuyup verir.
+    """
+    canonical: dict[str, str] = {}
+    display: dict[str, str] = {}
+
+    for canonical_name, display_name in ingredients:
+        display[canonical_name] = display_name
+        # canonical_name 'kirmizi_mercimek' -> normalize -> 'kirmizi mercimek'
+        canonical[normalize_text(canonical_name)] = canonical_name
+        # display_name ikinci sirada: canonical adin uzerine YAZMAZ
+        canonical.setdefault(normalize_text(display_name), canonical_name)
+
+    alias_map: dict[str, str] = {}
+    for alias_text, canonical_name in aliases:
+        if canonical_name not in display:
+            # Sozlukte olmayan bir malzemeye isaret eden alias sessizce
+            # yutulursa ilerde 'neden eslesmiyor' diye saatler harcanir.
+            logger.warning(
+                "Alias '%s' bilinmeyen malzemeye isaret ediyor: '%s'. Atlandi.",
+                alias_text, canonical_name,
+            )
+            continue
+        anahtar = normalize_text(alias_text)
+        if anahtar in canonical:
+            continue  # 1. asama zaten yakaliyor, aday havuzunu sisirme
+        alias_map.setdefault(anahtar, canonical_name)
+
+    canonical.pop("", None)
+    alias_map.pop("", None)
+
+    return IngredientLookup(
+        canonical=canonical,
+        alias=alias_map,
+        display=display,
+        fuzzy_keys=tuple(canonical) + tuple(alias_map),
+    )
+
+
+# ==================================================================
+# Cekirdek: SAF eslestirme
+# ==================================================================
+def _tekillestir(norm: str) -> str | None:
+    """Turkce cogul ekini atar; ek yoksa None.
+
+    NEDEN AYRI ASAMA: rapidfuzz bunu yakalayamiyor. Tek kelimede token
+    kumesi tek elemanli oldugu icin token_set_ratio duz ratio'ya iner:
+        token_set_ratio('domatesler', 'domates') = 82  <  85
+    """
+    for ek in _COGUL_EKLERI:
+        if norm.endswith(ek) and len(norm) - len(ek) >= 3:
+            return norm[: -len(ek)]
+    return None
+
+
+def _insan_okunur(ham: str) -> str:
+    """Eslesmeyenler icin gosterim adi. Ham metni bozmadan bas harfi buyutur."""
+    temiz = " ".join(ham.split())[:120]
+    return temiz[:1].upper() + temiz[1:] if temiz else "Bilinmeyen"
+
+
+def _sonuc(
+    raw_name: str, canonical_name: str, lookup: IngredientLookup,
+    confidence: float, matched_by: str, score: float,
+) -> MatchResult:
+    # Bulanik eslesme kesin degil: guven puanini benzerlik oraniyla kis.
+    # Onay ekraninda (W2-T10) daha asagida gorunmesi dogru davranis.
+    carpan = score / 100.0 if matched_by == "fuzzy" else 1.0
+    return MatchResult(
+        raw_name=raw_name,
+        canonical_name=canonical_name,
+        display_name=lookup.display[canonical_name],
+        confidence=round(min(confidence * carpan, 1.0), 3),
+        matched_by=matched_by,
+        score=round(float(score), 1),
+    )
+
+
+def _eslesmedi(raw_name: str, confidence: float) -> MatchResult:
+    return MatchResult(
+        raw_name=raw_name,
+        canonical_name=None,
+        display_name=_insan_okunur(raw_name),
+        confidence=round(confidence, 3),
+        matched_by="none",
+        score=0.0,
+    )
+
+
+def _bulanik_eslestir(
+    raw_name: str, norm: str, lookup: IngredientLookup, confidence: float,
+) -> MatchResult:
+    if len(norm) < FUZZY_MIN_UZUNLUK:
+        return _eslesmedi(raw_name, confidence)
+
+    adaylar = process.extract(
+        norm,
+        lookup.fuzzy_keys,
+        scorer=fuzz.token_set_ratio,
+        limit=FUZZY_ADAY_SAYISI,
+        score_cutoff=FUZZY_ESIK,
+    )
+    if not adaylar:
+        return _eslesmedi(raw_name, confidence)
+
+    # DIKKAT - token_set_ratio'nun tuzagi:
+    # Girdiyi TAMAMEN iceren her adaya 100 verir.
+    #   token_set_ratio('domates', 'domates')         = 100
+    #   token_set_ratio('domates', 'domates salcasi') = 100   <-- yanlis aday
+    # Tek olcutle secseydik hangisinin donecegi liste sirasina kalirdi.
+    # token_sort_ratio uzunluk farkini cezalandirir ve ayrimi yapar:
+    #   token_sort_ratio('domates', 'domates')         = 100
+    #   token_sort_ratio('domates', 'domates salcasi') = 63
+    anahtar, skor, _ = max(
+        adaylar,
+        key=lambda aday: (aday[1], fuzz.token_sort_ratio(norm, aday[0])),
+    )
+
+    canonical_name = lookup.canonical_of(anahtar)
+    if canonical_name is None:  # olmamali; savunma amacli
+        return _eslesmedi(raw_name, confidence)
+    return _sonuc(raw_name, canonical_name, lookup, confidence, "fuzzy", skor)
+
+
+def match_name(
+    raw_name: str, lookup: IngredientLookup, *, confidence: float = 1.0,
+) -> MatchResult:
+    """SAF FONKSIYON. Tek bir ham adi sozlukle eslestirir.
+
+    Veritabani, ag, saat, rastgelelik YOK. Ayni girdi -> ayni cikti.
+    """
+    norm = normalize_text(raw_name)
+    if not norm:
+        return _eslesmedi(raw_name, confidence)
+
+    # 1) canonical_name / display_name tam eslesme
+    if canonical_name := lookup.canonical.get(norm):
+        return _sonuc(raw_name, canonical_name, lookup, confidence, "canonical", 100)
+
+    # 2) alias tam eslesme
+    if canonical_name := lookup.alias.get(norm):
+        return _sonuc(raw_name, canonical_name, lookup, confidence, "alias", 100)
+
+    # 1b/2b) cogul eki atilarak ayni iki asama
+    if tekil := _tekillestir(norm):
+        if canonical_name := lookup.canonical.get(tekil):
+            return _sonuc(raw_name, canonical_name, lookup, confidence, "canonical_ek", 100)
+        if canonical_name := lookup.alias.get(tekil):
+            return _sonuc(raw_name, canonical_name, lookup, confidence, "alias_ek", 100)
+
+    # 3) bulanik eslesme
+    return _bulanik_eslestir(raw_name, norm, lookup, confidence)
+
+
+def match_names(
+    items: Iterable[tuple[str, float]], lookup: IngredientLookup,
+) -> list[MatchResult]:
+    """Toplu SAF eslestirme. (ham_ad, confidence) ciftleri alir."""
+    return [match_name(ham, lookup, confidence=guven) for ham, guven in items]
+
+
+# ==================================================================
+# BURADAN ASAGISI VERITABANINA DOKUNUR
+# ==================================================================
+_ONBELLEK_SURESI = 300  # saniye
+_onbellek: tuple[float, IngredientLookup] | None = None
+
+
+def load_lookup(db: Session) -> IngredientLookup:
+    """Sozlugu veritabanindan okuyup saf yapiya cevirir."""
+    ingredients = db.execute(
         select(Ingredient.canonical_name, Ingredient.display_name)
-    ).all():
-        tablo[normalize_text(canonical)] = (canonical, display)
-        tablo.setdefault(normalize_text(display), (canonical, display))
-
-    for alias, canonical, display in db.execute(
-        select(IngredientAlias.alias, Ingredient.canonical_name, Ingredient.display_name)
+    ).all()
+    aliases = db.execute(
+        select(IngredientAlias.alias, Ingredient.canonical_name)
         .join(Ingredient, IngredientAlias.ingredient_id == Ingredient.id)
-    ).all():
-        tablo.setdefault(normalize_text(alias), (canonical, display))
+    ).all()
 
-    tablo.pop("", None)
-    logger.info("Malzeme sözlüğü yüklendi: %d anahtar", len(tablo))
-    return tablo
+    lookup = build_lookup(ingredients, aliases)
+    logger.info(
+        "Malzeme sozlugu yuklendi: %d malzeme, %d arama anahtari",
+        len(lookup), len(lookup.fuzzy_keys),
+    )
+    return lookup
 
-def get_lookup(db: Session, *, force:bool= False) -> dict[str,tuple[str,str]]:
-    """sözlüğü önbellekten döner TTL dolduysa yeniden yükler neden ön bellek : 10 malzemelik bir foto için 20 sql sorgusu yerine tek sorgu + ramde O(1) arama 
+
+def get_lookup(db: Session, *, force: bool = False) -> IngredientLookup:
+    """Sozlugu onbellekten doner; TTL dolduysa yeniden yukler.
+
+    NEDEN ONBELLEK: 10 malzemelik bir fotograf icin 20 SQL sorgusu yerine
+    tek sorgu. Sozluk gun icinde nadiren degisir.
     """
     global _onbellek
     simdi = time.monotonic()
     if not force and _onbellek and simdi - _onbellek[0] < _ONBELLEK_SURESI:
         return _onbellek[1]
-    tablo = _sozlugu_yukle(db)
-    _onbellek = (simdi, tablo)
-    return tablo
+    lookup = load_lookup(db)
+    _onbellek = (simdi, lookup)
+    return lookup
+
 
 def clear_lookup_cache() -> None:
-    """testlerde ve seed sonrası çağrılır"""
+    """Testlerde ve seed sonrasi cagrilir."""
     global _onbellek
     _onbellek = None
 
-#EŞLEŞTİRME
 
-def _adaylar(norm:str) -> Iterator[tuple[str, str]]:
-    """aranacak anahtarları oncelik sırasıyla üretir"""
-    yield norm, "exact"
-    for ek in _COGUL_EKLERI:
-        if norm.endswith(ek) and len(norm) - len(ek) >=3:
-            yield norm[: -len(ek)], "suffix"
+def kaydet_eslesmeyen(db: Session, ham: str, norm: str, source: str) -> None:
+    """unmatched_ingredients tablosuna upsert eder.
 
-    parcalar = norm.split()
-    if len(parcalar) > 1:
-        yield " ".join(parcalar[-2:]), "partial"
-        yield parcalar[-1], "partial"
-
-def _eslestir(
-        norm: str,
-        tablo: dict[str, tuple[str, str]]
-) -> tuple[tuple[str, str] | None, str]:
-    for aday, yontem in _adaylar(norm):
-        if bulunan := tablo.get(aday):
-            return bulunan, yontem
-
-    if len(norm) >= 4:
-        yakin = difflib.get_close_matches(norm, tablo.keys(), n=1, cutoff=FUZZY_ESIK)
-        if yakin: 
-            return tablo[yakin[0]], "fuzzy"
-
-    return None, "none"
-
-def _insan_okunur(ham: str) -> str:
-    """eşleşmeyenler için gösterim adı ham metni bozmadan baş harf büyütür"""
-    temiz = " ".join(ham.split())[:120]
-    return temiz[:1].upper() + temiz[1:] if temiz else "Bilinmeyen"
-
-#Eşleşmeyen kayıtları
-def kaydet_eslesmeyen(db:Session, ham: str, norm: str, source:str) -> None:
+    normalized_text UNIQUE oldugu icin es zamanli iki istek cakisabilir.
+    begin_nested() ile SAVEPOINT aciyoruz: cakisma olursa yalnizca bu
+    ekleme geri alinir, isteğin geri kalani kaybolmaz.
+    """
     kayit = db.execute(
         select(UnmatchedIngredient).where(UnmatchedIngredient.normalized_text == norm)
     ).scalar_one_or_none()
-    #scalar: dbden gelen sonucu karmaşık bir tuple olarak değil doğrdudan kullanılan temiz python objesi olarak verir
-    #one: bir tane bekliyorum
-    #or none: yok ise boş dön
+
     if kayit is not None:
-        kayit.occurrence_count +=1
+        kayit.occurrence_count += 1
         kayit.last_seen_at = datetime.now()
         return
+
     try:
         with db.begin_nested():
             db.add(UnmatchedIngredient(
@@ -139,47 +336,33 @@ def kaydet_eslesmeyen(db:Session, ham: str, norm: str, source:str) -> None:
                 source=source,
             ))
     except IntegrityError:
-        logger.debug("eşleşmeyen '%s' başka bir istek tarafından eklendi", norm)
+        logger.debug("Eslesmeyen '%s' baska bir istek tarafindan eklendi.", norm)
 
-#genel api
+
 def match_ingredients(
-        db:Session,
-        items: Iterable[tuple[str, float]],
-        *,
-        source: str = "vision",
-        record_unmatched: bool = True,
+    db: Session,
+    items: Iterable[tuple[str, float]],
+    *,
+    source: str = "vision",
+    record_unmatched: bool = True,
 ) -> list[MatchResult]:
-    """ham_ad, confidence çiftleriini sözlükle eşleştirir
-    commit etmez çağıran katman işlemin tamamını tek transactionda kapatmalı"""
-    tablo= get_lookup(db)
+    """DB'li sarmalayici: eslestirir + eslesmeyenleri kaydeder.
+
+    COMMIT ETMEZ. Cagiran katman islemi tek transaction'da kapatmali.
+    """
+    lookup = get_lookup(db)
     sonuclar: list[MatchResult] = []
-    for ham, guven in items: 
-        norm = normalize_text(ham)
-        if not norm:
-            continue
-        eslesme, yontem = _eslestir(norm, tablo)
-        if eslesme is not None:
-            canocical, display = eslesme
-            carpan = 0.9 if yontem == "fuzzy" else 1.0
-            sonuclar.append(MatchResult(
-                raw_name=ham,
-                canonical_name=canocical,
-                display_name=display,
-                confidence=round(min(guven * carpan, 1.0), 3),
-                matched_by=yontem,
-            ))
-        else: 
-            if record_unmatched:
+
+    for ham, guven in items:
+        sonuc = match_name(ham, lookup, confidence=guven)
+        if not sonuc.matched and record_unmatched:
+            if norm := normalize_text(ham):
                 kaydet_eslesmeyen(db, ham, norm, source)
-            sonuclar.append(MatchResult(
-                raw_name=ham,
-                canonical_name=None,
-                display_name=_insan_okunur(ham),
-                confidence=round(guven, 3),
-                matched_by="none",
-            ))
+        sonuclar.append(sonuc)
+
     return sonuclar
 
-def match_one(db: Session, ham: str, *, source:str = "manual") -> MatchResult :
-    "tek ad için kısayol"
+
+def match_one(db: Session, ham: str, *, source: str = "manual") -> MatchResult:
+    """Tek ad icin kisayol. W2-T02 elle malzeme ekleme ucu kullanacak."""
     return match_ingredients(db, [(ham, 1.0)], source=source)[0]
