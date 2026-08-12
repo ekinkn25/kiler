@@ -72,6 +72,17 @@ class Settings(BaseSettings):
 
     # Kullanici basina gunluk fotograf limiti (maliyet korumasi)
     VISION_DAILY_LIMIT_PER_USER: int = 30
+    # Bu esigin altindaki sonuclar onay ekranina hic gelmez.
+    # 0.15: model "belki bir sey var" dediginde gostermek kullaniciyi yorar.
+    VISION_MIN_CONFIDENCE: float = 0.15
+    # Tek fotograftan donecek en fazla malzeme sayisi (UI kalabaligi korumasi)
+    VISION_MAX_ITEMS: int = 25
+    # Akil yurutme modelleri response_format=json_object ile calismiyor:
+    # <think> blogu dogrulamayi patlatiyor. Kapatildiginda extract_json
+    # ayristirir.
+    VISION_JSON_MODE: bool = True
+    VISION_MAX_TOKENS: int = 6000
+    VISION_REASONING_EFFORT: str = "none"
 
 
 @lru_cache

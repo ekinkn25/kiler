@@ -41,7 +41,7 @@ class OpenAICompatibleProvider(VisionProvider):
 
     # ------------------------------------------------------------------
     def _govde(self, image_bytes: bytes, prompt: str) -> dict: # istek gövdesi
-        return {
+        govde =  {
             "model": self.model,
             "messages": [{
                 "role": "user",
@@ -52,10 +52,13 @@ class OpenAICompatibleProvider(VisionProvider):
                 ],
             }],
             # Modelin serbest metin yerine JSON dondurmesini zorlar.
-            "response_format": {"type": "json_object"},
+            # "response_format": {"type": "json_object"},
             "temperature": 0.1,     # tanima gorevi - yaraticilik istemiyoruz
             "max_tokens": 1024,
         }
+        if settings.VISION_JSON_MODE:
+            govde["response_format"] = {"type": "json_object"}
+        return govde
 
     async def analyze(self, image_bytes: bytes, prompt: str) -> VisionResult:
         baslangic = time.perf_counter()
@@ -122,9 +125,19 @@ class OpenAICompatibleProvider(VisionProvider):
 
     def _sonuca_cevir(self, ham: dict, baslangic: float, boyut: int) -> VisionResult:
         try:
-            metin = ham["choices"][0]["message"]["content"]
+            secim = ham["choices"][0]
+            metin = secim["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
             raise VisionInvalidResponse("Yanit beklenen bicimde degil.") from exc
+        
+        if secim.get("finish_reason") == "length":
+            logger.error(
+                "Yanit token sinirinda kesildi (max_tokens=%s). Uretilen: %d karakter.",
+                settings.VISION_MAX_TOKENS, len(metin),
+            )
+            raise VisionInvalidResponse(
+                "Model yaniti tamamlanamadan kesildi. max_tokens degerini artir."
+            )
 
         kullanim = ham.get("usage") or {}
         return VisionResult(
@@ -140,14 +153,24 @@ class OpenAICompatibleProvider(VisionProvider):
             ),
         )
 
-
 class GroqVisionProvider(OpenAICompatibleProvider):
     name = "groq"
     base_url = "https://api.groq.com/openai/v1"
-    # DOGRULA: Groq'un guncel gorme modeli kimligini
-    # console.groq.com adresindeki model listesinden kontrol et ve
-    # .env icindeki VISION_MODEL degerine yaz.
-    default_model = ""
+    default_model = "qwen/qwen3.6-27b"
+
+    def _govde(self, image_bytes: bytes, prompt: str) -> dict:
+        """Groq'a ozgu akil yurutme parametrelerini ekler.
+
+        Taban sinifa KOYMUYORUZ: bu alanlar OpenAI'nin sozlesmesinde yok,
+        gonderirsek 400 alirdik.
+        """
+        govde = super()._govde(image_bytes, prompt)
+        if settings.VISION_REASONING_EFFORT:
+            govde["reasoning_effort"] = settings.VISION_REASONING_EFFORT
+            # 'hidden' = dusunme metni yanitta hic gelmesin. extract_json'daki
+            # <think> temizligi yine de dursun: emniyet kemeri.
+            govde["reasoning_format"] = "hidden"
+        return govde
 
 
 class OpenAIVisionProvider(OpenAICompatibleProvider):
@@ -197,8 +220,8 @@ class FakeVisionProvider(VisionProvider):
 
     async def analyze(self, image_bytes: bytes, prompt: str) -> VisionResult:
         await asyncio.sleep(0.15)  # gercekci gecikme benzetimi
-        ogun_mu = any(k in prompt.lower() for k in ("yemek", "tabak", "porsiyon", "ogun"))
-        veri = self.SAHTE_OGUN if ogun_mu else self.SAHTE_MALZEMELER
+        malzeme_mi = '"items"' in prompt
+        veri = self.SAHTE_MALZEMELER if malzeme_mi else self.SAHTE_OGUN
         return VisionResult(
             data=veri,
             raw_text=json.dumps(veri, ensure_ascii=False),

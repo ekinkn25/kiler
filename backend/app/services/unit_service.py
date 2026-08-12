@@ -137,7 +137,7 @@ _TR_MAP = str.maketrans("çğöşüÇĞÖŞÜ", "cgosuCGOSU")
 def normalize_text(text: str) -> str:
     """Malzeme adini eslestirme icin normalize eder.
 
-    'Kırmızı Mercimek (1 KG)' -> 'kirmizi mercimek 1 kg'
+    'Kirmizi Mercimek (1 KG)' -> 'kirmizi mercimek 1 kg'
 
     Turkce 'I/İ/ı/i' harflerinin tamami ASCII 'i'ye katlanir. Python'un
     varsayilan lower() metodu Turkce kurallarini bilmez ('I'.lower() == 'i'
