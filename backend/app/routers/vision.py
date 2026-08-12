@@ -1,0 +1,64 @@
+"""görme modeli uçları"""
+import logging
+from typing import Annotated
+from fastapi import APIRouter, File, UploadFile, status
+
+from app.core.deps import ActiveUser, DbSession
+from app.core.exceptions import AppError
+from app.schemas import DetectedIngredient, ErrorResponse
+from app.services.vision_ingredients import detect_ingredients
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter()
+
+#iphoneda heic var şuanlık dışarıda
+IZINLI_TIPLER = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
+
+class UnsupportedImageType(AppError):
+    status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    code = "unsupported_image_type"
+    message = "Yalnizca JPEG, PNG ve WEBP fotograflar kabul ediliyor."
+
+
+class EmptyImage(AppError):
+    status_code = status.HTTP_400_BAD_REQUEST
+    code = "empty_image"
+    message = "Bos dosya gonderildi."
+
+
+@router.post(
+    "/ingredients",
+    response_model=list[DetectedIngredient],
+    summary="Fotograftan malzeme cikarma",
+    description=(
+        "Buzdolabi/mutfak fotografini analiz eder ve sozlukle eslestirilmis "
+        "malzeme listesi doner. canonical_name null ise malzeme sozlukte yok; "
+        "istemci bunlari gri gosterip kilere eklemeyi devre disi birakmali."
+    ),
+    responses={
+        status.HTTP_413_REQUEST_ENTITY_TOO_LARGE: {"model": ErrorResponse},
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {"model": ErrorResponse},
+        status.HTTP_429_TOO_MANY_REQUESTS: {"model": ErrorResponse},
+        status.HTTP_502_BAD_GATEWAY: {"model": ErrorResponse},
+    },
+)
+async def vision_ingredients(
+    db: DbSession,
+    current_user: ActiveUser,
+    file: Annotated[UploadFile, File(description="Buzdolabi veya mutfak fotografi")],
+) -> list[DetectedIngredient]:
+    if file.content_type not in IZINLI_TIPLER:
+        raise UnsupportedImageType(
+            f"'{file.content_type}' desteklenmiyor. JPEG, PNG veya WEBP gonder."
+        )
+
+    ham = await file.read()
+    if not ham:
+        raise EmptyImage()
+
+    logger.info(
+        "Malzeme fotografi alindi | kullanici=%s | dosya=%s | %d KB",
+        current_user.id, file.filename, len(ham) // 1024,
+    )
+    return await detect_ingredients(db, raw_image=ham, user_id=current_user.id)

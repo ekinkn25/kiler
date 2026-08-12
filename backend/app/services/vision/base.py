@@ -123,6 +123,8 @@ def to_data_uri(image_bytes: bytes) -> str:
 # ==================================================================
 _FENCE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL)
 
+_THINK = re.compile(r"<think>.*?</think>", re.DOTALL)
+
 
 def extract_json(text: str) -> dict:
     """Model yanitindan JSON cikarir.
@@ -132,6 +134,12 @@ def extract_json(text: str) -> dict:
     """
     if not text or not text.strip():
         raise VisionInvalidResponse("Model bos yanit dondu.")
+    text = _THINK.sub("", text)
+    if "</think>" in text:
+        text = text.rsplit("</think>", 1)[-1]
+    text = text.strip()
+    if not text:
+        raise VisionInvalidResponse("Model yalnizca akil yurutme metni dondu.")
 
     # 1) Dogrudan JSON
     try:
@@ -156,7 +164,9 @@ def extract_json(text: str) -> dict:
             except json.JSONDecodeError:
                 continue
 
-    logger.warning("JSON ayristirilamadi. Ham yanit: %s", text[:400])
+    logger.warning(
+        "JSON ayristirilamadi (%d karakter). Ham yanit: %s", len(text), text[:1500]
+    )
     raise VisionInvalidResponse("Model gecerli JSON dondurmedi.")
 
 
