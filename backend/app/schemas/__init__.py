@@ -24,7 +24,8 @@ from app.schemas.recipe import (
     IngredientStatus, RecipeBase, RecipeCard, RecipeCookRequest, RecipeCreate,
     RecipeFeedbackCreate, RecipeFeedbackRead, RecipeIngredient,
     RecipeIngredientStatus, RecipeMacros, RecipeRead,
-    ScoreBreakdown, ScoredRecipeCard, ScoreWeights
+    ScoreBreakdown, ScoredRecipeCard, ScoreWeights,
+    DeckResponse, SwipeRequest, SwipeResponse
 )
 from app.schemas.user import (
     AllergenRead, DietTagRead, OnboardingRequest, UserProfileCreate,
