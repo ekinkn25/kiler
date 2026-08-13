@@ -98,6 +98,12 @@ class Settings(BaseSettings):
     VISION_MAX_TOKENS: int = 6000
     VISION_REASONING_EFFORT: str = "none"
 
+    #öğün tahmini
+    MEAL_GRAMS_SMALL: float = 200
+    MEAL_GRAMS_MEDIUM: float = 350
+    MEAL_GRAMS_LARGE: float = 500
+    MEAL_TITLE_MATCH_TREASHOLD: int = 85
+
 
 @lru_cache
 def get_settings() -> Settings:

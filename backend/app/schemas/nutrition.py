@@ -5,6 +5,7 @@ from pydantic import Field, model_validator
 
 from app.models.enums import LogSource, MealType
 from app.schemas.common import AppBaseModel, UtcDatetime
+from app.models.enums import LogSource, MealType, PortionSize
 
 
 class MealLogCreate(AppBaseModel):
@@ -78,3 +79,44 @@ class WeightLogRead(AppBaseModel):
     id: int
     logged_date: date
     weight_kg: float
+
+class PortionOption(AppBaseModel):
+    """Onay ekranında porsiyon değiştirilince yeniden istek atılmasın."""
+    portion: PortionSize
+    grams: float
+    calories: float | None = None
+
+
+class MealEstimate(AppBaseModel):
+    """Tabak fotoğrafından üretilen tahmin
+    Bu bir öğün KAYDI DEĞİL. Hiçbir tabloya yazılmaz; kullanıcı onaylayana kadar yalnızca bir öneridir.
+    """
+    dish_name: str
+    portion: PortionSize
+    estimated_grams: float = Field(gt=0, le=3000)
+    confidence: float = Field(ge=0, le=1, description="Modelin tanima guveni")
+    scale_reference_found: bool = Field(
+        description="Catal/kasik gibi bir olcek referansi bulundu mu"
+    )
+    notes: str | None = None
+
+    calories: float | None = Field(
+        default=None, description="null ise kalori kaynagi bulunamadi"
+    )
+    calorie_confidence: float = Field(
+        default=0, ge=0, le=1,
+        description="Kalori tahmininin guveni - tanima guveninden AYRIDIR",
+    )
+    macros: MacroBreakdown | None = None
+
+    match_source: str = Field(description="recipe | ingredient | product | none")
+    matched_id: str | None = None
+    matched_name: str | None = None
+    match_score: float = 0
+
+    portion_options: list[PortionOption] = []
+
+    is_estimate: bool = True
+    requires_confirmation: bool = True
+    needs_manual_entry: bool = False
+    image_hash: str

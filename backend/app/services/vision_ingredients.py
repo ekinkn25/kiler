@@ -51,13 +51,13 @@ _AD_ANAHTARLARI = ("name", "ad", "raw_name", "ingredient", "malzeme", "label", "
 _GUVEN_ANAHTARLARI = ("confidence", "guven", "score", "certainty", "probability")
 
 def _guveni_normalize_et(deger) -> float:
-    """0-100 aralığını 0-1e katlar"""
-    try: 
-        sayi=float(deger)
-    except(TypeError, ValueError):
+    """0-100 aralığını 0-1e katlar. 2'den büyük değerler yüzde olarak yorumlanır."""
+    try:
+        sayi = float(deger)
+    except (TypeError, ValueError):
         return 0.5
-    if sayi > 1.0:
-        sayi= sayi/ 100.0
+    if sayi > 2.0:
+        sayi = sayi / 100.0
     return round(min(max(sayi, 0.0), 1.0), 3)
 
 def _ham_listeyi_cikar(data:dict) -> list[tuple[str, float]]:

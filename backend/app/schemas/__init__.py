@@ -13,7 +13,7 @@ from app.schemas.common import (
 )
 from app.schemas.nutrition import (
     DailySummary, MacroBreakdown, MealLogCreate, MealLogRead,
-    WeightLogCreate, WeightLogRead,
+    WeightLogCreate, WeightLogRead, MealEstimate, PortionOption
 )
 from app.schemas.pantry import (
     PantryEventRead, PantryItemCreate, PantryItemRead,
@@ -53,5 +53,6 @@ __all__ = [
     "RefreshRequest", "ChangePasswordRequest"
     "RecipeBase", "RecipeCard", "RecipeCreate", "RecipeIngredient", "RecipeMacros", 
     "RecipeRead"
-    "ScoreBreakdown", "ScoreWeights", "ScoredRecipeCard"
+    "ScoreBreakdown", "ScoreWeights", "ScoredRecipeCard",
+    "MealEstimate", "PortionOption"
 ]
