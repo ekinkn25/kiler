@@ -19,7 +19,7 @@ def ping() -> dict[str, bool]:
     tags=["system"],
     summary="[GECICI] Sema dogrulama testi",
     response_model=PantryItemCreate,
-    responses={status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ErrorResponse}},
+    responses={status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": ErrorResponse}},
 )
 def schema_check(payload: PantryItemCreate) -> PantryItemCreate:
     """Gonderilen govdeyi dogrular ve aynen geri doner."""
