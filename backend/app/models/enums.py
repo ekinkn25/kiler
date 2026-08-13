@@ -64,6 +64,7 @@ class LogSource(str, enum.Enum):
     MANUEL = "manuel"
     BARKOD = "barkod"
     TARIF = "tarif"
+    FOTO = "foto"
 
 class FeedbackAction(str, enum.Enum):
     GORDU = "gordu"
