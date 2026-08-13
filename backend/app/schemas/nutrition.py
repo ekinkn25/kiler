@@ -20,6 +20,12 @@ class MealLogCreate(AppBaseModel):
 
     servings: float = Field(default=1, gt=0, le=20)
     quantity_g: float | None = Field(default=None, gt=0, le=5000)
+    local_hour: int | None = Field(default=None, ge=0, le=23)
+    calories: float | None = Field(default=None, ge=0, le=5000)
+    protein_g: float | None = Field(default=None, ge=0)
+    carb_g: float | None = Field(default=None, ge=0)
+    fat_g: float | None = Field(default=None, ge=0)
+    fiber_g: float | None = Field(default=None, ge=0)
 
     @model_validator(mode="after")
     def at_least_one_source(self) -> "MealLogCreate":
@@ -27,6 +33,16 @@ class MealLogCreate(AppBaseModel):
             raise ValueError(
                 "product_id, ingredient_id, recipe_id veya custom_name "
                 "alanlarindan en az biri zorunludur."
+            )
+        return self
+    
+    @model_validator(mode="after")
+    def custom_only_needs_calories(self) -> "MealLogCreate":
+        katalog_referansi_var = any([self.product_id, self.ingredient_id, self.recipe_id])
+        if not katalog_referansi_var and self.calories is None:
+            raise ValueError(
+                "Katalog referansi (product_id/ingredient_id/recipe_id) yoksa "
+                "calories alani zorunludur - ANLIK GORUNTU icin baska kaynak yok."
             )
         return self
 
