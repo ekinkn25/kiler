@@ -179,3 +179,9 @@ def test_kiler_skoru_matematigi(var, bilinmiyor, toplam, beklenen):
     """Pipeline'daki formulun Python karsiligi - beklentiyi sabitler."""
     puan = (var * 1.0 + bilinmiyor * settings.PANTRY_UNKNOWN_WEIGHT) / toplam
     assert round(puan, 2) == beklenen
+
+def test_required_ingredients_in_filtresi():
+    """W2-T09: chat'te bahsedilen malzeme sert filtre olarak giriyor."""
+    ctx = ScoringContext(required_ingredients=("kirmizi_mercimek",))
+    match = build_scoring_pipeline(ctx)[0]["$match"]
+    assert match["ingredients.canonical_name"] == {"$in": ["kirmizi_mercimek"]}

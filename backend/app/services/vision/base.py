@@ -12,6 +12,7 @@ from PIL import Image, ImageOps #exif_transpose için
 
 from app.core.config import settings
 from app.core.exceptions import AppError, ExternalServiceError
+from app.services.llm_json import extract_json as _extract_json_generic
 
 logger = logging.getLogger(__name__)
 
@@ -132,42 +133,45 @@ def extract_json(text: str) -> dict:
     Modeller JSON istense bile bazen markdown kod blogu icine sarar veya
     basina 'Iste sonuc:' gibi bir cumle ekler. Uc asamali deneme yapiyoruz.
     """
-    if not text or not text.strip():
-        raise VisionInvalidResponse("Model bos yanit dondu.")
-    text = _THINK.sub("", text)
-    if "</think>" in text:
-        text = text.rsplit("</think>", 1)[-1]
-    text = text.strip()
-    if not text:
-        raise VisionInvalidResponse("Model yalnizca akil yurutme metni dondu.")
 
-    # 1) Dogrudan JSON
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        pass
+    return _extract_json_generic(text, error_cls=VisionInvalidResponse)
 
-    # 2) Markdown kod blogu icinde
-    if m := _FENCE.search(text):
-        try:
-            return json.loads(m.group(1))
-        except json.JSONDecodeError:
-            pass
+    # if not text or not text.strip():
+    #     raise VisionInvalidResponse("Model bos yanit dondu.")
+    # text = _THINK.sub("", text)
+    # if "</think>" in text:
+    #     text = text.rsplit("</think>", 1)[-1]
+    # text = text.strip()
+    # if not text:
+    #     raise VisionInvalidResponse("Model yalnizca akil yurutme metni dondu.")
 
-    # 3) Metnin icindeki ilk { ... } veya [ ... ] blogu
-    for acilis, kapanis in (("{", "}"), ("[", "]")):
-        bas, son = text.find(acilis), text.rfind(kapanis)
-        if bas != -1 and son > bas:
-            try:
-                cozulen = json.loads(text[bas:son + 1])
-                return cozulen if isinstance(cozulen, dict) else {"items": cozulen}
-            except json.JSONDecodeError:
-                continue
+    # # 1) Dogrudan JSON
+    # try:
+    #     return json.loads(text)
+    # except json.JSONDecodeError:
+    #     pass
 
-    logger.warning(
-        "JSON ayristirilamadi (%d karakter). Ham yanit: %s", len(text), text[:1500]
-    )
-    raise VisionInvalidResponse("Model gecerli JSON dondurmedi.")
+    # # 2) Markdown kod blogu icinde
+    # if m := _FENCE.search(text):
+    #     try:
+    #         return json.loads(m.group(1))
+    #     except json.JSONDecodeError:
+    #         pass
+
+    # # 3) Metnin icindeki ilk { ... } veya [ ... ] blogu
+    # for acilis, kapanis in (("{", "}"), ("[", "]")):
+    #     bas, son = text.find(acilis), text.rfind(kapanis)
+    #     if bas != -1 and son > bas:
+    #         try:
+    #             cozulen = json.loads(text[bas:son + 1])
+    #             return cozulen if isinstance(cozulen, dict) else {"items": cozulen}
+    #         except json.JSONDecodeError:
+    #             continue
+
+    # logger.warning(
+    #     "JSON ayristirilamadi (%d karakter). Ham yanit: %s", len(text), text[:1500]
+    # )
+    # raise VisionInvalidResponse("Model gecerli JSON dondurmedi.")
 
 
 # ==================================================================

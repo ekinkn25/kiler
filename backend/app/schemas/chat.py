@@ -30,3 +30,11 @@ class ChatMessageRead(AppBaseModel):
 class ChatResponse(AppBaseModel):
     conversation_id: int
     message: ChatMessageRead
+
+class RagChatResponse(AppBaseModel):
+    """POST /chat çıktı sözleşmesi"""
+    conversation_id: int
+    mesaj: str
+    onerilen_tarif_idleri: list[str] = []
+    uygulanan_filtreler: list[str] = []
+    from_cache: bool = False

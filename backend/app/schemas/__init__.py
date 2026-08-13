@@ -7,7 +7,7 @@ from app.schemas.auth import LoginRequest, RegisterRequest, Token, TokenPayload
 from app.schemas.catalog import (
     CategoryRead, IngredientCreate, IngredientRead, ProductCreate, ProductRead,
 )
-from app.schemas.chat import ChatMessageRead, ChatRequest, ChatResponse
+from app.schemas.chat import ChatMessageRead, ChatRequest, ChatResponse, RagChatResponse
 from app.schemas.common import (
     AppBaseModel, ErrorResponse, HealthResponse, Message, Page, PageParams,
 )
@@ -54,5 +54,6 @@ __all__ = [
     "RecipeBase", "RecipeCard", "RecipeCreate", "RecipeIngredient", "RecipeMacros", 
     "RecipeRead"
     "ScoreBreakdown", "ScoreWeights", "ScoredRecipeCard",
-    "MealEstimate", "PortionOption"
+    "MealEstimate", "PortionOption",
+    "RagChatResponse"
 ]

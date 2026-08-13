@@ -43,6 +43,7 @@ class ScoringContext:
     target_minutes: int = 45
     max_calories: float | None = None   
     max_total_minutes: int | None = None   # sert tavan (opsiyonel)
+    required_ingredients: tuple[str, ...] = ()
 
 
 def build_context(
@@ -146,6 +147,9 @@ def _match_stage(ctx: ScoringContext, exclude_ids: Sequence[str]) -> dict:
                 logger.warning("Gecersiz tarif kimligi atlandi: %r", i)
         if gecerli:
             kosul["_id"] = {"$nin": gecerli}
+
+    if ctx.required_ingredients:
+        kosul["ingredients.canonical_name"] = {"$in": list(ctx.required_ingredients)}
 
     return {"$match": kosul}
 
