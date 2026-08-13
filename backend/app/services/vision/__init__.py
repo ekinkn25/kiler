@@ -14,6 +14,7 @@ from .base import (
     ImageTooLarge, VisionError, VisionInvalidResponse, VisionProvider,
     VisionRateLimited, VisionResult, VisionTimeout, VisionUsage,
     extract_json, prepare_image, to_data_uri,
+    ALLOWED_IMAGE_TYPES, EmptyImage, UnsupportedImageType
 )
 from .providers import FakeVisionProvider, GroqVisionProvider, OpenAIVisionProvider
 
@@ -56,4 +57,5 @@ __all__ = [
     "get_vision_provider", "reset_vision_provider",
     "prepare_image", "to_data_uri", "extract_json",
     "FakeVisionProvider", "GroqVisionProvider", "OpenAIVisionProvider",
+    "ALLOWED_IMAGE_TYPES", "EmptyImage", "UnsupportedImageType"
 ]

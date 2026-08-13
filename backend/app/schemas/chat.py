@@ -6,6 +6,7 @@ from pydantic import Field
 
 from app.models.enums import ChatRole
 from app.schemas.common import AppBaseModel
+from app.schemas.pantry import DetectedIngredient
 
 
 class ChatRequest(AppBaseModel):
@@ -38,3 +39,4 @@ class RagChatResponse(AppBaseModel):
     onerilen_tarif_idleri: list[str] = []
     uygulanan_filtreler: list[str] = []
     from_cache: bool = False
+    detected_ingredients: list[DetectedIngredient] = []

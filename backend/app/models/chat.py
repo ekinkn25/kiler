@@ -67,6 +67,8 @@ class ChatMessage(Base):
     prompt_tokens: Mapped[int | None] = mapped_column(Integer)
     completion_tokens: Mapped[int | None] = mapped_column(Integer)
     from_cache: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    image_url: Mapped[str|None] = mapped_column(String(64))
+    detected_ingredients: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )

@@ -154,3 +154,18 @@ class PantryConfirmDetectedRequest(AppBaseModel):
     "onay ekranından secilen malzemelerin kilere yazılması W2-T10"
     canonical_name: list[str] = Field(min_length=1, max_length=40)
     source: PantrySource = PantrySource.FOTO
+
+class ConfirmedPantryItem(AppBaseModel):
+    ingredient_id: int
+    canonical_name: str
+    display_name: str
+    availability: Availability
+    confidence_expires_at: UtcDatetime | None = None
+    is_new: bool
+
+
+class PantryConfirmDetectedResponse(AppBaseModel):
+    confirmed: list[ConfirmedPantryItem]
+    skipped_unknown: list[str] = Field(
+        default=[], description="Sozlukte karsiligi olmayan, atlanan canonical_name'ler"
+    )

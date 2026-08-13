@@ -8,13 +8,11 @@ from app.core.exceptions import AppError
 from app.schemas import DetectedIngredient, ErrorResponse, MealEstimate
 from app.services.vision_ingredients import detect_ingredients
 from app.services.meal_estimation import estimate_meal
+from app.services.vision import ALLOWED_IMAGE_TYPES, EmptyImage, UnsupportedImageType
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
-#iphoneda heic var şuanlık dışarıda
-IZINLI_TIPLER = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
 
 class UnsupportedImageType(AppError):
     status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
@@ -49,7 +47,7 @@ async def vision_ingredients(
     current_user: ActiveUser,
     file: Annotated[UploadFile, File(description="Buzdolabi veya mutfak fotografi")],
 ) -> list[DetectedIngredient]:
-    if file.content_type not in IZINLI_TIPLER:
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
         raise UnsupportedImageType(
             f"'{file.content_type}' desteklenmiyor. JPEG, PNG veya WEBP gonder."
         )
@@ -62,7 +60,8 @@ async def vision_ingredients(
         "Malzeme fotografi alindi | kullanici=%s | dosya=%s | %d KB",
         current_user.id, file.filename, len(ham) // 1024,
     )
-    return await detect_ingredients(db, raw_image=ham, user_id=current_user.id)
+    sonuc = await detect_ingredients(db, raw_image=ham, user_id=current_user.id)
+    return sonuc.items
 
 
 @router.post(
@@ -87,7 +86,7 @@ async def vision_meal(
         current_user: ActiveUser,
         file: Annotated[UploadFile, File(description="tabak fotoğrafı")],
 ) -> MealEstimate:
-    if file.content_type not in IZINLI_TIPLER:
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
         raise UnsupportedImageType(
             f"'{file.content_type}' desteklenemiyor. Jpeg png veya webp gönderebilirsin."
         )

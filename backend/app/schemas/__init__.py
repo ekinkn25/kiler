@@ -18,7 +18,8 @@ from app.schemas.nutrition import (
 from app.schemas.pantry import (
     PantryEventRead, PantryItemCreate, PantryItemRead,
     PantryScanRequest, ShoppingBulkAdd, ShoppingItemCreate, ShoppingItemRead,
-    ShoppingItemUpdate, PantryItemConfirm, DetectedIngredient, PantryConfirmDetectedRequest
+    ShoppingItemUpdate, PantryItemConfirm, DetectedIngredient, PantryConfirmDetectedRequest,
+    ConfirmedPantryItem, PantryConfirmDetectedResponse
 )
 from app.schemas.recipe import (
     IngredientStatus, RecipeBase, RecipeCard, RecipeCookRequest, RecipeCreate,
@@ -55,5 +56,5 @@ __all__ = [
     "RecipeRead"
     "ScoreBreakdown", "ScoreWeights", "ScoredRecipeCard",
     "MealEstimate", "PortionOption",
-    "RagChatResponse"
+    "RagChatResponse",  "ConfirmedPantryItem", "PantryConfirmDetectedResponse"
 ]
