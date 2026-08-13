@@ -126,6 +126,12 @@ class Settings(BaseSettings):
     MEAL_GRAMS_LARGE: float = 500
     MEAL_TITLE_MATCH_TREASHOLD: int = 85
 
+    #  Open Food Facts
+    OFF_TIMEOUT_SECONDS: int = 5
+    OFF_MAX_RETRIES: int = 2
+    # Onbellekteki urun kac gun 'taze' sayilir; bu sureden eskiyse OFF'tan tekrar cekilir. Besin degerleri sik degismez, 30 gun makul.
+    OFF_CACHE_DAYS: int = 30
+
 
 @lru_cache
 def get_settings() -> Settings:
