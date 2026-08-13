@@ -86,11 +86,33 @@ class Settings(BaseSettings):
 
     # Kullanici basina gunluk fotograf limiti (maliyet korumasi)
     VISION_DAILY_LIMIT_PER_USER: int = 30
+
+    # Sohbet asistani / RAG
+    # fake | groq  -- VARSAYILAN 'fake'
+    CHAT_PROVIDER: str = "fake"
+    # Bos ise GROQ_MODEL kullanilir (mevcut GROQ ayarlari).
+    CHAT_MODEL: str = ""
+    CHAT_TIMEOUT_SECONDS: int = 20
+    CHAT_MAX_RETRIES: int = 2
+    CHAT_MAX_TOKENS: int = 1024
+    CHAT_JSON_MODE: bool = True
+    # Akil yurutme modelleri icin (bkz. VISION_REASONING_EFFORT gerekcesi).
+    CHAT_REASONING_EFFORT: str = "none"
+
+    # Prompt'a gomulecek en fazla aday tarif sayisi. Gorev tanimi 5-8 diyor.
+    CHAT_MAX_CANDIDATES: int = 8
+    # Ayni baglamda ayni soru tekrar sorulursa API'ye gitmez.
+    CHAT_CACHE_TTL_MINUTES: int = 30
+    CHAT_DAILY_LIMIT_PER_USER: int = 50
+
+
     # Bu esigin altindaki sonuclar onay ekranina hic gelmez.
     # 0.15: model "belki bir sey var" dediginde gostermek kullaniciyi yorar.
     VISION_MIN_CONFIDENCE: float = 0.15
+
     # Tek fotograftan donecek en fazla malzeme sayisi (UI kalabaligi korumasi)
     VISION_MAX_ITEMS: int = 25
+
     # Akil yurutme modelleri response_format=json_object ile calismiyor:
     # <think> blogu dogrulamayi patlatiyor. Kapatildiginda extract_json
     # ayristirir.
