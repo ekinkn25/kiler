@@ -19,7 +19,8 @@ from app.schemas.pantry import (
     PantryEventRead, PantryItemCreate, PantryItemRead,
     PantryScanRequest, ShoppingBulkAdd, ShoppingItemCreate, ShoppingItemRead,
     ShoppingItemUpdate, PantryItemConfirm, DetectedIngredient, PantryConfirmDetectedRequest,
-    ConfirmedPantryItem, PantryConfirmDetectedResponse
+    ConfirmedPantryItem, PantryConfirmDetectedResponse,
+    ProductScanResponse, PantryConfirmScannedRequest, ScannedConfirmResponse,
 )
 from app.schemas.recipe import (
     IngredientStatus, RecipeBase, RecipeCard, RecipeCookRequest, RecipeCreate,
@@ -56,5 +57,6 @@ __all__ = [
     "RecipeRead"
     "ScoreBreakdown", "ScoreWeights", "ScoredRecipeCard",
     "MealEstimate", "PortionOption",
-    "RagChatResponse",  "ConfirmedPantryItem", "PantryConfirmDetectedResponse"
+    "RagChatResponse",  "ConfirmedPantryItem", "PantryConfirmDetectedResponse",
+    "ProductScanResponse", "PantryConfirmScannedRequest", "ScannedConfirmResponse",
 ]

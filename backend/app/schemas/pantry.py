@@ -80,6 +80,25 @@ class PantryScanRequest(AppBaseModel):
     barcode: str = Field(min_length=8, max_length=20, examples=["8690504010203"])
     quantity: float | None = Field(default=None, gt=0)
     unit: UnitCode | None = None
+
+class ProductScanResponse(AppBaseModel):
+    """POST /pantry/scan yaniti. Kilere HICBIR SEY YAZILMAZ - onay bekler."""
+    found: bool
+    product: ProductRead | None = None
+    matched_ingredient: IngredientRead | None = None
+    from_cache: bool = False
+    message: str | None = None
+
+
+class PantryConfirmScannedRequest(AppBaseModel):
+    """Barkod taramasinin onaylanmasi. Foto akisindaki
+    PantryConfirmDetectedRequest'ten FARKLI: liste degil TEK urun."""
+    product_id: int
+    ingredient_id: int | None = Field(
+        default=None, description="Urun sozlukte eslesmediyse ZORUNLU."
+    )
+
+
 class PantryItemConfirm(AppBaseModel):
     """[Var]/ [Bitti] hızlı aksiyonu"""
     still_have : bool = Field(description="true -> süre yenilenir, false -> bitti")
@@ -162,6 +181,9 @@ class ConfirmedPantryItem(AppBaseModel):
     availability: Availability
     confidence_expires_at: UtcDatetime | None = None
     is_new: bool
+
+class ScannedConfirmResponse(ConfirmedPantryItem):
+    product_id: int
 
 
 class PantryConfirmDetectedResponse(AppBaseModel):
