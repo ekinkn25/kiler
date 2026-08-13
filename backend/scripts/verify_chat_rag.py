@@ -65,7 +65,7 @@ def main() -> None:
     with TestClient(app) as istemci:
         print("\n1) Kabul kriterindeki ornek cumle")
         mesaj = "Hafif, mercimekli, 30 dakikada yapabilecegim bir sey"
-        y = istemci.post(f"{ONEK}/chat", json={"message": mesaj})
+        y = istemci.post(f"{ONEK}/chat", data={"message": mesaj})
         kontrol("HTTP 201", y.status_code == 201, f"-> {y.status_code} {y.text[:300]}")
         if y.status_code != 201:
             print("\nDevam edilemiyor. Tarifler seed edilmis mi? python -m scripts.seed_recipes")
@@ -101,7 +101,7 @@ def main() -> None:
         kontrol("Ilk cagri onbellekten DEGIL", asistan.from_cache is False)
 
         print("\n4) Onbellek - ayni soru tekrar")
-        y2 = istemci.post(f"{ONEK}/chat", json={
+        y2 = istemci.post(f"{ONEK}/chat", data={
             "message": mesaj, "conversation_id": v["conversation_id"],
         })
         v2 = y2.json()
@@ -110,12 +110,12 @@ def main() -> None:
                 v2["onerilen_tarif_idleri"] == v["onerilen_tarif_idleri"])
 
         print("\n5) Var olmayan konusma")
-        y = istemci.post(f"{ONEK}/chat", json={"message": "selam", "conversation_id": 999999})
+        y = istemci.post(f"{ONEK}/chat", data={"message": "selam", "conversation_id": 999999})
         kontrol("Olmayan konusma -> 404", y.status_code == 404, f"-> {y.status_code}")
 
         print("\n6) Kimlik dogrulama")
         app.dependency_overrides.clear()
-        y = istemci.post(f"{ONEK}/chat", json={"message": "selam"})
+        y = istemci.post(f"{ONEK}/chat", data={"message": "selam"})
         kontrol("Token'siz -> 401", y.status_code == 401, f"-> {y.status_code}")
 
     db.close()

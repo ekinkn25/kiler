@@ -34,6 +34,8 @@ from app.services.chat import ADAYLAR_BASI, ADAYLAR_SONU, get_chat_provider
 from app.services.ingredient_matcher import IngredientLookup, get_lookup, match_name
 from app.services.recipe_scoring import build_context, score_recipes
 from app.services.unit_service import normalize_text
+from app.schemas import DetectedIngredient
+from app.services.vision_ingredients import detect_ingredients
 
 logger = logging.getLogger(__name__)
 
@@ -311,13 +313,20 @@ def _get_or_create_conversation(
     return konusma
 
 
-# Ana akış
 async def chat_completion(
     db: Session, mongo_db: AsyncIOMotorDatabase, user: User,
-    *, message: str, conversation_id: int | None,
+    *, message: str, conversation_id: int | None, raw_image: bytes | None = None,
 ) -> dict:
     _gunluk_kotayi_kontrol_et(db, user.id)
     konusma = _get_or_create_conversation(db, user, conversation_id)
+
+    # W2-T10: foto varsa ONCE malzeme tespiti yapilir. Tespit ONAY BEKLER -
+    # burada hicbir sey pantry_items'a YAZILMAZ (bkz. pantry_service.py).
+    image_hash: str | None = None
+    detected: list[DetectedIngredient] = []
+    if raw_image is not None:
+        tespit = await detect_ingredients(db, raw_image=raw_image, user_id=user.id)
+        image_hash, detected = tespit.image_hash, tespit.items
 
     lookup = get_lookup(db)
     intent = extract_intent(message, lookup)
@@ -326,7 +335,14 @@ async def chat_completion(
     anahtar = _cache_key(user, intent, [a["id"] for a in adaylar])
     onbellek = _cache_oku(db, anahtar)
 
-    db.add(ChatMessage(conversation_id=konusma.id, role=ChatRole.USER, content=message))
+    db.add(ChatMessage(
+        conversation_id=konusma.id, role=ChatRole.USER, content=message,
+        image_url=image_hash,
+        detected_ingredients=(
+            json.dumps([d.model_dump() for d in detected], ensure_ascii=False)
+            if detected else None
+        ),
+    ))
 
     if onbellek is not None:
         mesaj, onerilen = onbellek["mesaj"], onbellek["onerilen_tarif_idleri"]
@@ -351,8 +367,10 @@ async def chat_completion(
     db.commit()
 
     logger.info(
-        "Sohbet | kullanıcı=%s konuşma=%s adaylar=%d önerilen=%d önbellek=%s filtreler=%s",
-        user.id, konusma.id, len(adaylar), len(onerilen), from_cache, filtreler,
+        "Sohbet | kullanici=%s konusma=%s adaylar=%d onerilen=%d onbellek=%s "
+        "foto=%s tespit=%d filtreler=%s",
+        user.id, konusma.id, len(adaylar), len(onerilen), from_cache,
+        bool(image_hash), len(detected), filtreler,
     )
 
     return {
@@ -361,4 +379,58 @@ async def chat_completion(
         "onerilen_tarif_idleri": onerilen,
         "uygulanan_filtreler": filtreler,
         "from_cache": from_cache,
+        "detected_ingredients": detected,
     }
+
+
+# Ana akış
+# async def chat_completion(
+#     db: Session, mongo_db: AsyncIOMotorDatabase, user: User,
+#     *, message: str, conversation_id: int | None,
+# ) -> dict:
+#     _gunluk_kotayi_kontrol_et(db, user.id)
+#     konusma = _get_or_create_conversation(db, user, conversation_id)
+
+#     lookup = get_lookup(db)
+#     intent = extract_intent(message, lookup)
+#     adaylar, filtreler = await build_candidates(db, mongo_db, user, intent)
+
+#     anahtar = _cache_key(user, intent, [a["id"] for a in adaylar])
+#     onbellek = _cache_oku(db, anahtar)
+
+#     db.add(ChatMessage(conversation_id=konusma.id, role=ChatRole.USER, content=message))
+
+#     if onbellek is not None:
+#         mesaj, onerilen = onbellek["mesaj"], onbellek["onerilen_tarif_idleri"]
+#         model_adi = prompt_tok = tamamlama_tok = None
+#         from_cache = True
+#     else:
+#         system_prompt, user_prompt = build_prompt(intent, adaylar)
+#         saglayici = get_chat_provider()
+#         sonuc = await saglayici.complete(system_prompt, user_prompt)
+#         mesaj, onerilen = parse_and_validate(sonuc.data, adaylar)
+#         model_adi = sonuc.usage.model
+#         prompt_tok, tamamlama_tok = sonuc.usage.prompt_tokens, sonuc.usage.completion_tokens
+#         from_cache = False
+#         _cache_yaz(db, anahtar, {"mesaj": mesaj, "onerilen_tarif_idleri": onerilen}, model_adi)
+
+#     db.add(ChatMessage(
+#         conversation_id=konusma.id, role=ChatRole.ASSISTANT, content=mesaj,
+#         suggested_recipe_ids=json.dumps(onerilen, ensure_ascii=False),
+#         prompt_tokens=prompt_tok, completion_tokens=tamamlama_tok, from_cache=from_cache,
+#     ))
+#     konusma.last_message_at = utcnow()
+#     db.commit()
+
+#     logger.info(
+#         "Sohbet | kullanıcı=%s konuşma=%s adaylar=%d önerilen=%d önbellek=%s filtreler=%s",
+#         user.id, konusma.id, len(adaylar), len(onerilen), from_cache, filtreler,
+#     )
+
+#     return {
+#         "conversation_id": konusma.id,
+#         "mesaj": mesaj,
+#         "onerilen_tarif_idleri": onerilen,
+#         "uygulanan_filtreler": filtreler,
+#         "from_cache": from_cache,
+#     }

@@ -4,6 +4,7 @@ router ince kalsın diye tüm iş mantığı burada: kota kontrolü, model çağ
 from __future__ import annotations
 import logging
 from datetime import date
+from dataclasses import dataclass
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from app.core.config import settings
@@ -17,6 +18,13 @@ from app.services.vision import (
 from app.services.vision_log import log_vision_call
 
 logger = logging.getLogger(__name__)
+
+@dataclass(frozen=True, slots=True)
+class IngredientDetectionResult:
+    """detect_ingredients() ciktisi. image_hash W2-T10'da chat_messages'a
+    yazilir - foto SAKLANMIYOR, sadece bu ozet."""
+    items: list[DetectedIngredient]
+    image_hash: str
 
 class VisionDailyLimitExceeded(AppError):
     status_code = 429
@@ -121,7 +129,7 @@ async def detect_ingredients(
     *,
     raw_image: bytes,
     user_id: int | None,
-) -> list[DetectedIngredient]:
+) -> IngredientDetectionResult:
     """Fotoğraftan malzeme listesi çıkarır ve sözlükle eşleştirir."""
     if user_id is not None:
         gunluk_kotayi_kontrol_et(db, user_id)
@@ -185,12 +193,15 @@ async def detect_ingredients(
         {m.matched_by for m in eslesmeler},
     )
 
-    return [
-        DetectedIngredient(
-            raw_name=m.raw_name,
-            canonical_name=m.canonical_name,
-            display_name=m.display_name,
-            confidence=m.confidence,
-        )
-        for m in eslesmeler
-    ]
+    return IngredientDetectionResult(
+        items=[
+            DetectedIngredient(
+                raw_name=m.raw_name,
+                canonical_name=m.canonical_name,
+                display_name=m.display_name,
+                confidence=m.confidence,
+            )
+            for m in eslesmeler
+        ],
+        image_hash=ozet,
+    )

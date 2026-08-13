@@ -47,6 +47,17 @@ class ImageTooLarge(AppError):
     code = "image_too_large"
     message = "Fotograf cok buyuk."
 
+class UnsupportedImageType(AppError):
+    status_code = 415
+    code = "unsupported_image_type"
+    message = "Yalnizca JPEG, PNG ve WEBP fotograflar kabul edilir!"
+
+class EmptyImage(AppError):
+    status_code = 400
+    code = "empty_image"
+    message = "Bos dosya gonderildi"
+
+ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
 
 # ==================================================================
 # Sonuc tipleri
