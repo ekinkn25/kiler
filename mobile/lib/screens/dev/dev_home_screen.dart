@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config/app_config.dart';
 import '../../providers/barcode_provider.dart';
+import 'package:go_router/go_router.dart';
 
 /// GECICI: W1-T14'te alt bar navigasyonu gelince SILINECEK.
 class DevHomeScreen extends ConsumerStatefulWidget {
@@ -54,6 +55,12 @@ class _DevHomeScreenState extends ConsumerState<DevHomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          FilledButton.tonalIcon(
+            onPressed: () => context.push('/dev/widgets'),
+            icon: const Icon(Icons.palette_outlined),
+            label: const Text('Tasarım Sistemi Vitrini'),
+          ),
+          const SizedBox(height: 16),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
