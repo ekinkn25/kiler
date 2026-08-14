@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../screens/dev/dev_home_screen.dart';
+import '../screens/dev/widget_showcase_screen.dart';
 
 //uygulamanın tüm yönlendirme tablosu burada 
 //go router url tabanlı tek bir yerden okunabilir bir rota listesi sunar
@@ -14,6 +15,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/',
         name: 'dev-home',
         builder: (context, state) => const DevHomeScreen(),
+      ),
+      GoRoute(
+        path: '/dev/widgets',
+        name: 'widget-showcase',
+        builder: (context, state) => const WidgetShowcaseScreen(),
       ),
     ],
   );

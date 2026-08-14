@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 //uygulamanın tek tema tanımı bu dosyada
 
 class AppTheme{
@@ -10,6 +11,7 @@ class AppTheme{
   static ThemeData get light => ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(seedColor: _seedColor),
+    extensions: const [AppColors.standart],
   );
 
 
@@ -19,5 +21,6 @@ class AppTheme{
       seedColor: _seedColor,
       brightness: Brightness.dark,
       ),
+    extensions: const [AppColors.standart],
   );
 }
