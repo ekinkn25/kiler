@@ -10,10 +10,9 @@ import '../../core/config/app_config.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/network/dio_client.dart';
 import '../../core/network/multipart_helper.dart';
-import '../../core/storage/secure_storage.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/barcode_provider.dart';
 import '../../providers/health_provider.dart';
-import '../../providers/me_provider.dart';
 
 /// GECICI: alt bar navigasyonu geldi (W2-T15), bu ekran artik '/dev'
 /// rotasinda - gercek Ayarlar ekrani gelince kaldirilabilir.
@@ -25,63 +24,15 @@ class DevHomeScreen extends ConsumerStatefulWidget {
 }
 
 class _DevHomeScreenState extends ConsumerState<DevHomeScreen> {
-  final _emailController = TextEditingController(text: 'test@example.com');
-  final _passwordController = TextEditingController(text: 'Test1234!');
-
   String _barkodSonuc = '—';
-  String _girisSonuc = '—';
   String _fotoSonuc = '—';
-  bool _girisYukleniyor = false;
   bool _fotoYukleniyor = false;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
 
   Future<void> _barkodTara() async {
     final tarayici = ref.read(barcodeScannerProvider);
     final sonuc = await tarayici.scan(context);
     if (!mounted) return;
     setState(() => _barkodSonuc = sonuc ?? 'iptal edildi');
-  }
-
-  Future<void> _girisYap() async {
-    setState(() {
-      _girisYukleniyor = true;
-      _girisSonuc = 'giriş yapılıyor...';
-    });
-    try {
-      final dio = ref.read(dioProvider);
-      final response = await dio.post<Map<String, dynamic>>(
-        '/auth/login',
-        data: {
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-        },
-      );
-      final data = response.data!;
-      await ref.read(secureStorageProvider).saveTokens(
-        accessToken: data['access_token'] as String,
-        refreshToken: data['refresh_token'] as String,
-      );
-      if (!mounted) return;
-      setState(() => _girisSonuc = 'giriş başarılı, token kaydedildi');
-      ref.invalidate(meProvider);
-    } on DioException catch (e) {
-      if (!mounted) return;
-      setState(() => _girisSonuc = 'HATA — ${e.apiException.message}');
-    } finally {
-      if (mounted) setState(() => _girisYukleniyor = false);
-    }
-  }
-
-  Future<void> _cikisYap() async {
-    await ref.read(secureStorageProvider).clear();
-    ref.invalidate(meProvider);
-    setState(() => _girisSonuc = 'çıkış yapıldı');
   }
 
   Future<void> _fotoYukle() async {
@@ -110,7 +61,7 @@ class _DevHomeScreenState extends ConsumerState<DevHomeScreen> {
   Widget build(BuildContext context) {
     final tarayici = ref.watch(barcodeScannerProvider);
     final saglikDurumu = ref.watch(healthProvider);
-    final kullaniciDurumu = ref.watch(meProvider);
+    final oturum = ref.watch(authProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Kurulum Doğrulama')),
@@ -163,44 +114,28 @@ class _DevHomeScreenState extends ConsumerState<DevHomeScreen> {
           Text('Sonuç: $_barkodSonuc'),
           const SizedBox(height: 24),
 
-          _baslik(context, 'Test Girişi (dev)'),
-          TextField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: 'E-posta'),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _passwordController,
-            decoration: const InputDecoration(labelText: 'Şifre'),
-            obscureText: true,
+          _baslik(context, 'Oturum (authProvider) — W3-T01'),
+          Text(
+            oturum.when(
+              loading: () => 'kontrol ediliyor...',
+              error: (err, _) => 'HATA — $err',
+              data: (kullanici) =>
+                  kullanici == null ? 'giriş yapılmamış' : 'giriş yapılmış — ${kullanici.email}',
+            ),
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              Expanded(
-                child: FilledButton(
-                  onPressed: _girisYukleniyor ? null : _girisYap,
-                  child: const Text('Giriş Yap'),
-                ),
+              OutlinedButton(
+                onPressed: () => context.push('/giris'),
+                child: const Text('Giriş ekranı'),
               ),
               const SizedBox(width: 8),
-              OutlinedButton(onPressed: _cikisYap, child: const Text('Çıkış')),
+              OutlinedButton(
+                onPressed: () => context.push('/profil'),
+                child: const Text('Profil'),
+              ),
             ],
-          ),
-          const SizedBox(height: 8),
-          Text('Sonuç: $_girisSonuc'),
-          const SizedBox(height: 24),
-
-          _baslik(context, 'GET /auth/me (AsyncNotifier + Bearer token)'),
-          kullaniciDurumu.when(
-            loading: () => const LinearProgressIndicator(),
-            error: (err, _) =>
-                Text('HATA — ${err is DioException ? err.apiException.message : err}'),
-            data: (veri) => Text('OK — ${veri.email} (id: ${veri.id})'),
-          ),
-          TextButton(
-            onPressed: () => ref.read(meProvider.notifier).refresh(),
-            child: const Text('Tekrar dene'),
           ),
           const SizedBox(height: 24),
 

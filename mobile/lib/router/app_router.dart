@@ -5,6 +5,11 @@ import '../screens/dev/widget_showcase_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/main_shell.dart';
 import '../screens/placeholder_screen.dart';
+import '../models/app_user.dart';
+import '../providers/auth_provider.dart';
+import '../screens/auth/login_screen.dart';
+import '../screens/profile/profile_screen.dart';
+import '../screens/splash_screen.dart';
 
 
 //uygulamanın tüm yönlendirme tablosu burada 
@@ -16,13 +21,74 @@ final _kesfetKey = GlobalKey<NavigatorState>(debugLabel: 'kesfet');
 final _kaloriKey = GlobalKey<NavigatorState>(debugLabel: 'kalori');
 final _kilerKey = GlobalKey<NavigatorState>(debugLabel: 'kiler');
 
+
+class _AuthRefreshListenable extends ChangeNotifier {
+  _AuthRefreshListenable(Ref ref) {
+    _sub = ref.listen(authProvider, (previous, next) => notifyListeners());
+  }
+
+  late final ProviderSubscription<AsyncValue<AppUser?>> _sub;
+
+  @override
+  void dispose() {
+    _sub.close();
+    super.dispose();
+  }
+}
+
 final appRouterProvider = Provider<GoRouter>((ref) {
+  final authListenable = _AuthRefreshListenable(ref);
+  ref.onDispose(authListenable.dispose);
+
   return GoRouter(
-    initialLocation: '/sohbet',
-    // NOT: Giris/onboarding yonlendirmesi (redirect:) HENUZ YOK - kimlik
-    // dogrulama mobil gorevinde eklenecek. Simdilik dogrudan sekmelere
-    // giriyoruz; bu W2-T15'in kapsami disinda BILEREK birakildi.
+    initialLocation: '/splash',
+    refreshListenable: authListenable,
+    
+    redirect: (context, state) {
+      final authState = ref.read(authProvider);
+      final hedef = state.matchedLocation;
+      final splashaGidiyor = hedef == '/splash';
+      final girisEGidiyor = hedef == '/giris';
+      // /dev rotalari HER ZAMAN erisilebilir - oturum durumundan
+      // bagimsiz. Gelistirme/dogrulama ekranlari (health kontrolu,
+      // barkod testi) giris yapilmadan da calisabilmeli.
+      final devRotasiMi = hedef == '/dev' || hedef == '/dev/widgets';
+      if (devRotasiMi) return null;
+
+      // TRUE ilk acilis kontrolu: hic cozulmemis (ne veri ne hata) VE
+      // yukleniyor. login()/retry() sirasindaki 'yukleniyor' durumu
+      // copyWithPrevious sayesinde bunu TETIKLEMEZ.
+      final ilkAcilisKontrolEdiliyor =
+          authState.isLoading && !authState.hasValue && !authState.hasError;
+      if (ilkAcilisKontrolEdiliyor) {
+        return splashaGidiyor ? null : '/splash';
+      }
+
+      final girisYapilmis = authState.valueOrNull != null;
+
+      if (!girisYapilmis) {
+        return girisEGidiyor ? null : '/giris';
+      }
+
+      // Giris yapilmis: splash veya giris ekraninda kalinmasin.
+      if (splashaGidiyor || girisEGidiyor) {
+        return '/sohbet';
+      }
+
+      return null;
+    },
+
     routes: [
+      GoRoute(
+        path: '/splash',
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/giris',
+        name: 'giris',
+        builder: (context, state) => const LoginScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainShell(navigationShell: navigationShell);
@@ -72,8 +138,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // ---------------------------------------------------------------
-      // KABUK DISI tam ekran rotalar: alt navigasyon cubugu GORUNMEZ,
-      // kok Navigator'a PUSH edilir - altta sekme yigini KORUNUR.
+      // KABUK DISI tam ekran rotalar.
       // ---------------------------------------------------------------
       GoRoute(
         path: '/tara',
@@ -96,24 +161,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profil',
         name: 'profil',
-        builder: (context, state) => const PlaceholderScreen(title: 'Profil'),
+        builder: (context, state) => const ProfileScreen(),
       ),
       GoRoute(
         path: '/onboarding',
         name: 'onboarding',
         builder: (context, state) => const PlaceholderScreen(title: 'Onboarding'),
       ),
-      GoRoute(
-        path: '/giris',
-        name: 'giris',
-        builder: (context, state) => const PlaceholderScreen(title: 'Giriş'),
-      ),
 
       // ---------------------------------------------------------------
-      // GECICI gelistirme rotalari (W2-T13/T14). '/' yerine artik '/dev'
-      // altindalar; sekmeler devreye girdikten sonra dogrudan erisim
-      // butonu yok - web'de adres cubugundan veya derin baglanti testiyle
-      // (bkz. calistirma adimlari) acilabilir.
+      // GECICI gelistirme rotalari.
       // ---------------------------------------------------------------
       GoRoute(
         path: '/dev',
