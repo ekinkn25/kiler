@@ -1,0 +1,52 @@
+library;
+
+final _emailDeseni=RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+String? emailValidator(String? value){
+  final v = value?.trim() ?? '';
+  if (v.isEmpty) return 'E-posta gerekli.';
+  if (!_emailDeseni.hasMatch(v)) return 'Geçerli bir e-posta girmelisin.';
+  return null;
+}
+
+//backendde min 8 max 72 karakter olmasını ve hem harf hem rakam içermesini girmiştik. ayrıca sadece rakam ve sadece harften oluşan şifreler reddedilir
+String? passwordValidator(String? value) {
+  final v = value ?? '';
+  if (v.isEmpty) return 'Şifre gerekli.';
+  if (v.length < 8) return 'Şifre en az 8 karakter olmalı.';
+  if (v.length > 72) return 'Şifre en fazla 72 karakter olabilir.';
+  final sadeceRakam = RegExp(r'^\d+$').hasMatch(v);
+  final sadeceHarf = RegExp(r'^[a-zA-ZçğıöşüÇĞİÖŞÜ]+$').hasMatch(v);
+  if (sadeceRakam || sadeceHarf) {
+    return 'Şifre hem harf hem rakam içermeli.';
+  }
+  return null;
+}
+
+String? loginPasswordValidator(String? value){
+  if(value == null || value.isEmpty) return 'Şifre gerekli.';
+  return null;
+}
+
+String? fullNameValidator(String? value){
+  final v = value?.trim() ?? '';
+  if (v.isEmpty) return null;
+  if (v.length > 120) return 'İsim en fazla 120 karakter olabilir.';
+  return null;
+}
+
+enum PasswordStrength {weak, medium, strong }
+
+PasswordStrength calculatePasswordStength(String value){
+  if (value.length < 8) return PasswordStrength.weak;
+  final hasLetter = RegExp(r'[a-zA-ZçğıöşüÇĞİÖŞÜ]').hasMatch(value);
+  final hasDigit = RegExp(r'\d').hasMatch(value);
+  if (!hasLetter || !hasDigit) return PasswordStrength.weak;
+
+  final hasUpper = RegExp(r'[A-ZÇĞİÖŞÜ]').hasMatch(value);
+  final hasLower = RegExp(r'[a-zçğıöşü]').hasMatch(value);
+  final hasSpecial = RegExp(r'[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]').hasMatch(value);
+  final guclu = value.length >= 12 || (hasUpper && hasLower && hasSpecial);
+
+  return guclu ? PasswordStrength.strong : PasswordStrength.medium;
+}
