@@ -3,6 +3,9 @@ import 'package:dio/dio.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_config.dart';
+import '../storage/secure_storage.dart';
+import 'auth_interceptor.dart';
+import 'error_interceptor.dart';
 
 //backende giden tüm isteklerin tek çıkış noktası
 
@@ -18,11 +21,17 @@ final dioProvider = Provider<Dio>((ref){
     ),
   );
 
+  final storage = ref.watch(secureStorageProvider);
+  dio.interceptors.add(
+    AuthInterceptor(storage: storage, baseUrl: AppConfig.apiBaseUrl),
+  );
+  dio.interceptors.add(ErrorInterceptor());
+
   if (AppConfig.debugLogging){
     dio.interceptors.add(
       LogInterceptor(requestBody: true, responseBody: true),
       //istek backende gitmeden hemen önce veya backendden cevap cihaza dönmeden hemen önce araya girip işlem yapmanı sağlar
-      //backendde hnagi jjson verisi gönderdiğimi ve backendden hangi json cevabı döndiğini console'a yazdırır
+      //backendde hangi json verisi gönderdiğimi ve backendden hangi json cevabı döndiğini console'a yazdırır
     );
   }
   
