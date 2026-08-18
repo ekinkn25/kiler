@@ -27,6 +27,7 @@ from app.models.recipe import (
     ids_permanently_disliked, ids_seen_in_session,
 )
 from app.services.recipe_scoring import build_context, score_recipes
+from app.services import taste_service
 
 logger = logging.getLogger(__name__)
 
@@ -189,7 +190,8 @@ async def record_swipe(
     # Var olmayan tarife geri bildirim yazmak ogrenme verisini kirletir.
     # Tek indeksli sorgu; maliyeti ihmal edilebilir.
     varmi = await mongo_db[RECIPE_COLLECTION].find_one(
-        {"_id": nesne_kimlik}, projection={"_id": 1}
+        {"_id": nesne_kimlik},
+        projection={"_id": 1, "cuisine": 1, "difficulty": 1, "diet_tags": 1, "ingredients": 1},
     )
     if varmi is None:
         raise NotFoundError("Tarif bulunamadi.")
@@ -210,6 +212,14 @@ async def record_swipe(
         comment=comment,
     )
     db.add(kayit)
+
+    # Ogrenen sinyal: SADECE begendim/begenmedim(sevmedim)/yaptim.
+    if action == FeedbackAction.BEGENDIM:
+        taste_service.register_recipe_signal(db, user.id, varmi, signal=1.0)
+    elif action == FeedbackAction.YAPTIM:
+        taste_service.register_recipe_signal(db, user.id, varmi, signal=1.0, tekrar=3)
+    elif action == FeedbackAction.BEGENMEDIM and reason == FeedbackReason.SEVMEDIM:
+        taste_service.register_recipe_signal(db, user.id, varmi, signal=-1.0)
 
     # (c) 'Cok uzun' bir ELEME degil, oturum filtresinin daralmasidir.
     # tighten_time_limit min() kullanir: esik daralir, asla gevsemez.
