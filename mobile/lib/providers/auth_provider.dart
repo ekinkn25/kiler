@@ -63,6 +63,42 @@ class AuthNotifier extends AsyncNotifier<AppUser?> {
     });
   }
 
+  Future<void> register({
+    required String email,
+    required String password,
+    String? fullName,
+  }) async {
+    state = const AsyncValue<AppUser?>.loading().copyWithPrevious(state);
+    state = await AsyncValue.guard(() async{
+      final dio = ref.read(dioProvider);
+      await dio.post<Map<String, dynamic>>('/auth/register', data: {
+        'email' : email,
+        'password': password,
+        if (fullName != null && fullName.isNotEmpty) 'full_name': fullName,
+      });
+
+      final loginResponse = await dio.post<Map<String, dynamic>>(
+        '/auth/login',
+        data: {'email': email, 'password': password},
+      );
+
+      final data = loginResponse.data!;
+      await ref.read(secureStorageProvider).saveTokens(
+        accessToken: data['access_token'] as String, 
+        refreshToken: data['refresh_token'] as String,
+      );
+
+      final user = await _fetchMe();
+      if (user == null) {
+        throw const ApiException(
+          code: 'unauthorized', 
+          message: 'Kayıt sonrası giriş başarısız oldu.'
+        );
+      }
+      return user;
+    });
+  }
+
   /// Cikis. Token'lar SILINIR, durum aninda 'giris yapilmamis'a doner.
   Future<void> logout() async {
     await ref.read(secureStorageProvider).clear();

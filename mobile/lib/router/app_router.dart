@@ -10,6 +10,7 @@ import '../providers/auth_provider.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/splash_screen.dart';
+import '../screens/auth/register_screen.dart';
 
 
 //uygulamanın tüm yönlendirme tablosu burada 
@@ -43,21 +44,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/splash',
     refreshListenable: authListenable,
-    
+
     redirect: (context, state) {
       final authState = ref.read(authProvider);
       final hedef = state.matchedLocation;
       final splashaGidiyor = hedef == '/splash';
-      final girisEGidiyor = hedef == '/giris';
-      // /dev rotalari HER ZAMAN erisilebilir - oturum durumundan
-      // bagimsiz. Gelistirme/dogrulama ekranlari (health kontrolu,
-      // barkod testi) giris yapilmadan da calisabilmeli.
+      final authEkraniMi = hedef == '/giris' || hedef == '/kayit';
       final devRotasiMi = hedef == '/dev' || hedef == '/dev/widgets';
       if (devRotasiMi) return null;
 
-      // TRUE ilk acilis kontrolu: hic cozulmemis (ne veri ne hata) VE
-      // yukleniyor. login()/retry() sirasindaki 'yukleniyor' durumu
-      // copyWithPrevious sayesinde bunu TETIKLEMEZ.
       final ilkAcilisKontrolEdiliyor =
           authState.isLoading && !authState.hasValue && !authState.hasError;
       if (ilkAcilisKontrolEdiliyor) {
@@ -67,11 +62,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final girisYapilmis = authState.valueOrNull != null;
 
       if (!girisYapilmis) {
-        return girisEGidiyor ? null : '/giris';
+        return authEkraniMi ? null : '/giris';
       }
 
-      // Giris yapilmis: splash veya giris ekraninda kalinmasin.
-      if (splashaGidiyor || girisEGidiyor) {
+      if (splashaGidiyor || authEkraniMi) {
         return '/sohbet';
       }
 
@@ -88,6 +82,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/giris',
         name: 'giris',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/kayit',
+        name: 'kayit',
+        builder: (context, state) => const RegisterScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

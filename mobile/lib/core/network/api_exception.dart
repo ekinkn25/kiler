@@ -32,3 +32,9 @@ extension DioExceptionApiError on DioException{
     );
   }
 }
+
+String friendlyErrorMessage(Object? error) {
+  if (error is DioException) return error.apiException.message;
+  if (error is ApiException) return error.message;
+  return 'Beklenmeyen bir hata oluştur';
+}
