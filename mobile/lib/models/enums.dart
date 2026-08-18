@@ -155,3 +155,29 @@ String unitCodeToJson(UnitCode value) => switch (value) {
   UnitCode.demet => 'demet',
   UnitCode.dilim => 'dilim',
 };
+
+enum Gender { erkek, kadin, belirtilmedi }
+
+String genderToJson(Gender value) => switch (value) {
+  Gender.erkek => 'erkek',
+  Gender.kadin => 'kadin',
+  Gender.belirtilmedi => 'belirtilmedi',
+};
+
+enum ActivityLevel { sedanter, hafif, orta, yuksek, cokYuksek }
+
+String activityLevelToJson(ActivityLevel value) => switch (value) {
+  ActivityLevel.sedanter => 'sedanter',
+  ActivityLevel.hafif => 'hafif',
+  ActivityLevel.orta => 'orta',
+  ActivityLevel.yuksek => 'yuksek',
+  ActivityLevel.cokYuksek => 'cok_yuksek',
+};
+
+enum Goal { kiloVerme, koruma, kiloAlma }
+
+String goalToJson(Goal value) => switch (value) {
+  Goal.kiloVerme => 'kilo_verme',
+  Goal.koruma => 'koruma',
+  Goal.kiloAlma => 'kilo_alma',
+};

@@ -29,6 +29,7 @@ def apply_taste_event(
                         user_id = user_id, dimension = dimension, taste_key = taste_key, weight = 0.0, event_count = 0,
                 )
                 db.add(satir)
+                db.flush()
         satir.event_count += 1
         satir.weight += (signal - satir.weight) / satir.event_count
 
