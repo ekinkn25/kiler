@@ -12,6 +12,8 @@ import '../screens/profile/profile_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
+import '../screens/discover/discover_screen.dart';
+import '../screens/dev/dev_swipe_preview_screen.dart';
 
 
 //uygulamanın tüm yönlendirme tablosu burada 
@@ -110,7 +112,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/kesfet',
                 name: 'kesfet',
-                builder: (context, state) => const PlaceholderScreen(title: 'Keşfet'),
+                builder: (context, state) => const DiscoverScreen(),
               ),
             ],
           ),
@@ -181,6 +183,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/dev/widgets',
         name: 'widget-showcase',
         builder: (context, state) => const WidgetShowcaseScreen(),
+      ),
+      GoRoute(
+        path: '/dev/widgets',
+        name: 'widget-showcase',
+        builder: (context, state) => const WidgetShowcaseScreen(),
+      ),
+      GoRoute(
+        path: '/dev/swipe',
+        name: 'dev-swipe',
+        builder: (context, state) => const DevSwipePreviewScreen(),
       ),
     ],
   );

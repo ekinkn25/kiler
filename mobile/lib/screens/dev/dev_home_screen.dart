@@ -90,6 +90,18 @@ class _DevHomeScreenState extends ConsumerState<DevHomeScreen> {
             label: const Text('Tasarım Sistemi Vitrini'),
           ),
           const SizedBox(height: 24),
+                    FilledButton.tonalIcon(
+            onPressed: () => context.push('/dev/widgets'),
+            icon: const Icon(Icons.palette_outlined),
+            label: const Text('Tasarım Sistemi Vitrini'),
+          ),
+          const SizedBox(height: 8),
+          FilledButton.tonalIcon(
+            onPressed: () => context.push('/dev/swipe'),
+            icon: const Icon(Icons.style_outlined),
+            label: const Text('Swipe Kart Önizleme (10 kart)'),
+          ),
+          const SizedBox(height: 24),
 
           _baslik(context, 'GET /health (AsyncNotifier)'),
           saglikDurumu.when(
