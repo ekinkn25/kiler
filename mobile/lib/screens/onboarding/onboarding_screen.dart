@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../core/network/api_exception.dart';
 import '../../models/enums.dart';
@@ -65,7 +66,40 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       likedRecipeIds: _begenilenTarifIdleri.toList(),
     );
     if (!mounted) return;
-    if (!ref.read(onboardingProvider).hasError) context.go('/sohbet');
+    
+    final durum = ref.read(onboardingProvider);
+    if (durum.hasError) return;
+
+    final hedefKalori = durum.valueOrNull;
+    if(hedefKalori != null) await _hedefKaloriGoster(hedefKalori);
+    if (!mounted) return;
+    context.go('/sohbet');
+  }
+
+  Future<void> _hedefKaloriGoster(double hedefKalori) async {
+    final metin = '${NumberFormat('#,##0', 'tr_TR').format(hedefKalori.round())} kcal';
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.emoji_events_outlined, size: 40),
+        title: const Text('Hazırsın!'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Günlük hedefin', style: Theme.of(context).textTheme.bodyMedium),
+            const SizedBox(height: 4),
+            Text(metin, style: Theme.of(context).textTheme.headlineMedium),
+          ],
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Başla'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

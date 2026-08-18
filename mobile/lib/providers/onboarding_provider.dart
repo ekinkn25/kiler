@@ -30,9 +30,9 @@ final onboardingRecipeChoicesProvider = FutureProvider<List<RecipeCard>>((ref) a
 
 /// Anket gonderimi. Basarili olursa authProvider'i yeniler ki
 /// onboarding_completed=true'ya donmus kullanici her yerde gorunsun.
-class OnboardingNotifier extends AsyncNotifier<void> {
+class OnboardingNotifier extends AsyncNotifier<double?> {
   @override
-  Future<void> build() async {}
+  Future<double?> build() async => null;
 
   Future<void> submit({
     int? birthYear,
@@ -49,7 +49,7 @@ class OnboardingNotifier extends AsyncNotifier<void> {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final dio = ref.read(dioProvider);
-      await dio.post<Map<String, dynamic>>('/onboarding', data: {
+      final response = await dio.post<Map<String, dynamic>>('/onboarding', data: {
         'profile': {
           'birth_year': birthYear,
           'gender': gender,
@@ -64,8 +64,11 @@ class OnboardingNotifier extends AsyncNotifier<void> {
         'liked_recipe_ids': likedRecipeIds,
       });
       await ref.read(authProvider.notifier).retry(); // /auth/me'yi tazeler
+
+      final profile = response.data!['profile'] as Map<String, dynamic>;
+      return (profile['daily_calorie_target'] as num).toDouble();
     });
   }
 }
 
-final onboardingProvider = AsyncNotifierProvider<OnboardingNotifier, void>(OnboardingNotifier.new);
+final onboardingProvider = AsyncNotifierProvider<OnboardingNotifier, double?>(OnboardingNotifier.new);
