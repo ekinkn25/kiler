@@ -51,6 +51,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final hedef = state.matchedLocation;
       final splashaGidiyor = hedef == '/splash';
       final authEkraniMi = hedef == '/giris' || hedef == '/kayit';
+      final onboardinEkraniMi = hedef == '/onboarding';
       final devRotasiMi = hedef == '/dev' || hedef == '/dev/widgets';
       if (devRotasiMi) return null;
 
@@ -60,14 +61,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return splashaGidiyor ? null : '/splash';
       }
 
-      final girisYapilmis = authState.valueOrNull != null;
+      final kullanici = authState.valueOrNull;
+      final girisYapilmis = kullanici != null;
 
       if (!girisYapilmis) {
         return authEkraniMi ? null : '/giris';
       }
 
-      if (splashaGidiyor || authEkraniMi) {
-        return '/sohbet';
+      final anketTamamlanmamis = !kullanici.onboardingCompleted;
+      if(anketTamamlanmamis) {
+        return onboardinEkraniMi ? null : '/onboarding';
+      }
+
+      if (splashaGidiyor || authEkraniMi || onboardinEkraniMi) {
+        return '/kesfet';
       }
 
       return null;
