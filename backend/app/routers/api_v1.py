@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 from app.schemas import ErrorResponse, PantryItemCreate
-from app.routers import auth, chat, recipes, vision, pantry, meals, onboarding
+from app.routers import auth, chat, recipes, vision, pantry, meals, onboarding, catalog
 
 api_router = APIRouter()
 
@@ -11,6 +11,7 @@ api_router.include_router(chat.router, prefix="/chat", tags=["chatbot"])
 api_router.include_router(pantry.router, prefix="/pantry", tags=["pantry"])
 api_router.include_router(meals.router, prefix="/meals", tags=["calories"])
 api_router.include_router(onboarding.router, prefix="/onboarding", tags=["onboarding"])
+api_router.include_router(catalog.router, prefix="/catalog", tags=["catalog"])
 
 @api_router.get("/ping", tags=["system"], summary="Versiyonlu API canlilik testi")
 def ping() -> dict[str, bool]:

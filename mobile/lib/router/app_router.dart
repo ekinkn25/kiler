@@ -11,6 +11,7 @@ import '../screens/auth/login_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/auth/register_screen.dart';
+import '../screens/onboarding/onboarding_screen.dart';
 
 
 //uygulamanın tüm yönlendirme tablosu burada 
@@ -165,7 +166,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/onboarding',
         name: 'onboarding',
-        builder: (context, state) => const PlaceholderScreen(title: 'Onboarding'),
+        builder: (context, state) => const OnboardingScreen(),
       ),
 
       // ---------------------------------------------------------------
