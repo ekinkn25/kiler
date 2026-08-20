@@ -207,6 +207,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     if (veri.cards.isEmpty) {
       return EmptyState(
         icon: Icons.restaurant_outlined,
+        illustrated: true,
         title: 'Şu an önerilecek tarif yok',
         message: veri.sessionFilters.isEmpty
             ? 'Kilerine malzeme ekleyince öneriler burada görünecek.'
@@ -223,7 +224,8 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     // tasarim W3-T08'in kalan maddelerinde yazilacak.
     if (veri.finished) {
       return EmptyState(
-        icon: Icons.check_circle_outline,
+        icon: Icons.restaurant_menu,
+        illustrated: true,
         title: 'Bugünlük bu kadar!',
         message: 'Kilerine bir şeyler ekle ya da yarın tekrar bak.',
         actionLabel: 'Baştan bak',

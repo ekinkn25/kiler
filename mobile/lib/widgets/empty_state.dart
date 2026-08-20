@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kalori/widgets/empty_illustration.dart';
 
 import 'app_button.dart';
 
@@ -12,6 +13,7 @@ class EmptyState extends StatelessWidget {
     this.message,
     this.actionLabel,
     this.onAction,
+    this.illustrated = false,
   });
 
   final IconData icon;
@@ -19,6 +21,7 @@ class EmptyState extends StatelessWidget {
   final String? message;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final bool illustrated; // true ise büyük görsel çizilir
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +33,11 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (illustrated)
+              EmptyIllustration(icon: icon)
+            else
             Icon(icon, size: 64, color: colors.outline),
-            const SizedBox(height: 16),
+            SizedBox(height: illustrated? 24 : 16),
             Text(
               title,
               textAlign: TextAlign.center,
