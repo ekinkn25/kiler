@@ -14,6 +14,8 @@ import '../screens/auth/register_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/discover/discover_screen.dart';
 import '../screens/dev/dev_swipe_preview_screen.dart';
+import '../screens/chat/chat_screen.dart';
+import '../screens/recipes/recipe_detail_screen.dart';
 
 
 //uygulamanın tüm yönlendirme tablosu burada 
@@ -103,7 +105,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/sohbet',
                 name: 'sohbet',
-                builder: (context, state) => const PlaceholderScreen(title: 'Sohbet'),
+                builder: (context, state) => const ChatScreen(),
               ),
             ],
           ),
@@ -158,7 +160,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'tarif-detay',
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          return PlaceholderScreen(title: 'Tarif Detayı', detail: 'id: $id');
+          return RecipeDetailScreen(recipeId: id);
         },
       ),
       GoRoute(
