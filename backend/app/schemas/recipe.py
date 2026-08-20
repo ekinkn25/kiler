@@ -241,6 +241,14 @@ class SwipeRequest(AppBaseModel):
     reason: FeedbackReason | None = None
     session_id: int | None = None
     missing_ingredient_id: int | None = None
+    missing_ingredient_ids: list[int] = Field(
+        default_factory=list,
+        max_length=20,
+        description=(
+            "W3-T09 coklu secim. Tekil `missing_ingredient_id` geriye uyum "
+            "icin duruyor; ikisi de gonderilirse liste esas alinir."
+        ),
+    )
     rating: int | None = Field(default=None, ge=1, le=5)
     servings_cooked: float | None = Field(default=None, gt=0, le=20)
     comment: str | None = Field(default=None, max_length=500)
@@ -254,8 +262,9 @@ class SwipeRequest(AppBaseModel):
         """
         if self.reason is not None and self.action != FeedbackAction.BEGENMEDIM:
             raise ValueError("reason yalnizca action='begenmedim' ile gonderilebilir.")
-        if (self.missing_ingredient_id is not None
-                and self.reason != FeedbackReason.MALZEME_YOK):
+        
+        eksik_verildi = (self.missing_ingredient_id is not None or bool(self.missing_ingredient_ids))
+        if eksik_verildi and self.reason != FeedbackReason.MALZEME_YOK:
             raise ValueError(
                 "missing_ingredient_id yalnizca reason='malzeme_yok' ile gonderilebilir."
             )

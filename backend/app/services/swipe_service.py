@@ -238,7 +238,7 @@ async def record_swipe(
     action: FeedbackAction,
     reason: FeedbackReason | None = None,
     session_id: int | None = None,
-    missing_ingredient_id: int | None = None,
+    missing_ingredient_ids: list[int] | None = None,
     rating: int | None = None,
     servings_cooked: float | None = None,
     comment: str | None = None,
@@ -265,6 +265,7 @@ async def record_swipe(
     if varmi is None:
         raise NotFoundError("Tarif bulunamadi.")
 
+    eksik_kimlikler = list(dict.fromkeys(missing_ingredient_ids or []))
     oturum = None
     if session_id is not None:
         oturum = get_or_create_session(db, user, session_id)
@@ -275,7 +276,7 @@ async def record_swipe(
         session_id=oturum.id if oturum else None,
         action=action,
         reason=reason,
-        missing_ingredient_id=missing_ingredient_id,
+        missing_ingredient_id=eksik_kimlikler[0] if eksik_kimlikler else None,
         rating=rating,
         servings_cooked=servings_cooked,
         comment=comment,
@@ -304,11 +305,17 @@ async def record_swipe(
         etki = "Bu tarif bir daha hic onerilmeyecek."
     elif reason == FeedbackReason.MALZEME_YOK:
         etki = f"Bu tarif {MALZEME_YOK_GUN} gun boyunca onerilmeyecek."
-        if missing_ingredient_id is not None:
-            ad = _malzemeyi_yok_isaretle(db, user, missing_ingredient_id, oturum)
-            if ad:
-                etki = (f"'{ad}' yok sayıldı; bu oturumda {ad.lower()} gerektiren "
-                        f"tarif gösterilmeyecek.")
+        adlar = [
+            ad
+            for kimlik in eksik_kimlikler
+            if (ad := _malzemeyi_yok_isaretle(db, user, kimlik, oturum)) is not None
+        ]
+        if adlar:
+            liste = ", ".join(adlar)
+            etki = (
+                f"{liste} yok sayildi; bu oturumda bu malzemeleri gerektiren "
+                f"tarif gosterilmeyecek."
+            )
 
     db.commit()
     db.refresh(kayit)
