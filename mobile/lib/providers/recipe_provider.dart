@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/network/dio_client.dart';
 import '../models/deck_response.dart';
 import '../models/recipe_card.dart';
+import 'dart:async';
 
 /// Kesfet sekmesindeki destenin EKRAN durumu.
 ///
@@ -81,7 +82,8 @@ class SwipeDeckNotifier extends AsyncNotifier<SwipeDeckState> {
 
   /// Ayni anda iki istek gitmesini engeller: kullanici esigin altinda
   /// birkac kez daha kaydirirsa gerekirseOnYukle tekrar tekrar cagrilir.
-  bool _istekSuruyor = false;
+  // bool _istekSuruyor = false;
+  Future<void>? _bekleyenIstek;
 
   int? get sessionId => _sessionId;
 
@@ -120,13 +122,16 @@ class SwipeDeckNotifier extends AsyncNotifier<SwipeDeckState> {
     await _dahaFazlaYukle();
   }
 
-  /// Yeni partiyi cekip mevcut listenin SONUNA ekler.
-  Future<void> _dahaFazlaYukle() async {
-    final mevcut = state.valueOrNull;
-    if (mevcut == null) return;
-    if (_istekSuruyor || mevcut.exhausted) return;
+    Future<void> _dahaFazlaYukle() {
+    return _bekleyenIstek ??= _partiCek().whenComplete(() {
+      _bekleyenIstek = null;
+    });
+  }
 
-    _istekSuruyor = true;
+  /// Yeni partiyi cekip mevcut listenin SONUNA ekler.
+  Future<void> _partiCek() async {
+    final mevcut = state.valueOrNull;
+    if (mevcut == null || mevcut.exhausted) return;
 
     // DIKKAT: state = AsyncLoading() YOK.
     // Ekranda kart varken loading'e dusmek SwipeDeck'i widget agacindan
@@ -141,20 +146,85 @@ class SwipeDeckNotifier extends AsyncNotifier<SwipeDeckState> {
         oncekiler.copyWith(
           cards: [...oncekiler.cards, ...yeni.items],
           exhausted: yeni.exhausted,
-          sessionFilters: yeni.sessionFilters,
           loadingMore: false,
         ),
       );
     } catch (_) {
       // On yukleme SESSIZ basarisiz olur: kullanici hala eldeki kartlari
-      // kaydirabiliyor, ekrana hata basmak akisi bozardi. Esigin altinda
-      // bir sonraki kaydirmada kendiliginden yeniden denenir.
+      // kaydirabiliyor, ekrana hata basmak akisi bozardi.
       final oncekiler = state.valueOrNull ?? mevcut;
       state = AsyncData(oncekiler.copyWith(loadingMore: false));
-    } finally {
-      _istekSuruyor = false;
     }
   }
+
+  /// Oturum filtresi degistiginde ELDEKI kartlari YEREL olarak suzer.
+  ///
+  /// Neden yeni deste istemiyoruz: backend, desteyi dondugu ANDA butun
+  /// kartlari 'gordu' isaretliyor (mark_shown). Yeniden istemek,
+  /// kullanicinin hic gormedigi kartlari KALICI olarak cope atmak
+  /// demek - filtreye uyanlar dahil. Onceki surumde 'zamani fazla'
+  /// dendiginde elde 8 kart varken deste bir anda bosaliyor ve
+  /// cikissiz bos ekrana dusuluyordu.
+  ///
+  /// [gecerliIndex] o an ustte duran kartin indeksi. Ondan ONCEKI
+  /// kartlar (zaten kaydirilmis olanlar) listeden dusurulur; boylece
+  /// CardSwiper'in anahtari degisir ve swiper sifirdan baslar.
+  void filtreleriUygula(
+    Map<String, dynamic> filtreler, {
+    required int gecerliIndex,
+  }) {
+    final mevcut = state.valueOrNull;
+    if (mevcut == null) return;
+
+    final int? sureTavani = (filtreler['max_total_time'] as num?)?.toInt();
+    final Set<String> olmayanlar =
+        ((filtreler['missing_ingredients'] as List<dynamic>?) ?? const [])
+            .cast<String>()
+            .toSet();
+
+    if (sureTavani == null && olmayanlar.isEmpty) return;
+
+    final int baslangic = gecerliIndex.clamp(0, mevcut.cards.length);
+    final List<RecipeCard> kalan = mevcut.cards
+        .sublist(baslangic)
+        .where((kart) => _filtreyeUyuyor(kart, sureTavani, olmayanlar))
+        .toList();
+
+    state = AsyncData(
+      mevcut.copyWith(
+        cards: kalan,
+        sessionFilters: filtreler,
+        finished: false,
+      ),
+    );
+
+    // Suzgecten az kart gectiyse arka planda takviye iste.
+    unawaited(gerekirseOnYukle(kalan.length));
+  }
+
+  bool _filtreyeUyuyor(
+    RecipeCard kart,
+    int? sureTavani,
+    Set<String> olmayanlar,
+  ) {
+    if (sureTavani != null) {
+      final int sure = (kart.prepTime ?? 0) + (kart.cookTime ?? 0);
+      if (sure > sureTavani) return false;
+    }
+    if (olmayanlar.isNotEmpty) {
+      // matched + unknown + missing = tarifin ZORUNLU malzeme kumesi.
+      // Backend skorlamada da tam bu kumeyi kullaniyor (_zorunlu).
+      final Set<String> gerekli = {
+        ...kart.matchedIngredients,
+        ...kart.unknownIngredients,
+        ...kart.missingIngredients,
+      };
+      if (gerekli.intersection(olmayanlar).isNotEmpty) return false;
+    }
+    return true;
+  }
+
+  
 
   /// Kullanici SON karti da kaydirdi.
   ///

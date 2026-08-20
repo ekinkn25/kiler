@@ -13,6 +13,7 @@ import '../../widgets/empty_state.dart';
 import '../../widgets/loading_skeleton.dart';
 import '../../widgets/swipe/dislike_reason_sheet.dart';
 import '../../widgets/swipe/swipe_deck.dart';
+import 'package:go_router/go_router.dart';
 
 /// KESFET sekmesi: 'Bugun ne yesen?' + swipe destesi.
 ///
@@ -59,7 +60,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     } else if (yon == CardSwiperDirection.top) {
       unawaited(_gonder(kart: kart, action: FeedbackAction.kaydetti));
     } else if (yon == CardSwiperDirection.left) {
-      unawaited(_solaKaydirildi(kart));
+      unawaited(_solaKaydirildi(kart, mevcutIndex ?? deste.cards.length));
     }
 
     // ON YUKLEME TETIGI (W3-T08).
@@ -93,29 +94,30 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     });
   }
 
-  Future<void> _solaKaydirildi(RecipeCard kart) async {
+    Future<void> _solaKaydirildi(RecipeCard kart, int gecerliIndex) async {
     // Kart ZATEN ucup gitti; soru ondan SONRA soruluyor.
     final sonuc = await showDislikeReasonDialog(context, card: kart);
     if (!mounted) return;
 
     // sonuc == null -> kullanici hicbir seye dokunmadi.
     // KABUL KRITERI: bu durumda da SEBEPSIZ 'begenmedim' yazilir.
-    await _gonder(
+    final SwipeResult? yanit = await _gonder(
       kart: kart,
       action: FeedbackAction.begenmedim,
       reason: sonuc?.reason,
       missingIngredientId: sonuc?.missingIngredientId,
     );
+    if (!mounted || yanit == null) return;
 
-    // Bu iki sebep OTURUM FILTRESINI degistirir: elimizdeki kartlar artik
-    // gecersiz olabilir (uzun sureli ya da o malzemeyi iceren kartlar),
-    // desteyi AYNI oturumla bastan kur.
-    final bool filtreDegisti = sonuc?.reason == FeedbackReason.cokUzun ||
-        (sonuc?.reason == FeedbackReason.malzemeYok &&
-            sonuc?.missingIngredientId != null);
-
-    if (filtreDegisti && mounted) {
-      await ref.read(swipeDeckProvider.notifier).yenile();
+    // Oturum filtresi degistiyse ELDEKI kartlari yerel olarak suz.
+    // Eskiden burada yenile() cagriliyordu; backend deste dondugu anda
+    // butun kartlari 'gordu' isaretledigi icin yeniden istemek,
+    // kullanicinin hic gormedigi kartlari kalici olarak cope atiyordu.
+    if (yanit.sessionFilters.isNotEmpty) {
+      ref.read(swipeDeckProvider.notifier).filtreleriUygula(
+            yanit.sessionFilters,
+            gecerliIndex: gecerliIndex,
+          );
     }
   }
 
@@ -123,7 +125,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   // Geri bildirim
   // ---------------------------------------------------------------
 
-  Future<void> _gonder({
+    Future<SwipeResult?> _gonder({
     required RecipeCard kart,
     required FeedbackAction action,
     FeedbackReason? reason,
@@ -133,18 +135,20 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     final oturum = ref.read(swipeDeckProvider.notifier).sessionId;
 
     try {
-      final etki = await servis.gonder(
+      final yanit = await servis.gonder(
         recipeId: kart.id,
         action: action,
         reason: reason,
         sessionId: oturum,
         missingIngredientId: missingIngredientId,
       );
-      if (!mounted) return;
-      _bilgi(etki);
+      // Ekran kapandiysa SnackBar gosterilemez ama yanit yine de
+      // dondurulur: cagiran taraf filtreleri uygulamak isteyebilir.
+      if (mounted) _bilgi(yanit.effect);
+      return yanit;
     } catch (hata) {
-      if (!mounted) return;
-      _bilgi('Kaydedilemedi: ${friendlyErrorMessage(hata)}');
+      if (mounted) _bilgi('Kaydedilemedi: ${friendlyErrorMessage(hata)}');
+      return null;
     }
   }
 
@@ -172,6 +176,15 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
         // On yukleme gostergesi: 2 piksel, kaydirmayi ENGELLEMEZ.
         // Kullanici fark etmese de olur - amac gelistirici icin
         // gorunurluk ve yavas agda 'donmadi, calisiyor' hissi.
+        actions: [
+          IconButton(
+            tooltip: 'Yeni oturum başlat',
+            icon: const Icon(Icons.refresh),
+            onPressed: (){
+              unawaited(ref.read(swipeDeckProvider.notifier).oturumuSifirla());
+            }, 
+          ),
+        ],
         bottom: onYukleniyor
             ? const PreferredSize(
                 preferredSize: Size.fromHeight(2),
@@ -228,10 +241,12 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
         illustrated: true,
         title: 'Bugünlük bu kadar!',
         message: 'Kilerine bir şeyler ekle ya da yarın tekrar bak.',
-        actionLabel: 'Baştan bak',
-        onAction: () {
-          unawaited(ref.read(swipeDeckProvider.notifier).oturumuSifirla());
-        },
+        actionLabel: 'Fotoğraf çek',
+        actionIcon: Icons.photo_camera_outlined,
+        onAction: () => context.push('/foto'),
+        secondaryActionLabel: 'Barkod okut',
+        secondaryActionIcon: Icons.qr_code_scanner,
+        onSecondaryAction: () => context.push('/tara'),
       );
     }
 

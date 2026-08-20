@@ -7,6 +7,12 @@ import '../models/swipe_feedback.dart';
 
 // riverpod statei tutmaz swipe katdı ateşle ve unut bir olaydır, ekranın yeniden çizilmesini gerektirmez 
 
+class SwipeResult {
+  const SwipeResult({ required this.effect, this.sessionFilters = const {}});
+    final String effect;
+    final Map<String,dynamic> sessionFilters;
+}
+
 class SwipeFeedbackService {
   const SwipeFeedbackService(this._dio);
 
@@ -18,7 +24,7 @@ class SwipeFeedbackService {
   ///   - `reason` yalnizca action='begenmedim' ile gonderilebilir,
   ///   - `missingIngredientId` yalnizca reason='malzeme_yok' ile.
   /// Yanlis kombinasyon 422 doner.
-  Future<String> gonder({
+  Future<SwipeResult> gonder({
     required String recipeId,
     required FeedbackAction action,
     FeedbackReason? reason,
@@ -36,9 +42,14 @@ class SwipeFeedbackService {
       '/recipes/$recipeId/swipe',
       data: govde.toJson(),
     );
-    return response.data?['effect'] as String? ?? 'Kaydedildi.';
+    final veri = response.data ?? const <String, dynamic>{};
+    return SwipeResult(
+      effect: veri['effect'] as String? ?? 'Kaydedildi.',
+      sessionFilters:
+          (veri['session_filters'] as Map<String, dynamic>?) ?? const {},
+    );
   }
-}
+  }
 
 final swipeFeedbackServiceProvider = Provider<SwipeFeedbackService>(
   (ref) => SwipeFeedbackService(ref.read(dioProvider)),

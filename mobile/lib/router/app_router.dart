@@ -149,6 +149,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PlaceholderScreen(title: 'Barkod Tara'),
       ),
       GoRoute(
+        path: '/foto',
+        name: 'foto',
+        builder: (context, state) => const PlaceholderScreen(title: 'Fotoğraf Çek'),
+      ),
+      GoRoute(
         path: '/tarif/:id',
         name: 'tarif-detay',
         builder: (context, state) {

@@ -152,14 +152,22 @@ def test_esik_daha_da_daralabilir(session):
     assert session.filters["max_total_time"] == 15
 
 def test_cok_uzun_esigi_karttan_kisa_olur():
-    # 25 dk'lik karta 'cok uzun' -> bundan sonrasi 24 dk ve alti
-    assert cok_uzun_esigi(25) == 24
+    # 25 dk'lik karta 'cok uzun' -> %20 kisalir
+    assert cok_uzun_esigi(25) == 20
 
 
-def test_cok_uzun_esigi_tavani_asmaz():
-    # 90 dk'lik kart -> 89 degil, sprint tavani olan 30
-    assert cok_uzun_esigi(90) == COK_UZUN_ESIK_DK
+def test_cok_uzun_esigi_uzun_kartta_KADEMELI_daralir():
+    # 110 dk'lik kart 30'a CAKMAZ; kullanicinin sikayeti olmayan
+    # 45 dk'lik tarifler hayatta kalir.
+    assert cok_uzun_esigi(110) == 88
+    assert cok_uzun_esigi(88) == 70
 
+
+def test_cok_uzun_esigi_bir_noktada_yakinsar():
+    esik = 110
+    for _ in range(20):
+        esik = cok_uzun_esigi(esik)
+    assert esik == COK_UZUN_TABAN_DK
 
 def test_cok_uzun_esigi_tabanin_altina_inmez():
     # 12 dk'lik karta 'cok uzun' denirse deste kurumasin

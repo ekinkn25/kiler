@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 COK_UZUN_ESIK_DK = 30
 
 COK_UZUN_TABAN_DK = 15
+COK_UZUN_DARALMA = 0.8
 
 # 'Malzemem yok' elemesinin omru.
 MALZEME_YOK_GUN = 7
@@ -98,7 +99,7 @@ def cok_uzun_esigi(kart_suresi_dk: int) -> int:
     """
     if kart_suresi_dk <= 0:
         return COK_UZUN_ESIK_DK
-    return max(COK_UZUN_TABAN_DK, min(COK_UZUN_ESIK_DK, kart_suresi_dk - 1))
+    return max(COK_UZUN_TABAN_DK, int(kart_suresi_dk * COK_UZUN_DARALMA))
 
 
 # ==================================================================
