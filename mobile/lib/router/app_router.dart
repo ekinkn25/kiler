@@ -45,7 +45,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ref.onDispose(authListenable.dispose);
 
   return GoRouter(
-    initialLocation: '/dev/swipe',  //  '/splash'
+    initialLocation: '/splash',  //dev/swipe',
     refreshListenable: authListenable,
 
     redirect: (context, state) {

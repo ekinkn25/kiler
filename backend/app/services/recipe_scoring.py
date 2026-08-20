@@ -104,7 +104,7 @@ def build_context(
         ctx.allergens, len(ctx.taste), ctx.calorie_target,
     )
     if ctx.excluded_ingredients:
-        logger.info("Oturumda yok sayilan malzemeler: %", ctx.excluded_ingredients)
+        logger.info("Oturumda yok sayilan malzemeler: %s", ctx.excluded_ingredients)
     return ctx
 
 
