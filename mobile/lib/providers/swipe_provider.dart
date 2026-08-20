@@ -22,20 +22,20 @@ class SwipeFeedbackService {
   ///
   /// DIKKAT (backend SwipeRequest dogrulamasi):
   ///   - `reason` yalnizca action='begenmedim' ile gonderilebilir,
-  ///   - `missingIngredientId` yalnizca reason='malzeme_yok' ile.
+  ///   - `missingIngredientIds` yalnizca reason='malzeme_yok' ile.
   /// Yanlis kombinasyon 422 doner.
   Future<SwipeResult> gonder({
     required String recipeId,
     required FeedbackAction action,
     FeedbackReason? reason,
     int? sessionId,
-    int? missingIngredientId,
+    List<int> missingIngredientIds = const [],
   }) async {
     final govde = SwipeFeedback(
       action: action,
       reason: reason,
       sessionId: sessionId,
-      missingIngredientId: missingIngredientId,
+      missingIngredientIds: missingIngredientIds,
     );
 
     final response = await _dio.post<Map<String, dynamic>>(

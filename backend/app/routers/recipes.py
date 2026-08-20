@@ -73,7 +73,10 @@ async def swipe(
         action=data.action,
         reason=data.reason,
         session_id=data.session_id,
-        missing_ingredient_id=data.missing_ingredient_id,
+        missing_ingredient_ids=(
+            data.missing_ingredient_ids
+            or ([data.missing_ingredient_id] if data.missing_ingredient_id else [])
+        ),
         rating=data.rating,
         servings_cooked=data.servings_cooked,
         comment=data.comment,

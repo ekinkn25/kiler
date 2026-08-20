@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SwipeFeedback {
 
-@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson) FeedbackAction get action;@JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson) FeedbackReason? get reason;@JsonKey(name: 'session_id') int? get sessionId;@JsonKey(name: 'missing_ingredient_id') int? get missingIngredientId; int? get rating;@JsonKey(name: 'servings_cooked') double? get servingsCooked; String? get comment;
+@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson) FeedbackAction get action;@JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson) FeedbackReason? get reason;@JsonKey(name: 'session_id') int? get sessionId;@JsonKey(name: 'missing_ingredient_id') int? get missingIngredientId;@JsonKey(name: 'missing_ingredient_ids') List<int> get missingIngredientIds; int? get rating;@JsonKey(name: 'servings_cooked') double? get servingsCooked; String? get comment;
 /// Create a copy of SwipeFeedback
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SwipeFeedbackCopyWith<SwipeFeedback> get copyWith => _$SwipeFeedbackCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SwipeFeedback&&(identical(other.action, action) || other.action == action)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.missingIngredientId, missingIngredientId) || other.missingIngredientId == missingIngredientId)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.servingsCooked, servingsCooked) || other.servingsCooked == servingsCooked)&&(identical(other.comment, comment) || other.comment == comment));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SwipeFeedback&&(identical(other.action, action) || other.action == action)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.missingIngredientId, missingIngredientId) || other.missingIngredientId == missingIngredientId)&&const DeepCollectionEquality().equals(other.missingIngredientIds, missingIngredientIds)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.servingsCooked, servingsCooked) || other.servingsCooked == servingsCooked)&&(identical(other.comment, comment) || other.comment == comment));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,action,reason,sessionId,missingIngredientId,rating,servingsCooked,comment);
+int get hashCode => Object.hash(runtimeType,action,reason,sessionId,missingIngredientId,const DeepCollectionEquality().hash(missingIngredientIds),rating,servingsCooked,comment);
 
 @override
 String toString() {
-  return 'SwipeFeedback(action: $action, reason: $reason, sessionId: $sessionId, missingIngredientId: $missingIngredientId, rating: $rating, servingsCooked: $servingsCooked, comment: $comment)';
+  return 'SwipeFeedback(action: $action, reason: $reason, sessionId: $sessionId, missingIngredientId: $missingIngredientId, missingIngredientIds: $missingIngredientIds, rating: $rating, servingsCooked: $servingsCooked, comment: $comment)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $SwipeFeedbackCopyWith<$Res>  {
   factory $SwipeFeedbackCopyWith(SwipeFeedback value, $Res Function(SwipeFeedback) _then) = _$SwipeFeedbackCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson) FeedbackAction action,@JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson) FeedbackReason? reason,@JsonKey(name: 'session_id') int? sessionId,@JsonKey(name: 'missing_ingredient_id') int? missingIngredientId, int? rating,@JsonKey(name: 'servings_cooked') double? servingsCooked, String? comment
+@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson) FeedbackAction action,@JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson) FeedbackReason? reason,@JsonKey(name: 'session_id') int? sessionId,@JsonKey(name: 'missing_ingredient_id') int? missingIngredientId,@JsonKey(name: 'missing_ingredient_ids') List<int> missingIngredientIds, int? rating,@JsonKey(name: 'servings_cooked') double? servingsCooked, String? comment
 });
 
 
@@ -65,13 +65,14 @@ class _$SwipeFeedbackCopyWithImpl<$Res>
 
 /// Create a copy of SwipeFeedback
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? action = null,Object? reason = freezed,Object? sessionId = freezed,Object? missingIngredientId = freezed,Object? rating = freezed,Object? servingsCooked = freezed,Object? comment = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? action = null,Object? reason = freezed,Object? sessionId = freezed,Object? missingIngredientId = freezed,Object? missingIngredientIds = null,Object? rating = freezed,Object? servingsCooked = freezed,Object? comment = freezed,}) {
   return _then(_self.copyWith(
 action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
 as FeedbackAction,reason: freezed == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as FeedbackReason?,sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
 as int?,missingIngredientId: freezed == missingIngredientId ? _self.missingIngredientId : missingIngredientId // ignore: cast_nullable_to_non_nullable
-as int?,rating: freezed == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
+as int?,missingIngredientIds: null == missingIngredientIds ? _self.missingIngredientIds : missingIngredientIds // ignore: cast_nullable_to_non_nullable
+as List<int>,rating: freezed == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as int?,servingsCooked: freezed == servingsCooked ? _self.servingsCooked : servingsCooked // ignore: cast_nullable_to_non_nullable
 as double?,comment: freezed == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -159,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson)  FeedbackAction action, @JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson)  FeedbackReason? reason, @JsonKey(name: 'session_id')  int? sessionId, @JsonKey(name: 'missing_ingredient_id')  int? missingIngredientId,  int? rating, @JsonKey(name: 'servings_cooked')  double? servingsCooked,  String? comment)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson)  FeedbackAction action, @JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson)  FeedbackReason? reason, @JsonKey(name: 'session_id')  int? sessionId, @JsonKey(name: 'missing_ingredient_id')  int? missingIngredientId, @JsonKey(name: 'missing_ingredient_ids')  List<int> missingIngredientIds,  int? rating, @JsonKey(name: 'servings_cooked')  double? servingsCooked,  String? comment)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SwipeFeedback() when $default != null:
-return $default(_that.action,_that.reason,_that.sessionId,_that.missingIngredientId,_that.rating,_that.servingsCooked,_that.comment);case _:
+return $default(_that.action,_that.reason,_that.sessionId,_that.missingIngredientId,_that.missingIngredientIds,_that.rating,_that.servingsCooked,_that.comment);case _:
   return orElse();
 
 }
@@ -180,10 +181,10 @@ return $default(_that.action,_that.reason,_that.sessionId,_that.missingIngredien
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson)  FeedbackAction action, @JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson)  FeedbackReason? reason, @JsonKey(name: 'session_id')  int? sessionId, @JsonKey(name: 'missing_ingredient_id')  int? missingIngredientId,  int? rating, @JsonKey(name: 'servings_cooked')  double? servingsCooked,  String? comment)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson)  FeedbackAction action, @JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson)  FeedbackReason? reason, @JsonKey(name: 'session_id')  int? sessionId, @JsonKey(name: 'missing_ingredient_id')  int? missingIngredientId, @JsonKey(name: 'missing_ingredient_ids')  List<int> missingIngredientIds,  int? rating, @JsonKey(name: 'servings_cooked')  double? servingsCooked,  String? comment)  $default,) {final _that = this;
 switch (_that) {
 case _SwipeFeedback():
-return $default(_that.action,_that.reason,_that.sessionId,_that.missingIngredientId,_that.rating,_that.servingsCooked,_that.comment);case _:
+return $default(_that.action,_that.reason,_that.sessionId,_that.missingIngredientId,_that.missingIngredientIds,_that.rating,_that.servingsCooked,_that.comment);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +201,10 @@ return $default(_that.action,_that.reason,_that.sessionId,_that.missingIngredien
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson)  FeedbackAction action, @JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson)  FeedbackReason? reason, @JsonKey(name: 'session_id')  int? sessionId, @JsonKey(name: 'missing_ingredient_id')  int? missingIngredientId,  int? rating, @JsonKey(name: 'servings_cooked')  double? servingsCooked,  String? comment)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson)  FeedbackAction action, @JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson)  FeedbackReason? reason, @JsonKey(name: 'session_id')  int? sessionId, @JsonKey(name: 'missing_ingredient_id')  int? missingIngredientId, @JsonKey(name: 'missing_ingredient_ids')  List<int> missingIngredientIds,  int? rating, @JsonKey(name: 'servings_cooked')  double? servingsCooked,  String? comment)?  $default,) {final _that = this;
 switch (_that) {
 case _SwipeFeedback() when $default != null:
-return $default(_that.action,_that.reason,_that.sessionId,_that.missingIngredientId,_that.rating,_that.servingsCooked,_that.comment);case _:
+return $default(_that.action,_that.reason,_that.sessionId,_that.missingIngredientId,_that.missingIngredientIds,_that.rating,_that.servingsCooked,_that.comment);case _:
   return null;
 
 }
@@ -215,13 +216,20 @@ return $default(_that.action,_that.reason,_that.sessionId,_that.missingIngredien
 @JsonSerializable()
 
 class _SwipeFeedback implements SwipeFeedback {
-  const _SwipeFeedback({@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson) required this.action, @JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson) this.reason, @JsonKey(name: 'session_id') this.sessionId, @JsonKey(name: 'missing_ingredient_id') this.missingIngredientId, this.rating, @JsonKey(name: 'servings_cooked') this.servingsCooked, this.comment});
+  const _SwipeFeedback({@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson) required this.action, @JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson) this.reason, @JsonKey(name: 'session_id') this.sessionId, @JsonKey(name: 'missing_ingredient_id') this.missingIngredientId, @JsonKey(name: 'missing_ingredient_ids') final  List<int> missingIngredientIds = const [], this.rating, @JsonKey(name: 'servings_cooked') this.servingsCooked, this.comment}): _missingIngredientIds = missingIngredientIds;
   factory _SwipeFeedback.fromJson(Map<String, dynamic> json) => _$SwipeFeedbackFromJson(json);
 
 @override@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson) final  FeedbackAction action;
 @override@JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson) final  FeedbackReason? reason;
 @override@JsonKey(name: 'session_id') final  int? sessionId;
 @override@JsonKey(name: 'missing_ingredient_id') final  int? missingIngredientId;
+ final  List<int> _missingIngredientIds;
+@override@JsonKey(name: 'missing_ingredient_ids') List<int> get missingIngredientIds {
+  if (_missingIngredientIds is EqualUnmodifiableListView) return _missingIngredientIds;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_missingIngredientIds);
+}
+
 @override final  int? rating;
 @override@JsonKey(name: 'servings_cooked') final  double? servingsCooked;
 @override final  String? comment;
@@ -239,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SwipeFeedback&&(identical(other.action, action) || other.action == action)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.missingIngredientId, missingIngredientId) || other.missingIngredientId == missingIngredientId)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.servingsCooked, servingsCooked) || other.servingsCooked == servingsCooked)&&(identical(other.comment, comment) || other.comment == comment));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SwipeFeedback&&(identical(other.action, action) || other.action == action)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.missingIngredientId, missingIngredientId) || other.missingIngredientId == missingIngredientId)&&const DeepCollectionEquality().equals(other._missingIngredientIds, _missingIngredientIds)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.servingsCooked, servingsCooked) || other.servingsCooked == servingsCooked)&&(identical(other.comment, comment) || other.comment == comment));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,action,reason,sessionId,missingIngredientId,rating,servingsCooked,comment);
+int get hashCode => Object.hash(runtimeType,action,reason,sessionId,missingIngredientId,const DeepCollectionEquality().hash(_missingIngredientIds),rating,servingsCooked,comment);
 
 @override
 String toString() {
-  return 'SwipeFeedback(action: $action, reason: $reason, sessionId: $sessionId, missingIngredientId: $missingIngredientId, rating: $rating, servingsCooked: $servingsCooked, comment: $comment)';
+  return 'SwipeFeedback(action: $action, reason: $reason, sessionId: $sessionId, missingIngredientId: $missingIngredientId, missingIngredientIds: $missingIngredientIds, rating: $rating, servingsCooked: $servingsCooked, comment: $comment)';
 }
 
 
@@ -259,7 +267,7 @@ abstract mixin class _$SwipeFeedbackCopyWith<$Res> implements $SwipeFeedbackCopy
   factory _$SwipeFeedbackCopyWith(_SwipeFeedback value, $Res Function(_SwipeFeedback) _then) = __$SwipeFeedbackCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson) FeedbackAction action,@JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson) FeedbackReason? reason,@JsonKey(name: 'session_id') int? sessionId,@JsonKey(name: 'missing_ingredient_id') int? missingIngredientId, int? rating,@JsonKey(name: 'servings_cooked') double? servingsCooked, String? comment
+@JsonKey(fromJson: feedbackActionFromJson, toJson: feedbackActionToJson) FeedbackAction action,@JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson) FeedbackReason? reason,@JsonKey(name: 'session_id') int? sessionId,@JsonKey(name: 'missing_ingredient_id') int? missingIngredientId,@JsonKey(name: 'missing_ingredient_ids') List<int> missingIngredientIds, int? rating,@JsonKey(name: 'servings_cooked') double? servingsCooked, String? comment
 });
 
 
@@ -276,13 +284,14 @@ class __$SwipeFeedbackCopyWithImpl<$Res>
 
 /// Create a copy of SwipeFeedback
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? action = null,Object? reason = freezed,Object? sessionId = freezed,Object? missingIngredientId = freezed,Object? rating = freezed,Object? servingsCooked = freezed,Object? comment = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? action = null,Object? reason = freezed,Object? sessionId = freezed,Object? missingIngredientId = freezed,Object? missingIngredientIds = null,Object? rating = freezed,Object? servingsCooked = freezed,Object? comment = freezed,}) {
   return _then(_SwipeFeedback(
 action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
 as FeedbackAction,reason: freezed == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as FeedbackReason?,sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
 as int?,missingIngredientId: freezed == missingIngredientId ? _self.missingIngredientId : missingIngredientId // ignore: cast_nullable_to_non_nullable
-as int?,rating: freezed == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
+as int?,missingIngredientIds: null == missingIngredientIds ? _self._missingIngredientIds : missingIngredientIds // ignore: cast_nullable_to_non_nullable
+as List<int>,rating: freezed == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as int?,servingsCooked: freezed == servingsCooked ? _self.servingsCooked : servingsCooked // ignore: cast_nullable_to_non_nullable
 as double?,comment: freezed == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
 as String?,

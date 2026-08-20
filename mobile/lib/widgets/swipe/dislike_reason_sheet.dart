@@ -4,14 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/enums.dart';
 import '../../models/recipe_card.dart';
 import '../../providers/swipe_provider.dart';
+import '../../models/ingredient_lite.dart';
+import '../app_button.dart';
 
 class DislikeResult {
   const DislikeResult({
     required this.reason, 
-    this.missingIngredientId
+    this.missingIngredients = const [],
   });
   final FeedbackReason reason;
-  final int? missingIngredientId;
+  final List<IngredientLite> missingIngredients;
 }
 
 //sola kaydıırnca bulanık tam ekran ve sorular
@@ -43,6 +45,7 @@ class _SebepGovdesi extends ConsumerStatefulWidget {
 
 class _SebepGovdesiState extends ConsumerState<_SebepGovdesi> {
   bool _malzemeAdimi = false;
+  final Set<int> _secilenKimlikler = <int>{};
   void _kapat(DislikeResult? sonuc) => Navigator.of(context).pop(sonuc);
   void _malzemeAdiminiAc(){
     if (widget.card.missingIngredients.isEmpty){
@@ -131,7 +134,8 @@ class _SebepGovdesiState extends ConsumerState<_SebepGovdesi> {
   }
 
   // ADIM 2: hangi malzemen yok ? 
-  Widget _malzemeSecimi(){
+    // ADIM 2: hangi malzemelerin yok ? (COKLU secim)
+  Widget _malzemeSecimi() {
     final TextTheme yazi = Theme.of(context).textTheme;
     final String anahtar = widget.card.missingIngredients.join(',');
     final malzemeler = ref.watch(missingIngredientsProvider(anahtar));
@@ -142,9 +146,15 @@ class _SebepGovdesiState extends ConsumerState<_SebepGovdesi> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Hangi malzemen yok?',
+          'Hangi malzemelerin yok?',
           textAlign: TextAlign.center,
           style: yazi.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Birden fazla seçebilirsin, alışveriş listene eklerim.',
+          textAlign: TextAlign.center,
+          style: yazi.bodySmall,
         ),
         const SizedBox(height: 20),
         malzemeler.when(
@@ -152,33 +162,63 @@ class _SebepGovdesiState extends ConsumerState<_SebepGovdesi> {
             padding: EdgeInsets.all(24),
             child: Center(child: CircularProgressIndicator()),
           ),
+          // Sozluk cekilemezse kullaniciyi tikamayiz: sebep yine yazilir,
+          // sadece hangi malzeme oldugu bilinmez.
           error: (error, _) => Text(
             'Malzeme listesi alınamadı, sebebi yine de kaydedeceğim.',
             textAlign: TextAlign.center,
             style: yazi.bodySmall,
           ),
-          data: (liste) => Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            alignment: WrapAlignment.center,
+          data: (liste) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              for (final malzeme in liste)
-                ActionChip(
-                  label: Text(malzeme.displayName),
-                  onPressed: () => _kapat(
-                    DislikeResult(
-                      reason: FeedbackReason.malzemeYok,
-                      missingIngredientId: malzeme.id,
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                alignment: WrapAlignment.center,
+                children: [
+                  for (final malzeme in liste)
+                    FilterChip(
+                      label: Text(malzeme.displayName),
+                      selected: _secilenKimlikler.contains(malzeme.id),
+                      onSelected: (secildi) => setState(() {
+                        if (secildi) {
+                          _secilenKimlikler.add(malzeme.id);
+                        } else {
+                          _secilenKimlikler.remove(malzeme.id);
+                        }
+                      }),
                     ),
-                  ),
-                ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              AppButton(
+                label: _secilenKimlikler.isEmpty
+                    ? 'Malzeme seç'
+                    : '${_secilenKimlikler.length} malzemeyi listeme ekle',
+                icon: Icons.add_shopping_cart,
+                // Hicbir sey secilmemisken buton PASIF: bos gonderim
+                // backend'de 422 doner (items min_length=1).
+                onPressed: _secilenKimlikler.isEmpty
+                    ? null
+                    : () => _kapat(
+                          DislikeResult(
+                            reason: FeedbackReason.malzemeYok,
+                            missingIngredients: liste
+                                .where((m) => _secilenKimlikler.contains(m.id))
+                                .toList(),
+                          ),
+                        ),
+              ),
             ],
           ),
         ),
-        const SizedBox(height: 16,),
+        const SizedBox(height: 8),
         TextButton(
-          onPressed: () => _kapat(const DislikeResult(reason: FeedbackReason.malzemeYok)),
-          child: const Text('Birden fazla / emin değilim'),
+          // Sebep yazilir ama malzeme secilmez: liste de olusmaz.
+          onPressed: () =>
+              _kapat(const DislikeResult(reason: FeedbackReason.malzemeYok)),
+          child: const Text('Seçmeden geç'),
         ),
         TextButton(
           onPressed: () => setState(() => _malzemeAdimi = false),

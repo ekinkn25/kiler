@@ -14,6 +14,8 @@ import '../../widgets/loading_skeleton.dart';
 import '../../widgets/swipe/dislike_reason_sheet.dart';
 import '../../widgets/swipe/swipe_deck.dart';
 import 'package:go_router/go_router.dart';
+import '../../models/ingredient_lite.dart';
+import '../../providers/shopping_provider.dart';
 
 /// KESFET sekmesi: 'Bugun ne yesen?' + swipe destesi.
 ///
@@ -94,10 +96,13 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     });
   }
 
-    Future<void> _solaKaydirildi(RecipeCard kart, int gecerliIndex) async {
+  Future<void> _solaKaydirildi(RecipeCard kart, int gecerliIndex) async {
     // Kart ZATEN ucup gitti; soru ondan SONRA soruluyor.
     final sonuc = await showDislikeReasonDialog(context, card: kart);
     if (!mounted) return;
+
+    final List<IngredientLite> eksikler =
+        sonuc?.missingIngredients ?? const <IngredientLite>[];
 
     // sonuc == null -> kullanici hicbir seye dokunmadi.
     // KABUL KRITERI: bu durumda da SEBEPSIZ 'begenmedim' yazilir.
@@ -105,19 +110,41 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
       kart: kart,
       action: FeedbackAction.begenmedim,
       reason: sonuc?.reason,
-      missingIngredientId: sonuc?.missingIngredientId,
+      missingIngredientIds: [for (final malzeme in eksikler) malzeme.id],
     );
     if (!mounted || yanit == null) return;
 
     // Oturum filtresi degistiyse ELDEKI kartlari yerel olarak suz.
-    // Eskiden burada yenile() cagriliyordu; backend deste dondugu anda
-    // butun kartlari 'gordu' isaretledigi icin yeniden istemek,
-    // kullanicinin hic gormedigi kartlari kalici olarak cope atiyordu.
     if (yanit.sessionFilters.isNotEmpty) {
       ref.read(swipeDeckProvider.notifier).filtreleriUygula(
             yanit.sessionFilters,
             gecerliIndex: gecerliIndex,
           );
+    }
+
+    // Alisveris listesine yazma, swipe kaydindan SONRA ve AYRI:
+    // oncelik ogrenme sinyalinde. Liste yazimi basarisiz olsa bile geri
+    // bildirim ve oturum filtresi kaybolmamali.
+    if (eksikler.isNotEmpty) {
+      unawaited(_alisverisListesineEkle(kart, eksikler));
+    }
+  }
+
+  Future<void> _alisverisListesineEkle(
+    RecipeCard kart,
+    List<IngredientLite> malzemeler,
+  ) async {
+    try {
+      final adet = await ref.read(shoppingServiceProvider).tariftenEkle(
+            recipeId: kart.id,
+            ingredientIds: [for (final malzeme in malzemeler) malzeme.id],
+          );
+      if (!mounted || adet == 0) return;
+      final adlar = malzemeler.map((m) => m.displayName).join(', ');
+      _bilgi('$adlar alışveriş listene eklendi.');
+    } catch (hata) {
+      if (!mounted) return;
+      _bilgi('Alışveriş listesine eklenemedi: ${friendlyErrorMessage(hata)}');
     }
   }
 
@@ -125,11 +152,11 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   // Geri bildirim
   // ---------------------------------------------------------------
 
-    Future<SwipeResult?> _gonder({
+  Future<SwipeResult?> _gonder({
     required RecipeCard kart,
     required FeedbackAction action,
     FeedbackReason? reason,
-    int? missingIngredientId,
+    List<int> missingIngredientIds = const [],
   }) async {
     final servis = ref.read(swipeFeedbackServiceProvider);
     final oturum = ref.read(swipeDeckProvider.notifier).sessionId;
@@ -140,7 +167,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
         action: action,
         reason: reason,
         sessionId: oturum,
-        missingIngredientId: missingIngredientId,
+        missingIngredientIds: missingIngredientIds,
       );
       // Ekran kapandiysa SnackBar gosterilemez ama yanit yine de
       // dondurulur: cagiran taraf filtreleri uygulamak isteyebilir.
