@@ -90,7 +90,7 @@ FeedbackAction feedbackActionFromJson(String value) => switch (value) {
   'begenmedim' => FeedbackAction.begenmedim,
   'yapacagim' => FeedbackAction.yapacagim,
   'kaydetti' => FeedbackAction.kaydetti,
-  'yapti' => FeedbackAction.yapti,
+  'yaptim' => FeedbackAction.yapti,
   _ => throw ArgumentError('Bilinmeyen feedback action: $value'),
 };
 
@@ -100,7 +100,7 @@ String feedbackActionToJson(FeedbackAction value) => switch (value) {
   FeedbackAction.begenmedim => 'begenmedim',
   FeedbackAction.yapacagim => 'yapacagim',
   FeedbackAction.kaydetti => 'kaydetti',
-  FeedbackAction.yapti => 'yapti',
+  FeedbackAction.yapti => 'yaptim',
 };
 
 /// 'begenmedim' eyleminin sebebi. Diger eylemlerde null.

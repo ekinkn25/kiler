@@ -22,7 +22,7 @@ class RecipeSwipeCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          _kartGorseli(),
+          _kartGorseli(context),
           const DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -89,15 +89,18 @@ class RecipeSwipeCard extends StatelessWidget {
     );
   }
 
-  Widget _kartGorseli() {
+  Widget _kartGorseli(BuildContext context) {
     if (card.imageUrl == null) {
       return Container(color: const Color(0xFFE0E0E0));
     }
+
+    final MediaQueryData ekran = MediaQuery.of(context);
+    final int hedefGenislik = (ekran.size.width * ekran.devicePixelRatio).round().clamp(320, 1080);
     return CachedNetworkImage(
       imageUrl: card.imageUrl!,
       fit: BoxFit.cover,
       // 60fps hedefi: orijinal cozunurlukte decode etmek jank'e sebep olur.
-      memCacheWidth: 800,
+      memCacheWidth: hedefGenislik,
       placeholder: (context, url) => Container(color: const Color(0xFFE0E0E0)),
       errorWidget: (context, url, error) => Container(
         color: const Color(0xFFE0E0E0),

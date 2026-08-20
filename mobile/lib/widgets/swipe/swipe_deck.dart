@@ -3,6 +3,7 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
 import '../../models/recipe_card.dart';
 import 'recipe_swipe_card.dart';
+import 'swipe_overlay_label.dart';
 
 /// flutter_card_swiper sarmalayicisi. Deste mantigina (session, POST
 /// /swipe, geri bildirim etiketleri) KARISMAZ - W3-T07'nin isi. Bu
@@ -35,10 +36,27 @@ class SwipeDeck extends StatelessWidget {
       scale: 0.92, // arkadaki kart olceklensin
       backCardOffset: const Offset(0, 24),
       isLoop: false,
+      allowedSwipeDirection: const AllowedSwipeDirection.only(
+        left: true,
+        right: true,
+        up: true,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
-      cardBuilder: (context, index, percentX, percentY) => RecipeSwipeCard(card: cards[index]),
       onSwipe: onSwipe ?? (previousIndex, currentIndex, direction) async => true,
       onEnd: onEnd,
+      cardBuilder: (context, index, percentX, percentY) {
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            RepaintBoundary(child: RecipeSwipeCard(card: cards[index])),
+            // IgnorePointer SART: etiket kartin ustunde durur ama dokunusu
+            // yutarsa surukleme jesti ortasinda kesilir.
+            IgnorePointer(
+              child: SwipeOverlayLabel(percentX: percentX, percentY: percentY),
+            ),
+          ],
+        );
+      },
     );
   }
 }

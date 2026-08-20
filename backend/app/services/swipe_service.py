@@ -16,11 +16,12 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 from app.core.exceptions import NotFoundError, PermissionDeniedError
 from app.db.mongo_schema import RECIPE_COLLECTION
-from app.models import User
-from app.models.enums import FeedbackAction, FeedbackReason
+from app.models import User, Ingredient, PantryItem
+from app.models.enums import FeedbackAction, FeedbackReason, Availability
 from app.models.recipe import (
     RecipeFeedback, SwipeSession,
     ids_already_planned, ids_missing_ingredient_recent,
@@ -34,8 +35,70 @@ logger = logging.getLogger(__name__)
 # 'Cok uzun' denince oturum sure esiginin dusecegi deger (dakika).
 COK_UZUN_ESIK_DK = 30
 
+COK_UZUN_TABAN_DK = 15
+
 # 'Malzemem yok' elemesinin omru.
 MALZEME_YOK_GUN = 7
+
+def _malzemeyi_yok_isaretle(
+    db: Session, user: User, ingredient_id: int, oturum: SwipeSession | None
+) -> str | None:
+    """'Malzemem yok' bilgisini IKI yere birden yazar.
+
+    (1) OTURUM : filters['missing_ingredients'] listesine ekler. Deste
+        sorgusu bu malzemeyi ZORUNLU olarak iceren tarifleri o oturum
+        boyunca eler - kullanicinin 'artik limonlu gelmesin' beklentisi budur.
+
+    (2) KILER  : kayit varsa 'bitti'ye ceker. Kullanici 'yok' diyorsa
+        kilerdeki 'var' inanci YANLIS demektir; duzeltilmezse ayni malzemeli
+        HER tarif haksiz yere kiler puani almaya devam eder.
+
+    KALICI eleme BILEREK yapilmiyor: 'bugun limonum yok', yarin da
+    olmayacagi anlamina gelmez. Yeni oturum = temiz sayfa.
+
+    Commit ETMEZ; cagiran record_swipe'in islemine katilir.
+    Doner: kullaniciya gosterilecek malzeme adi, bulunamazsa None.
+    """
+    malzeme = db.get(Ingredient, ingredient_id)
+    if malzeme is None:
+        # Istemci uydurma bir kimlik gonderdi. Geri bildirimin tamamini
+        # dusurmek yerine yalnizca bu zenginlestirmeyi atliyoruz.
+        logger.warning("Bilinmeyen malzeme kimligi: %s", ingredient_id)
+        return None
+
+    kiler_kaydi = db.scalar(
+        select(PantryItem).where(
+            PantryItem.user_id == user.id,
+            PantryItem.ingredient_id == ingredient_id,
+        )
+    )
+    if kiler_kaydi is not None:
+        kiler_kaydi.availability = Availability.BITTI
+        # Guven suresi de anlamsizlasti; birakirsak temizlik gorevi (W4-T05)
+        # bunu 'bilinmiyor'a cevirip malzemeyi kismi puana geri sokabilir.
+        kiler_kaydi.confidence_expires_at = None
+
+    if oturum is not None:
+        mevcut = list(oturum.filters.get("missing_ingredients", []))
+        if malzeme.canonical_name not in mevcut:
+            mevcut.append(malzeme.canonical_name)
+            oturum.set_filter("missing_ingredients", mevcut)
+
+    return malzeme.display_name
+
+def cok_uzun_esigi(kart_suresi_dk: int) -> int:
+    """'Cok uzun' denen kartin suresine gore yeni oturum tavani.
+
+    Uc kurali birden karsilar:
+      - sprint plani  : tavan 30 dk'yi ASLA gecmez,
+      - kullanici     : bundan sonraki kartlar BU karttan KISA olmali,
+      - guvenlik      : 15 dk'nin altina inilmez.
+
+    Sure bilinmiyorsa (0) sprint planinin sabit kuralina dusulur.
+    """
+    if kart_suresi_dk <= 0:
+        return COK_UZUN_ESIK_DK
+    return max(COK_UZUN_TABAN_DK, min(COK_UZUN_ESIK_DK, kart_suresi_dk - 1))
 
 
 # ==================================================================
@@ -135,8 +198,9 @@ async def build_deck(
 
     # (c) Oturumda 'cok uzun' denmisse esik burada devreye girer.
     sure_tavani = oturum.filters.get("max_total_time")
+    olmayan_malzemeler = tuple(oturum.filters.get("missing_ingredients", []))
 
-    ctx = build_context(db, user, max_total_minutes=sure_tavani)
+    ctx = build_context(db, user, max_total_minutes=sure_tavani, excluded_ingredients=olmayan_malzemeler,)
     kartlar = await score_recipes(
         mongo_db, ctx, limit=limit, exclude_ids=elenecek
     )
@@ -191,7 +255,11 @@ async def record_swipe(
     # Tek indeksli sorgu; maliyeti ihmal edilebilir.
     varmi = await mongo_db[RECIPE_COLLECTION].find_one(
         {"_id": nesne_kimlik},
-        projection={"_id": 1, "cuisine": 1, "difficulty": 1, "diet_tags": 1, "ingredients": 1},
+        projection={
+            "_id": 1, "cuisine": 1, "difficulty": 1, "diet_tags": 1, "ingredients": 1,
+            # W3-T07: 'cok uzun' esigi kartin KENDI suresine gore daraliyor.
+            "prep_time": 1, "cook_time": 1,
+        },
     )
     if varmi is None:
         raise NotFoundError("Tarif bulunamadi.")
@@ -226,13 +294,20 @@ async def record_swipe(
     etki = "kaydedildi"
     if reason == FeedbackReason.COK_UZUN and oturum is not None:
         onceki = oturum.filters.get("max_total_time")
-        oturum.tighten_time_limit(COK_UZUN_ESIK_DK)
-        etki = (f"Oturum sure siniri {oturum.filters['max_total_time']} dk'ya "
-                f"dusuruldu (onceki: {onceki or 'yok'}).")
+        kart_suresi = (varmi.get("prep_time") or 0) + (varmi.get("cook_time") or 0)
+        # tighten_time_limit min() kullanir: esik yalnizca DARALIR, gevsemez.
+        oturum.tighten_time_limit(cok_uzun_esigi(kart_suresi))
+        etki = (f"Bundan sonra {oturum.filters['max_total_time']} dk'dan uzun "
+                f"tarif gosterilmeyecek (onceki sinir: {onceki or 'yok'}).")
     elif reason == FeedbackReason.SEVMEDIM:
         etki = "Bu tarif bir daha hic onerilmeyecek."
     elif reason == FeedbackReason.MALZEME_YOK:
         etki = f"Bu tarif {MALZEME_YOK_GUN} gun boyunca onerilmeyecek."
+        if missing_ingredient_id is not None:
+            ad = _malzemeyi_yok_isaretle(db, user, missing_ingredient_id, oturum)
+            if ad:
+                etki = (f"'{ad}' yok sayıldı; bu oturumda {ad.lower()} gerektiren "
+                        f"tarif gösterilmeyecek.")
 
     db.commit()
     db.refresh(kayit)

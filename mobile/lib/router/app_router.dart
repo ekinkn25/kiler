@@ -45,7 +45,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ref.onDispose(authListenable.dispose);
 
   return GoRouter(
-    initialLocation: '/splash',
+    initialLocation: '/dev/swipe',  //  '/splash'
     refreshListenable: authListenable,
 
     redirect: (context, state) {
@@ -53,7 +53,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final hedef = state.matchedLocation;
       final splashaGidiyor = hedef == '/splash';
       final authEkraniMi = hedef == '/giris' || hedef == '/kayit';
-      final devRotasiMi = hedef == '/dev' || hedef == '/dev/widgets';
+      // final devRotasiMi = hedef == '/dev' || hedef == '/dev/widgets';
+      final devRotasiMi = hedef.startsWith('/dev');
       if (devRotasiMi) return null;
 
       final ilkAcilisKontrolEdiliyor =
@@ -178,11 +179,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/dev',
         name: 'dev-home',
         builder: (context, state) => const DevHomeScreen(),
-      ),
-      GoRoute(
-        path: '/dev/widgets',
-        name: 'widget-showcase',
-        builder: (context, state) => const WidgetShowcaseScreen(),
       ),
       GoRoute(
         path: '/dev/widgets',
