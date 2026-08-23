@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/network/dio_client.dart';
 import '../models/lookup.dart';
 import '../models/recipe_card.dart';
-import 'auth_provider.dart';
 
 final dietTagsProvider = FutureProvider<List<DietTag>>((ref) async {
   final dio = ref.read(dioProvider);
@@ -63,8 +62,6 @@ class OnboardingNotifier extends AsyncNotifier<double?> {
         'allergen_codes': allergenCodes,
         'liked_recipe_ids': likedRecipeIds,
       });
-      await ref.read(authProvider.notifier).retry(); // /auth/me'yi tazeler
-
       final profile = response.data!['profile'] as Map<String, dynamic>;
       return (profile['daily_calorie_target'] as num).toDouble();
     });

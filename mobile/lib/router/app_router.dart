@@ -66,14 +66,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return splashaGidiyor ? null : '/splash';
       }
 
-      final girisYapilmis = authState.valueOrNull != null;
+      final kullanici = authState.valueOrNull;
+      final girisYapilmis = kullanici != null;
 
       if (!girisYapilmis) {
         return authEkraniMi ? null : '/giris';
       }
 
-      if (splashaGidiyor || authEkraniMi) {
-        return '/sohbet';
+      final anketTamamlanmamis = !kullanici.onboardingCompleted;
+      if(anketTamamlanmamis) {
+        return onboardinEkraniMi ? null : '/onboarding';
+      }
+
+      if (splashaGidiyor || authEkraniMi || onboardinEkraniMi) {
+        return '/kesfet';
       }
 
       return null;

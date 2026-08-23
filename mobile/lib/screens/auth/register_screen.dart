@@ -55,7 +55,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<AppUser?>>(authProvider, (onceki, sonraki) {
       if (sonraki.valueOrNull != null) {
-        context.go('/sohbet');
+        context.go('/kesfet');
       }
     });
     final authState = ref.watch(authProvider);

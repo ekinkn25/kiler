@@ -11,6 +11,7 @@ import 'widgets/onboarding_step1_profil.dart';
 import 'widgets/onboarding_step2_hedef.dart';
 import 'widgets/onboarding_step3_diyet.dart';
 import 'widgets/onboarding_step4_tarifler.dart';
+import '../../providers/auth_provider.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -72,8 +73,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
     final hedefKalori = durum.valueOrNull;
     if(hedefKalori != null) await _hedefKaloriGoster(hedefKalori);
+
     if (!mounted) return;
-    context.go('/sohbet');
+    await ref.read(authProvider.notifier).retry();
+
+    if (!mounted) return;
+    context.go('/kesfet');
   }
 
   Future<void> _hedefKaloriGoster(double hedefKalori) async {
