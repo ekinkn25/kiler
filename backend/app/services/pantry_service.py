@@ -12,7 +12,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models import Ingredient, PantryEvent, PantryItem, User
-from app.models.enums import PantryEventType, PantrySource, UnitType
+from app.core.exceptions import NotFoundError
+from app.models.enums import Availability, PantryEventType, PantrySource, UnitType
 
 logger = logging.getLogger(__name__)
 
@@ -92,3 +93,65 @@ def confirm_detected_ingredients(
         user.id, len(onaylanan), len(bilinmeyen),
     )
     return ConfirmResult(confirmed=onaylanan, skipped_unknown=bilinmeyen)
+
+
+# ==================================================================
+# Okuma ve hizli durum degistirme (W3-T18)
+# ==================================================================
+def list_items(
+    db: Session, user: User, *, include_finished: bool = False
+) -> list[PantryItem]:
+    """Kiler ekraninin listesi.
+
+    'bitti' kayitlari VARSAYILAN OLARAK gelmez: kullanici bittigini
+    soylemis bir urunu listede gormek istemez. Kayit silinmiyor cunku
+    PantryEvent gecmisi ve tuketim hizi analizi ona bagli.
+    """
+    sorgu = select(PantryItem).where(PantryItem.user_id == user.id)
+    if not include_finished:
+        sorgu = sorgu.where(PantryItem.availability != Availability.BITTI)
+    return list(db.scalars(sorgu.order_by(PantryItem.updated_at.desc())))
+
+
+def set_availability(
+    db: Session, user: User, item_id: int, *, still_have: bool
+) -> PantryItem:
+    """[Var] / [Bitti] hizli aksiyonu.
+
+    still_have=True  -> 7 gunluk guven suresi BUGUNDEN yeniden baslar
+    still_have=False -> kayit 'bitti' olur, listeden duser
+
+    Her iki durumda da PantryEvent yazilir: kiler gecmisi append-only.
+    """
+    kayit = db.get(PantryItem, item_id)
+    # 404 degil 403 ayrimi burada gereksiz: baskasinin kaydinin VAR
+    # oldugunu bile sizdirmiyoruz.
+    if kayit is None or kayit.user_id != user.id:
+        raise NotFoundError("Kiler kaydi bulunamadi.")
+
+    if still_have:
+        kayit.confirm(kayit.source)
+        olay = PantryEventType.DUZELTME
+        not_metni = "Kullanici 'hala var' dedi, guven suresi yenilendi."
+    else:
+        kayit.mark_finished()
+        olay = PantryEventType.TUKETILDI_MANUEL
+        not_metni = "Kullanici 'bitti' dedi."
+
+    db.add(PantryEvent(
+        user_id=user.id,
+        ingredient_id=kayit.ingredient_id,
+        pantry_item_id=kayit.id,
+        event_type=olay,
+        quantity_base_delta=0.0,
+        unit_type=UnitType.MASS,
+        event_note=not_metni,
+    ))
+
+    db.commit()
+    db.refresh(kayit)
+    logger.info(
+        "Kiler durumu | kullanici=%s kayit=%s -> %s",
+        user.id, kayit.id, kayit.availability.value,
+    )
+    return kayit

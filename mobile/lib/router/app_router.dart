@@ -16,6 +16,7 @@ import '../screens/discover/discover_screen.dart';
 import '../screens/dev/dev_swipe_preview_screen.dart';
 import '../screens/chat/chat_screen.dart';
 import '../screens/recipes/recipe_detail_screen.dart';
+import '../screens/calories/calorie_screen.dart';
 
 
 //uygulamanın tüm yönlendirme tablosu burada 
@@ -125,7 +126,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/kalori',
                 name: 'kalori-tab',
-                builder: (context, state) => const PlaceholderScreen(title: 'Kalori'),
+                builder: (context, state) => const CalorieScreen(),
               ),
             ],
           ),

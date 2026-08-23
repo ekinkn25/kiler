@@ -98,3 +98,75 @@ def test_birden_fazla_malzeme_tek_istekte(db, user, malzemeler):
     )
     assert len(sonuc.confirmed) == 2
     assert db.query(PantryItem).filter_by(user_id=user.id).count() == 2
+
+# ---------------------------------------------------------------- W3-T18
+# NOT: `malzemeler` fixture'i yalnizca Ingredient satirlari acar. Kiler
+# kaydi olusturmak icin once confirm_detected_ingredients cagrilmali.
+def test_bitti_kayitlari_varsayilan_olarak_listelenmez(db, user, malzemeler):
+    from app.services.pantry_service import list_items, set_availability
+
+    confirm_detected_ingredients(db, user, ["domates", "sogan"], PantrySource.FOTO)
+    kayitlar = list_items(db, user)
+    assert len(kayitlar) == 2
+
+    hedef = kayitlar[0]
+    set_availability(db, user, hedef.id, still_have=False)
+
+    kalanlar = list_items(db, user)
+    assert len(kalanlar) == 1
+    assert all(k.id != hedef.id for k in kalanlar)
+    # Kayit SILINMIYOR: PantryEvent gecmisi ve tuketim analizi ona bagli.
+    assert any(
+        k.id == hedef.id for k in list_items(db, user, include_finished=True)
+    )
+    assert hedef.availability is Availability.BITTI
+
+
+def test_var_denince_guven_suresi_yenilenir(db, user, malzemeler):
+    from app.services.pantry_service import list_items, set_availability
+
+    confirm_detected_ingredients(db, user, ["domates"], PantrySource.FOTO)
+    kayit = list_items(db, user)[0]
+
+    # Suresi dolmus bir kayit gibi davran: 'Emin degiliz' bolumunde olurdu.
+    kayit.confidence_expires_at = utcnow() - timedelta(days=1)
+    kayit.availability = Availability.BILINMIYOR
+    db.commit()
+    assert kayit.effective_availability is Availability.BILINMIYOR
+
+    yeni = set_availability(db, user, kayit.id, still_have=True)
+
+    assert yeni.availability is Availability.VAR
+    assert yeni.effective_availability is Availability.VAR
+    kalan = yeni.confidence_expires_at - utcnow()
+    beklenen = timedelta(days=settings.PANTRY_CONFIDENCE_DAYS)
+    assert abs(kalan - beklenen) < timedelta(seconds=5)
+
+
+def test_bitti_isaretleme_olay_gunlugune_yazilir(db, user, malzemeler):
+    from app.services.pantry_service import list_items, set_availability
+
+    confirm_detected_ingredients(db, user, ["domates"], PantrySource.FOTO)
+    kayit = list_items(db, user)[0]
+    set_availability(db, user, kayit.id, still_have=False)
+
+    olaylar = db.query(PantryEvent).filter_by(user_id=user.id).all()
+    assert any(
+        o.event_type is PantryEventType.TUKETILDI_MANUEL for o in olaylar
+    )
+
+
+def test_baskasinin_kaydi_degistirilemez(db, user, malzemeler):
+    from app.core.exceptions import NotFoundError
+    from app.services.pantry_service import list_items, set_availability
+
+    confirm_detected_ingredients(db, user, ["domates"], PantrySource.FOTO)
+    kayit = list_items(db, user)[0]
+
+    baskasi = User(email="baska_kiler@example.com", hashed_password="x")
+    db.add(baskasi)
+    db.commit()
+
+    # 403 degil 404: baskasinin kaydinin VAR oldugunu bile sizdirmiyoruz.
+    with pytest.raises(NotFoundError):
+        set_availability(db, baskasi, kayit.id, still_have=False)

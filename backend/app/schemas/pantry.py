@@ -46,15 +46,25 @@ class PantryItemCreate(AppBaseModel):
 
 
 class PantryItemRead(AppBaseModel):
+    """Kiler ekraninin (W3-T18) tek kaydi.
+
+    DIKKAT 1: `availability` ORM'deki ham kolon DEGIL,
+    PantryItem.effective_availability degeridir - guven suresi dolmus
+    bir 'var' kaydi burada 'bilinmiyor' olarak doner. Bu yuzden bu sema
+    model_validate ile DOGRUDAN uretilmemeli, alanlar acikca verilmeli.
+
+    DIKKAT 2: expiry_date / is_active / is_low / display_quantity alanlari
+    KALDIRILDI. Bunlar W2-T01 oncesi 'envanter' tasarimindan kalmaydi;
+    PantryItem modelinde karsiliklari YOK ve semada birakilmalari her
+    yaniti 500'e dusururdu.
+    """
+
     id: int
     ingredient: IngredientRead
     product: ProductRead | None = None
-    # custom_name: str | None = None
     availability: Availability = Field(
         description="Guven suresi dikkate alinmis GERCEK durum"
     )
-
-    # min_threshold_base: float
     source: PantrySource
     confirmed_at: UtcDatetime | None = None
     confidence_expires_at: UtcDatetime | None = None
@@ -64,14 +74,8 @@ class PantryItemRead(AppBaseModel):
     detected_confidence: float | None = Field(default=None, ge=0, le=1)
     quantity_base: float | None = None
     display_unit: UnitCode | None = None
-
-    expiry_date: date | None = None
-    is_active: bool
     created_at: UtcDatetime
     updated_at: UtcDatetime
-
-    is_low: bool = Field(description="quantity_base <= min_threshold_base")
-    display_quantity: float = Field(description="display_unit cinsinden gosterim miktari")
 
 
 class PantryScanRequest(AppBaseModel):

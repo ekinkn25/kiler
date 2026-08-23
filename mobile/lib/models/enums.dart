@@ -11,7 +11,7 @@ MealType mealTypeFromJson(String value) => switch(value){
 };
 
 String mealTypeToJson(MealType value) => switch (value){
-  MealType.kahvalti => 'kahvaltı',
+  MealType.kahvalti => 'kahvalti',
   MealType.ogle => 'ogle',
   MealType.aksam => 'aksam',
   MealType.atistirma => 'atistirma',
