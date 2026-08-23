@@ -5,15 +5,18 @@ bu dosya yalnizca /confirm-detected'i icerir.
 """
 import logging
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Query
 
 from app.services import barcode_service
 from app.core.deps import ActiveUser, DbSession
 from app.schemas import (
     ErrorResponse, IngredientRead, PantryConfirmDetectedRequest,
-    PantryConfirmDetectedResponse, PantryConfirmScannedRequest, PantryScanRequest,
-    ProductCreate, ProductRead, ProductScanResponse, ScannedConfirmResponse,
-    )
+    PantryConfirmDetectedResponse, PantryConfirmScannedRequest, PantryItemConfirm,
+    PantryItemRead, PantryScanRequest, ProductCreate, ProductRead,
+    ProductScanResponse, ScannedConfirmResponse,
+)
+from app.models import PantryItem
+from app.services import pantry_service
 from app.services.pantry_service import confirm_detected_ingredients
 
 logger = logging.getLogger(__name__)
@@ -110,3 +113,76 @@ def confirm_scanned(
         db, current_user, data.product_id, data.ingredient_id,
     )
     return ScannedConfirmResponse(**sonuc)
+
+
+# ==================================================================
+# Kiler okuma ve hizli durum degistirme (W3-T18)
+# ==================================================================
+def _to_read(kayit: PantryItem) -> PantryItemRead:
+    """ORM kaydini yanit semasina cevirir.
+
+    model_validate KULLANILMIYOR: o, ham `availability` kolonunu okur.
+    Kullaniciya gosterilmesi gereken deger `effective_availability` -
+    guven suresi dolmus 'var' kaydi 'bilinmiyor' olarak gorunmeli.
+    """
+    return PantryItemRead(
+        id=kayit.id,
+        ingredient=IngredientRead.model_validate(kayit.ingredient),
+        product=ProductRead.model_validate(kayit.product) if kayit.product else None,
+        availability=kayit.effective_availability,
+        source=kayit.source,
+        confirmed_at=kayit.confirmed_at,
+        confidence_expires_at=kayit.confidence_expires_at,
+        days_remaining=kayit.days_remaining,
+        detected_confidence=kayit.detected_confidence,
+        quantity_base=kayit.quantity_base,
+        display_unit=kayit.display_unit,
+        created_at=kayit.created_at,
+        updated_at=kayit.updated_at,
+    )
+
+
+@router.get(
+    "",
+    response_model=list[PantryItemRead],
+    summary="Kiler listesi",
+    description=(
+        "W3-T18 kiler ekraninin listesi. `availability` alani guven "
+        "suresi UYGULANMIS degerdir: 7 gunu gecmis bir 'var' kaydi "
+        "'bilinmiyor' olarak doner.\n\n"
+        "'bitti' kayitlari varsayilan olarak GELMEZ."
+    ),
+)
+def list_pantry(
+    db: DbSession,
+    current_user: ActiveUser,
+    include_finished: bool = Query(
+        default=False, description="'bitti' kayitlari da donsun mu?"
+    ),
+) -> list[PantryItemRead]:
+    kayitlar = pantry_service.list_items(
+        db, current_user, include_finished=include_finished
+    )
+    return [_to_read(k) for k in kayitlar]
+
+
+@router.patch(
+    "/{item_id}",
+    response_model=PantryItemRead,
+    summary="[Var] / [Bitti] hizli aksiyonu",
+    description=(
+        "`still_have=true` -> 7 gunluk guven suresi bugunden yeniden "
+        "baslar.\n`still_have=false` -> kayit 'bitti' olur ve listeden duser."
+    ),
+    responses={status.HTTP_404_NOT_FOUND: {"model": ErrorResponse}},
+)
+def update_pantry_item(
+    item_id: int,
+    data: PantryItemConfirm,
+    db: DbSession,
+    current_user: ActiveUser,
+) -> PantryItemRead:
+    kayit = pantry_service.set_availability(
+        db, current_user, item_id, still_have=data.still_have
+    )
+    return _to_read(kayit)

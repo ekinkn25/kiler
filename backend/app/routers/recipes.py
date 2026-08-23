@@ -1,16 +1,92 @@
 """Tarif uclari. W2-T07: swipe destesi ve geri bildirim."""
 import logging
 
+from bson import ObjectId
+from bson.errors import InvalidId
 from fastapi import APIRouter, Query, status
 
 from app.core.deps import ActiveUser, DbSession, MongoDb
-from app.schemas import DeckResponse, ErrorResponse, SwipeRequest, SwipeResponse
+from app.db.mongo_schema import RECIPE_COLLECTION
+from app.schemas import (
+    DeckResponse, ErrorResponse, RecipeCard, SwipeRequest, SwipeResponse,
+)
 from app.services import swipe_service
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+MAX_CARD_IDS = 30
+
+def parse_card_ids(ids: str, *, limit: int = MAX_CARD_IDS) -> list[str]:
+    """Virgullu metni SIRAYI KORUYARAK tekil kimlik listesine cevirir."""
+    parcalar = [p.strip() for p in ids.split(",") if p.strip()]
+    return list(dict.fromkeys(parcalar))[:limit]
+
+
+def order_like_request(dokumanlar: list[dict], istenen: list[str]) -> list[dict]:
+    """Sonucu ISTEK SIRASINA gore dizer.
+
+    Mongo'nun $in sonucu istek sirasini KORUMAZ. Sohbet, tarifleri onem
+    sirasiyla oneriyor; kartlarin sirasi degisirse 'en cok onerilen' ustte
+    durmaz. Bulunamayan kimlikler sessizce dusulur.
+    """
+    harita = {str(d["_id"]): d for d in dokumanlar}
+    return [harita[k] for k in istenen if k in harita]
+
+@router.get(
+    "/cards",
+    response_model=list[RecipeCard],
+    response_model_by_alias = False,
+    summary="Kimlige gore tarif kartlari",
+    description=(
+        "Virgulle ayrilmis tarif kimlikleri icin SADE kart verisi doner: "
+        "fotograf, baslik, kalori, sure, zorluk, diyet etiketleri.\n\n"
+        "NEDEN VAR: sohbet yanitindaki `onerilen_tarif_idleri` yalnizca "
+        "kimlik tasir; mini kartlar bu uctan beslenir. Ayni uc tarif "
+        "detay ekraninin iskeletini de doldurur (W4-T01).\n\n"
+        "Sonuc ISTEK SIRASINI korur. Gecersiz veya bulunamayan kimlikler "
+        "sessizce atlanir - tek hatali kimlik yuzunden butun istegi "
+        "dusurmek dogru olmaz."
+    ),
+    responses={status.HTTP_403_FORBIDDEN: {"model": ErrorResponse}},
+)
+async def get_cards(
+    mongo_db: MongoDb,
+    current_user: ActiveUser,
+    ids: str = Query(
+        ...,
+        min_length=1,
+        description="Virgulle ayrilmis tarif kimlikleri (24 karakter ObjectId).",
+    ),
+) -> list[RecipeCard]:
+    istenen = parse_card_ids(ids)
+    if not istenen:
+        return []
+
+    nesne_kimlikleri = []
+    for kimlik in istenen:
+        try:
+            nesne_kimlikleri.append(ObjectId(kimlik))
+        except (InvalidId, TypeError):
+            logger.warning("Gecersiz tarif kimligi atlandi: %r", kimlik)
+
+    if not nesne_kimlikleri:
+        return []
+
+    imlec = mongo_db[RECIPE_COLLECTION].find(
+        {"_id": {"$in": nesne_kimlikleri}, "is_active": {"$ne": False}},
+        projection={
+            "_id": 1, "title": 1, "slug": 1, "image_url": 1,
+            "calories_per_serving": 1, "servings": 1,
+            "prep_time": 1, "cook_time": 1, "difficulty": 1, "diet_tags": 1,
+        },
+    )
+    dokumanlar = await imlec.to_list(length=len(nesne_kimlikleri))
+
+    sirali = order_like_request(dokumanlar, istenen)
+    logger.info("Kart istegi | istenen=%d donen=%d", len(istenen), len(sirali))
+    return [RecipeCard.model_validate(d) for d in sirali]
 
 @router.get(
     "/deck",
@@ -73,7 +149,10 @@ async def swipe(
         action=data.action,
         reason=data.reason,
         session_id=data.session_id,
-        missing_ingredient_id=data.missing_ingredient_id,
+        missing_ingredient_ids=(
+            data.missing_ingredient_ids
+            or ([data.missing_ingredient_id] if data.missing_ingredient_id else [])
+        ),
         rating=data.rating,
         servings_cooked=data.servings_cooked,
         comment=data.comment,

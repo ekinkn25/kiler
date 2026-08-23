@@ -12,6 +12,11 @@ import '../screens/profile/profile_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
+import '../screens/discover/discover_screen.dart';
+import '../screens/dev/dev_swipe_preview_screen.dart';
+import '../screens/chat/chat_screen.dart';
+import '../screens/recipes/recipe_detail_screen.dart';
+import '../screens/calories/calorie_screen.dart';
 
 
 //uygulamanın tüm yönlendirme tablosu burada 
@@ -43,7 +48,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ref.onDispose(authListenable.dispose);
 
   return GoRouter(
-    initialLocation: '/splash',
+    initialLocation: '/splash',  //dev/swipe',
     refreshListenable: authListenable,
 
     redirect: (context, state) {
@@ -51,8 +56,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final hedef = state.matchedLocation;
       final splashaGidiyor = hedef == '/splash';
       final authEkraniMi = hedef == '/giris' || hedef == '/kayit';
-      final onboardinEkraniMi = hedef == '/onboarding';
-      final devRotasiMi = hedef == '/dev' || hedef == '/dev/widgets';
+      // final devRotasiMi = hedef == '/dev' || hedef == '/dev/widgets';
+      final devRotasiMi = hedef.startsWith('/dev');
       if (devRotasiMi) return null;
 
       final ilkAcilisKontrolEdiliyor =
@@ -107,7 +112,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/sohbet',
                 name: 'sohbet',
-                builder: (context, state) => const PlaceholderScreen(title: 'Sohbet'),
+                builder: (context, state) => const ChatScreen(),
               ),
             ],
           ),
@@ -117,7 +122,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/kesfet',
                 name: 'kesfet',
-                builder: (context, state) => const PlaceholderScreen(title: 'Keşfet'),
+                builder: (context, state) => const DiscoverScreen(),
               ),
             ],
           ),
@@ -127,7 +132,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/kalori',
                 name: 'kalori-tab',
-                builder: (context, state) => const PlaceholderScreen(title: 'Kalori'),
+                builder: (context, state) => const CalorieScreen(),
               ),
             ],
           ),
@@ -153,11 +158,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PlaceholderScreen(title: 'Barkod Tara'),
       ),
       GoRoute(
+        path: '/foto',
+        name: 'foto',
+        builder: (context, state) => const PlaceholderScreen(title: 'Fotoğraf Çek'),
+      ),
+      GoRoute(
         path: '/tarif/:id',
         name: 'tarif-detay',
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          return PlaceholderScreen(title: 'Tarif Detayı', detail: 'id: $id');
+          return RecipeDetailScreen(recipeId: id);
         },
       ),
       GoRoute(
@@ -188,6 +198,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/dev/widgets',
         name: 'widget-showcase',
         builder: (context, state) => const WidgetShowcaseScreen(),
+      ),
+      GoRoute(
+        path: '/dev/swipe',
+        name: 'dev-swipe',
+        builder: (context, state) => const DevSwipePreviewScreen(),
       ),
     ],
   );

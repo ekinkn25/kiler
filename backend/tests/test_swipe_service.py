@@ -16,7 +16,8 @@ from app.models.enums import FeedbackAction, FeedbackReason
 from app.models.recipe import RecipeFeedback, SwipeSession, utcnow
 from app.services.recipe_scoring import ScoringContext, build_scoring_pipeline
 from app.services.swipe_service import (
-    COK_UZUN_ESIK_DK, build_exclusions, get_or_create_session, mark_shown,
+    COK_UZUN_ESIK_DK, COK_UZUN_TABAN_DK, build_exclusions, cok_uzun_esigi,
+    get_or_create_session, mark_shown,
 )
 
 # Gecerli ObjectId bicimi: 24 hex karakter
@@ -150,6 +151,32 @@ def test_esik_daha_da_daralabilir(session):
     session.tighten_time_limit(15)
     assert session.filters["max_total_time"] == 15
 
+def test_cok_uzun_esigi_karttan_kisa_olur():
+    # 25 dk'lik karta 'cok uzun' -> %20 kisalir
+    assert cok_uzun_esigi(25) == 20
+
+
+def test_cok_uzun_esigi_uzun_kartta_KADEMELI_daralir():
+    # 110 dk'lik kart 30'a CAKMAZ; kullanicinin sikayeti olmayan
+    # 45 dk'lik tarifler hayatta kalir.
+    assert cok_uzun_esigi(110) == 88
+    assert cok_uzun_esigi(88) == 70
+
+
+def test_cok_uzun_esigi_bir_noktada_yakinsar():
+    esik = 110
+    for _ in range(20):
+        esik = cok_uzun_esigi(esik)
+    assert esik == COK_UZUN_TABAN_DK
+
+def test_cok_uzun_esigi_tabanin_altina_inmez():
+    # 12 dk'lik karta 'cok uzun' denirse deste kurumasin
+    assert cok_uzun_esigi(12) == COK_UZUN_TABAN_DK
+
+
+def test_cok_uzun_suresi_bilinmeyen_kartta_sabit_kurala_duser():
+    assert cok_uzun_esigi(0) == COK_UZUN_ESIK_DK
+
 
 def test_filtre_kalici_json_olarak_saklanir(db, session):
     session.tighten_time_limit(30)
@@ -196,3 +223,67 @@ def test_swipe_semasi_kurallari():
     assert SwipeRequest(action=FeedbackAction.BEGENDIM).reason is None
     assert SwipeRequest(action=FeedbackAction.BEGENMEDIM,
                         reason=FeedbackReason.COK_UZUN).reason
+
+
+# ---------------------------------------------------------------- malzeme elemesi
+def test_olmayan_malzeme_pipeline_dan_eleniyor():
+    ctx = ScoringContext(excluded_ingredients=("limon",))
+    match = build_scoring_pipeline(ctx)[0]["$match"]
+    assert match["$nor"] == [{
+        "ingredients": {
+            "$elemMatch": {
+                "canonical_name": {"$in": ["limon"]},
+                "optional": {"$ne": True},
+            }
+        }
+    }]
+
+
+def test_olmayan_malzeme_yoksa_nor_eklenmez():
+    assert "$nor" not in build_scoring_pipeline(ScoringContext())[0]["$match"]
+
+
+def test_malzemem_yok_oturuma_ve_kilere_yaziliyor(db, user, session):
+    from sqlalchemy import select
+
+    from app.models import Ingredient, PantryItem
+    from app.models.enums import Availability
+    from app.services.swipe_service import _malzemeyi_yok_isaretle
+
+    limon = Ingredient(canonical_name="limon", display_name="Limon")
+    db.add(limon)
+    db.commit()
+    db.add(PantryItem(
+        user_id=user.id, ingredient_id=limon.id, availability=Availability.VAR,
+    ))
+    db.commit()
+
+    ad = _malzemeyi_yok_isaretle(db, user, limon.id, session)
+    db.commit()
+
+    assert ad == "Limon"
+    # (1) oturum filtresine yazildi
+    assert session.filters["missing_ingredients"] == ["limon"]
+    # (2) kilerdeki YANLIS 'var' inanci duzeltildi
+    kayit = db.scalar(select(PantryItem).where(PantryItem.ingredient_id == limon.id))
+    assert kayit.availability is Availability.BITTI
+
+
+def test_ayni_malzeme_ikinci_kez_eklenmiyor(db, user, session):
+    from app.models import Ingredient
+    from app.services.swipe_service import _malzemeyi_yok_isaretle
+
+    limon = Ingredient(canonical_name="limon", display_name="Limon")
+    db.add(limon)
+    db.commit()
+
+    _malzemeyi_yok_isaretle(db, user, limon.id, session)
+    _malzemeyi_yok_isaretle(db, user, limon.id, session)
+    assert session.filters["missing_ingredients"] == ["limon"]
+
+
+def test_bilinmeyen_malzeme_kimligi_cokmeye_sebep_olmuyor(db, user, session):
+    from app.services.swipe_service import _malzemeyi_yok_isaretle
+
+    assert _malzemeyi_yok_isaretle(db, user, 999999, session) is None
+    assert "missing_ingredients" not in session.filters

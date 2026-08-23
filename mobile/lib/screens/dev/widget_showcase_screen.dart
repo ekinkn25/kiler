@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/widgets.dart';
+import 'package:go_router/go_router.dart';
 
 /// Tasarim sistemi vitrin ekrani.
 ///
@@ -68,13 +69,31 @@ class _WidgetShowcaseScreenState extends State<WidgetShowcaseScreen> {
           ),
           const SizedBox(height: 24),
           _baslik(context, 'EmptyState'),
-          EmptyState(
-            icon: Icons.kitchen_outlined,
+          const EmptyIllustration(icon: Icons.restaurant_menu),
+          const SizedBox(height: 16),
+          const EmptyState(
+            icon: Icons.restaurant_menu,
+            illustrated: true,
             title: 'Kilerin boş',
             message: 'Fotoğraf çekerek veya barkod tarayarak ekleyebilirsin.',
-            actionLabel: 'Malzeme Ekle',
-            onAction: () {},
+            // actionLabel: 'Malzeme Ekle',
+            // onAction: () {},
           ),
+          
+          const SizedBox(height: 24),
+          EmptyState(
+            icon: Icons.restaurant_menu,
+            illustrated: true,
+            title: 'Bugünlük bu kadar!',
+            message: 'Kilerine bir şeyler ekle ya da yarın tekrar bak.',
+            actionLabel: 'Fotoğraf çek',
+            actionIcon: Icons.photo_camera_outlined,
+            onAction: () => context.push('/foto'),
+            secondaryActionLabel: 'Barkod okut',
+            secondaryActionIcon: Icons.qr_code_scanner,
+            onSecondaryAction: () => context.push('/tara'),
+          ),
+
           const SizedBox(height: 24),
           _baslik(context, 'LoadingSkeleton'),
           const LoadingSkeleton(width: 200),

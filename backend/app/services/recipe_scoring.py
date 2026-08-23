@@ -44,6 +44,7 @@ class ScoringContext:
     max_calories: float | None = None   
     max_total_minutes: int | None = None   # sert tavan (opsiyonel)
     required_ingredients: tuple[str, ...] = ()
+    excluded_ingredients: tuple[str, ...] = ()
 
 
 def build_context(
@@ -53,6 +54,7 @@ def build_context(
     max_calories: float | None = None,
     target_minutes: int | None = None,
     max_total_minutes: int | None = None,
+    excluded_ingredients: Sequence[str] = (),
 ) -> ScoringContext:
     #Kullanıcının kilerini, kısıtlarını ve zevk vektörünü SQLite'tan toplar.
     hedef_dk = target_minutes or settings.SCORE_TARGET_MINUTES
@@ -93,6 +95,7 @@ def build_context(
         target_minutes=hedef_dk,
         max_calories=max_calories,
         max_total_minutes=max_total_minutes,
+        excluded_ingredients=tuple(excluded_ingredients),
     )
     logger.info(
         "Skorlama baglami | kullanici=%s var=%d bilinmiyor=%d diyet=%s alerjen=%s "
@@ -100,6 +103,8 @@ def build_context(
         user.id, len(ctx.var), len(ctx.bilinmiyor), ctx.diet_tags,
         ctx.allergens, len(ctx.taste), ctx.calorie_target,
     )
+    if ctx.excluded_ingredients:
+        logger.info("Oturumda yok sayilan malzemeler: %s", ctx.excluded_ingredients)
     return ctx
 
 
@@ -150,6 +155,16 @@ def _match_stage(ctx: ScoringContext, exclude_ids: Sequence[str]) -> dict:
 
     if ctx.required_ingredients:
         kosul["ingredients.canonical_name"] = {"$in": list(ctx.required_ingredients)}
+
+    if ctx.excluded_ingredients:
+        kosul["$nor"] = [{
+            "ingredients": {
+                "$elemMatch" : {
+                    "canonical_name": {"$in": list(ctx.excluded_ingredients)},
+                    "optional": {"$ne": True},
+                }
+            }
+        }]
 
     return {"$match": kosul}
 

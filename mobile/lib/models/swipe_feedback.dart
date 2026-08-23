@@ -22,6 +22,7 @@ abstract class SwipeFeedback with _$SwipeFeedback {
     @JsonKey(fromJson: _reasonOrNull, toJson: _reasonOrNullJson) FeedbackReason? reason,
     @JsonKey(name: 'session_id') int? sessionId,
     @JsonKey(name: 'missing_ingredient_id') int? missingIngredientId,
+    @JsonKey(name: 'missing_ingredient_ids') @Default([]) List<int> missingIngredientIds,
     int? rating,
     @JsonKey(name: 'servings_cooked') double? servingsCooked,
     String? comment,

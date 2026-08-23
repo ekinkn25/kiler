@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kalori/widgets/empty_illustration.dart';
 
 import 'app_button.dart';
 
@@ -11,47 +12,69 @@ class EmptyState extends StatelessWidget {
     super.key,
     this.message,
     this.actionLabel,
+    this.actionIcon,
     this.onAction,
+    this.secondaryActionLabel,
+    this.secondaryActionIcon,
+    this.onSecondaryAction,
+    this.illustrated = false,
   });
 
   final IconData icon;
   final String title;
   final String? message;
   final String? actionLabel;
+  final IconData? actionIcon;
   final VoidCallback? onAction;
+  final String? secondaryActionLabel;
+  final IconData? secondaryActionIcon;
+  final VoidCallback? onSecondaryAction;
+  final bool illustrated; // true ise büyük görsel çizilir
 
   @override
   Widget build(BuildContext context) {
     final ColorScheme colors = Theme.of(context).colorScheme;
+    final bool birincilVar = actionLabel != null && onAction != null;
+    final bool ikincilVar = secondaryActionLabel != null && onSecondaryAction != null;
 
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 64, color: colors.outline),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            if (message != null) ...[
-              const SizedBox(height: 8),
+      child : SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (illustrated)
+                EmptyIllustration(icon: icon)
+              else
+                Icon(icon, size: 64, color: colors.outline),
+              SizedBox(height: illustrated? 24 : 16),
               Text(
-                message!,
+                title,
                 textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
+              if (message != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  message!,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: colors.onSurfaceVariant),
+                ),
+              ],
+              if (birincilVar) ... [
+                const SizedBox(height: 24),
+                AppButton(label: actionLabel!, icon:actionIcon, onPressed: onAction,),
+              ],
+              if (ikincilVar) ... [
+                SizedBox(height: birincilVar? 12: 24),
+                AppButton(label: secondaryActionLabel!, icon:secondaryActionIcon, variant:AppButtonVariant.secondary, onPressed: onSecondaryAction,),
+              ],
             ],
-            if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: 24),
-              AppButton(label: actionLabel!, onPressed: onAction),
-            ],
-          ],
+          ),
         ),
       ),
     );
