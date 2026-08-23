@@ -26,14 +26,8 @@ _PantryItem _$PantryItemFromJson(Map<String, dynamic> json) => _PantryItem(
   detectedConfidence: (json['detected_confidence'] as num?)?.toDouble(),
   quantityBase: (json['quantity_base'] as num?)?.toDouble(),
   displayUnit: _unitOrNull(json['display_unit'] as String?),
-  expiryDate: json['expiry_date'] == null
-      ? null
-      : DateTime.parse(json['expiry_date'] as String),
-  isActive: json['is_active'] as bool,
   createdAt: DateTime.parse(json['created_at'] as String),
   updatedAt: DateTime.parse(json['updated_at'] as String),
-  isLow: json['is_low'] as bool,
-  displayQuantity: (json['display_quantity'] as num).toDouble(),
 );
 
 Map<String, dynamic> _$PantryItemToJson(_PantryItem instance) =>
@@ -49,12 +43,8 @@ Map<String, dynamic> _$PantryItemToJson(_PantryItem instance) =>
       'detected_confidence': instance.detectedConfidence,
       'quantity_base': instance.quantityBase,
       'display_unit': _unitOrNullJson(instance.displayUnit),
-      'expiry_date': instance.expiryDate?.toIso8601String(),
-      'is_active': instance.isActive,
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt.toIso8601String(),
-      'is_low': instance.isLow,
-      'display_quantity': instance.displayQuantity,
     };
 
 _IngredientSummary _$IngredientSummaryFromJson(Map<String, dynamic> json) =>

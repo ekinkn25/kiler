@@ -17,6 +17,7 @@ import '../screens/dev/dev_swipe_preview_screen.dart';
 import '../screens/chat/chat_screen.dart';
 import '../screens/recipes/recipe_detail_screen.dart';
 import '../screens/calories/calorie_screen.dart';
+import '../screens/pantry/pantry_screen.dart';
 
 
 //uygulamanın tüm yönlendirme tablosu burada 
@@ -56,6 +57,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final hedef = state.matchedLocation;
       final splashaGidiyor = hedef == '/splash';
       final authEkraniMi = hedef == '/giris' || hedef == '/kayit';
+      final onboardinEkraniMi = hedef == '/onboarding';
       // final devRotasiMi = hedef == '/dev' || hedef == '/dev/widgets';
       final devRotasiMi = hedef.startsWith('/dev');
       if (devRotasiMi) return null;
@@ -142,7 +144,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/kiler',
                 name: 'kiler',
-                builder: (context, state) => const PlaceholderScreen(title: 'Kiler'),
+                builder: (context, state) => const PantryScreen(),
               ),
             ],
           ),
