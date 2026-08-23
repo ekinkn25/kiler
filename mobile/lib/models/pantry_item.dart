@@ -23,12 +23,12 @@ abstract class PantryItem with _$PantryItem {
     @JsonKey(name: 'quantity_base') double? quantityBase,
     @JsonKey(name: 'display_unit', fromJson: _unitOrNull, toJson: _unitOrNullJson)
     UnitCode? displayUnit,
-    @JsonKey(name: 'expiry_date') DateTime? expiryDate,
-    @JsonKey(name: 'is_active') required bool isActive,
+    // @JsonKey(name: 'expiry_date') DateTime? expiryDate,
+    // @JsonKey(name: 'is_active') required bool isActive,
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'updated_at') required DateTime updatedAt,
-    @JsonKey(name: 'is_low') required bool isLow,
-    @JsonKey(name: 'display_quantity') required double displayQuantity,
+    // @JsonKey(name: 'is_low') required bool isLow,
+    // @JsonKey(name: 'display_quantity') required double displayQuantity,
   }) = _PantryItem;
 
   factory PantryItem.fromJson(Map<String, dynamic> json) => _$PantryItemFromJson(json);
