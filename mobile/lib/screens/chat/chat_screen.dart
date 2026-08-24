@@ -14,6 +14,7 @@ import '../../widgets/chat/message_bubble.dart';
 import '../../widgets/chat/suggestion_chips.dart';
 import '../../widgets/chat/typing_indicator.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/chat/shot_guide.dart';
 
 /// SOHBET sekmesi (W3-T10 + T11 + T12 + T13).
 class ChatScreen extends ConsumerStatefulWidget {
@@ -68,10 +69,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Cekim rehberi: 'malzemeleri tezgaha yay, ustten cek'.
+            const Padding(
+              padding: EdgeInsets.only(top: 8, bottom: 4),
+              child: ShotGuide(),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+              child: Text(
+                'Malzemeleri tezgaha yay, üstten çek',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+            const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
               title: const Text('Kamera'),
-              subtitle: const Text('Malzemeleri tezgaha yay, üstten çek'),
               onTap: () => Navigator.of(context).pop(ImageSource.camera),
             ),
             ListTile(
