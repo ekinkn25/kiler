@@ -5,6 +5,7 @@ import '../../core/network/api_exception.dart';
 import '../../models/meal_estimate.dart';
 import '../../providers/meal_provider.dart';
 import '../app_button.dart';
+import 'portion_selector.dart';
 
 /// Tabak tahmininin DUZENLENEBILIR onay karti (W3-T15).
 ///
@@ -45,14 +46,50 @@ class _OnayGovdesiState extends ConsumerState<_OnayGovdesi> {
   late final TextEditingController _adController =
       TextEditingController(text: widget.tahmin.dishName);
   late final TextEditingController _kaloriController = TextEditingController(
-    text: _seciliSecenek?.calories?.round().toString() ??
-        widget.tahmin.calories?.round().toString() ??
-        '',
+    text: _kaloriFor(_porsiyon)?.round().toString() ?? '',
   );
 
   late String _porsiyon = widget.tahmin.portion;
   late String _ogunTipi = _varsayilanOgun();
   bool _kaydediyor = false;
+
+  /// Kalori/gram alanini gorunur yapan bayrak. VARSAYILAN GIZLI: kullanici
+  /// hic gram gormeden porsiyon secip ekleyebilsin (W3-T17 kabul kriteri).
+  late bool _gramGoster = _kaloriFor(_porsiyon) == null;
+
+  /// Porsiyon carpanlari (referans = orta). portion_options yoksa fallback.
+  static const Map<String, double> _carpan = {
+    'kucuk': 0.72,
+    'orta': 1.0,
+    'buyuk': 1.4,
+  };
+
+  /// Tahminin kendi porsiyonundan turetilen 'orta' referansi.
+  double get _ortaGram =>
+      widget.tahmin.estimatedGrams / (_carpan[widget.tahmin.portion] ?? 1.0);
+
+  double? get _ortaKalori {
+    final b = widget.tahmin.calories;
+    if (b == null) return null;
+    return b / (_carpan[widget.tahmin.portion] ?? 1.0);
+  }
+
+  /// Bir boy icin gram: once portion_options, yoksa carpanla turet.
+  double _gramFor(String boy) {
+    for (final s in widget.tahmin.portionOptions) {
+      if (s.portion == boy) return s.grams;
+    }
+    return _ortaGram * (_carpan[boy] ?? 1.0);
+  }
+
+  /// Bir boy icin kalori: once portion_options, yoksa carpanla turet.
+  double? _kaloriFor(String boy) {
+    for (final s in widget.tahmin.portionOptions) {
+      if (s.portion == boy && s.calories != null) return s.calories;
+    }
+    final o = _ortaKalori;
+    return o == null ? null : o * (_carpan[boy] ?? 1.0);
+  }
 
   /// Gunun saatine gore mantikli varsayilan.
   static String _varsayilanOgun() {
@@ -70,31 +107,31 @@ class _OnayGovdesiState extends ConsumerState<_OnayGovdesi> {
     'atistirma': 'Atıştırma',
   };
 
-  static const Map<String, String> _porsiyonAdlari = {
-    'kucuk': 'Küçük',
-    'orta': 'Orta',
-    'buyuk': 'Büyük',
-  };
+  // static const Map<String, String> _porsiyonAdlari = {
+  //   'kucuk': 'Küçük',
+  //   'orta': 'Orta',
+  //   'buyuk': 'Büyük',
+  // };
 
   /// Secili porsiyona karsilik gelen secenek (gram+kalori hazir).
-  PortionOption? get _seciliSecenek {
-    for (final s in widget.tahmin.portionOptions) {
-      if (s.portion == _porsiyon) return s;
-    }
-    return null;
-  }
+  // PortionOption? get _seciliSecenek {
+  //   for (final s in widget.tahmin.portionOptions) {
+  //     if (s.portion == _porsiyon) return s;
+  //   }
+  //   return null;
+  // }
 
   /// Sunulacak porsiyon boylari: backend secenek verdiyse onlar, yoksa
   /// yalnizca tahminin kendi boyu.
-  List<String> get _porsiyonBoylari {
-    if (widget.tahmin.portionOptions.isEmpty) return [widget.tahmin.portion];
-    return widget.tahmin.portionOptions.map((s) => s.portion).toList();
-  }
+  // List<String> get _porsiyonBoylari {
+  //   if (widget.tahmin.portionOptions.isEmpty) return [widget.tahmin.portion];
+  //   return widget.tahmin.portionOptions.map((s) => s.portion).toList();
+  // }
 
   void _porsiyonSec(String yeni) {
     setState(() {
       _porsiyon = yeni;
-      final kcal = _seciliSecenek?.calories;
+      final kcal = _kaloriFor(yeni);
       // Porsiyon degisince kaloriyi guncelle - ama kullanici elle
       // degistirdiyse ustune yazmamak icin yalnizca secenek varsa.
       if (kcal != null) _kaloriController.text = kcal.round().toString();
@@ -103,14 +140,18 @@ class _OnayGovdesiState extends ConsumerState<_OnayGovdesi> {
 
   Future<void> _kaydet() async {
     final ad = _adController.text.trim();
-    final kcal = double.tryParse(_kaloriController.text.trim());
+    // Alan gizliyse porsiyondan turetilen kaloriyi kullan; acıksa yazılanı.
+    final double? kcal = _gramGoster
+        ? double.tryParse(_kaloriController.text.trim())
+        : _kaloriFor(_porsiyon);
 
     if (ad.isEmpty) {
       _uyar('Yemek adı boş olamaz.');
       return;
     }
     if (kcal == null || kcal <= 0) {
-      _uyar('Geçerli bir kalori gir.');
+      _uyar('Kalori tahmini bulunamadı; "Gram gireyim" ile elle girebilirsin.');
+      setState(() => _gramGoster = true);
       return;
     }
 
@@ -128,7 +169,7 @@ class _OnayGovdesiState extends ConsumerState<_OnayGovdesi> {
             mealType: _ogunTipi,
             dishName: ad,
             calories: kcal,
-            grams: _seciliSecenek?.grams ?? widget.tahmin.estimatedGrams,
+            grams: _gramFor(_porsiyon),
             proteinG: _olcekli(widget.tahmin.proteinG, olcek),
             carbG: _olcekli(widget.tahmin.carbG, olcek),
             fatG: _olcekli(widget.tahmin.fatG, olcek),
@@ -206,30 +247,34 @@ class _OnayGovdesiState extends ConsumerState<_OnayGovdesi> {
             ),
             const SizedBox(height: 16),
 
-            Text('Porsiyon', style: yazi.labelLarge),
+            Text('Ne kadar yedin?', style: yazi.labelLarge),
             const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: [
-                for (final boy in _porsiyonBoylari)
-                  ChoiceChip(
-                    label: Text(_porsiyonAdlari[boy] ?? boy),
-                    selected: _porsiyon == boy,
-                    onSelected: (_) => _porsiyonSec(boy),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
+            PortionSelector(secili: _porsiyon, onSec: _porsiyonSec),
+            const SizedBox(height: 12),
 
-            TextField(
-              controller: _kaloriController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Kalori',
-                suffixText: 'kcal',
-                border: OutlineInputBorder(),
+            // Kalori alani VARSAYILAN GIZLI: kullanici gram/kalori gormeden
+            // porsiyon secip ekleyebilir. Isteyen bu baglantiyla acar.
+            if (_gramGoster)
+              TextField(
+                controller: _kaloriController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Kalori',
+                  suffixText: 'kcal',
+                  border: OutlineInputBorder(),
+                ),
+              )
+            else
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: () => setState(() => _gramGoster = true),
+                  icon: const Icon(Icons.tune, size: 18),
+                  label: Text(
+                    'Kalori gireyim (${_kaloriFor(_porsiyon)?.round() ?? '?'} kcal)',
+                  ),
+                ),
               ),
-            ),
             const SizedBox(height: 16),
 
             Text('Hangi öğün?', style: yazi.labelLarge),
