@@ -17,6 +17,7 @@ Future<bool?> showMealConfirmSheet(
   BuildContext context, {
   required MealEstimate tahmin,
   required String date,
+  bool manuel = false,
 }) {
   return showModalBottomSheet<bool>(
     context: context,
@@ -27,16 +28,17 @@ Future<bool?> showMealConfirmSheet(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: _OnayGovdesi(tahmin: tahmin, date: date),
+      child: _OnayGovdesi(tahmin: tahmin, date: date, manuel: manuel),
     ),
   );
 }
 
 class _OnayGovdesi extends ConsumerStatefulWidget {
-  const _OnayGovdesi({required this.tahmin, required this.date});
+  const _OnayGovdesi({required this.tahmin, required this.date, this.manuel = false});
 
   final MealEstimate tahmin;
   final String date;
+  final bool manuel;
 
   @override
   ConsumerState<_OnayGovdesi> createState() => _OnayGovdesiState();
@@ -211,31 +213,32 @@ class _OnayGovdesiState extends ConsumerState<_OnayGovdesi> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 'Tahmindir' uyarisi: kullanici sayilarin kesin olmadigini
-            // bilmeli, kalori sayacinin guvenini sarsmasin.
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: renkler.secondaryContainer,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline,
-                      size: 18, color: renkler.onSecondaryContainer),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Bu bir tahmin; düzeltebilirsin.',
-                      style: yazi.bodySmall?.copyWith(
-                        color: renkler.onSecondaryContainer,
+            // Fotograftan geldiyse 'tahmindir' uyarisi; elle girişte gerek yok.
+            if (!widget.manuel) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: renkler.secondaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline,
+                        size: 18, color: renkler.onSecondaryContainer),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Bu bir tahmin; düzeltebilirsin.',
+                        style: yazi.bodySmall?.copyWith(
+                          color: renkler.onSecondaryContainer,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
+            ],
 
             TextField(
               controller: _adController,

@@ -88,7 +88,7 @@ class MealPhotoService {
         'custom_name': dishName,
         'calories': calories,
         'servings': 1,
-        'quantity_g': ?grams,
+        if (grams != null && grams > 0) 'quantity_g': grams,
         'protein_g': ?proteinG,
         'carb_g': ?carbG,
         'fat_g': ?fatG,
