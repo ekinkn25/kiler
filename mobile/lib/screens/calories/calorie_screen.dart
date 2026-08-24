@@ -16,6 +16,7 @@ import '../../widgets/calories/meal_group_card.dart';
 import '../../widgets/chat/shot_guide.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/loading_skeleton.dart';
+import '../../models/meal_estimate.dart';
 
 /// KALORI sekmesi (W3-T14 + W3-T15).
 ///
@@ -43,10 +44,7 @@ class _CalorieScreenState extends ConsumerState<CalorieScreen> {
   // Fotografla ogun ekleme (W3-T15)
   // ---------------------------------------------------------------
 
-  Future<void> _fotograflaEkle() async {
-    final kaynak = await _kaynakSec();
-    if (kaynak == null) return;
-
+  Future<void> _fotograflaEkle(ImageSource kaynak) async {
     try {
       final XFile? secilen = await _secici.pickImage(
         source: kaynak,
@@ -76,9 +74,30 @@ class _CalorieScreenState extends ConsumerState<CalorieScreen> {
     }
   }
 
-  Future<ImageSource?> _kaynakSec() {
-    FocusScope.of(context).unfocus();
-    return showModalBottomSheet<ImageSource>(
+    /// Fotografsiz, tamamen elle ogun ekleme (kullanici her seyi doldurur).
+  Future<void> _elleEkle() async {
+    final String gun = ref.read(selectedDateProvider);
+    // Bos tahmin: onay karti elle doldurulmaya acilir (kalori alani gorunur).
+    const bosTahmin = MealEstimate(
+      dishName: '',
+      portion: 'orta',
+      estimatedGrams: 0,
+      imageHash: '',
+    );
+    final eklendi = await showMealConfirmSheet(
+      context,
+      tahmin: bosTahmin,
+      date: gun,
+      manuel: true,
+    );
+    if (eklendi == true && mounted) {
+      ref.invalidate(dailySummaryProvider(gun));
+      _bilgi('Öğün günlüğe eklendi.');
+    }
+  }
+
+  Future<void> _ekleMenusu() async {
+    final secim = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
       builder: (context) => SafeArea(
@@ -104,20 +123,35 @@ class _CalorieScreenState extends ConsumerState<CalorieScreen> {
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
               title: const Text('Kamera'),
-              onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              onTap: () => Navigator.of(context).pop('kamera'),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
               title: const Text('Galeriden seç'),
-              onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+              onTap: () => Navigator.of(context).pop('galeri'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Yazarak ekle'),
+              subtitle: const Text('Fotoğrafsız, kendin doldur'),
+              onTap: () => Navigator.of(context).pop('yazi'),
             ),
             const SizedBox(height: 8),
           ],
         ),
       ),
     );
-  }
+    if (secim == null || !mounted) return;
 
+    switch (secim) {
+      case 'kamera':
+        await _fotograflaEkle(ImageSource.camera);
+      case 'galeri':
+        await _fotograflaEkle(ImageSource.gallery);
+      case 'yazi':
+        await _elleEkle();
+    }
+  }
   void _bilgi(String mesaj) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -148,14 +182,14 @@ class _CalorieScreenState extends ConsumerState<CalorieScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _tahminAliniyor ? null : () => unawaited(_fotograflaEkle()),
+        onPressed: _tahminAliniyor ? null : () => unawaited(_ekleMenusu()),
         icon: _tahminAliniyor
             ? const SizedBox(
                 width: 18,
                 height: 18,
                 child: CircularProgressIndicator(strokeWidth: 2.5),
               )
-            : const Icon(Icons.photo_camera_outlined),
+            : const Icon(Icons.add),
         label: Text(_tahminAliniyor ? 'İşleniyor...' : 'Öğün ekle'),
       ),
       body: ozet.when(
@@ -217,23 +251,61 @@ class _TarihSecici extends ConsumerWidget {
 
   final String secilenGun;
 
+  static const List<String> _aylar = [
+    'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+    'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık',
+  ];
+
+  String _etiket(DateTime gun) {
+    final DateTime bugun = DateTime.now();
+    final String gunKey = gunAnahtari(gun);
+    if (gunKey == gunAnahtari(bugun)) return 'Bugün';
+    if (gunKey == gunAnahtari(bugun.subtract(const Duration(days: 1)))) {
+      return 'Dün';
+    }
+    return '${gun.day} ${_aylar[gun.month - 1]}';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final DateTime gun = DateTime.parse(secilenGun);
     final DateTime bugun = DateTime.now();
-    final String bugunAnahtar = gunAnahtari(bugun);
-    final String dunAnahtar =
-        gunAnahtari(bugun.subtract(const Duration(days: 1)));
+    final bool bugunMu = gunAnahtari(gun) == gunAnahtari(bugun);
 
-    return SegmentedButton<String>(
-      segments: [
-        ButtonSegment(value: dunAnahtar, label: const Text('Dün')),
-        ButtonSegment(value: bugunAnahtar, label: const Text('Bugün')),
+    void ayarla(DateTime yeni) {
+      ref.read(selectedDateProvider.notifier).state = gunAnahtari(yeni);
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.chevron_left),
+          tooltip: 'Önceki gün',
+          onPressed: () => ayarla(gun.subtract(const Duration(days: 1))),
+        ),
+        TextButton.icon(
+          onPressed: () async {
+            final secilen = await showDatePicker(
+              context: context,
+              initialDate: gun,
+              firstDate: DateTime(bugun.year - 1),
+              lastDate: bugun, // gelecege gidilmez
+            );
+            if (secilen != null) ayarla(secilen);
+          },
+          icon: const Icon(Icons.calendar_today, size: 16),
+          label: Text(_etiket(gun)),
+        ),
+        IconButton(
+          icon: const Icon(Icons.chevron_right),
+          tooltip: 'Sonraki gün',
+          // Bugunden ileriye gidilmez.
+          onPressed: bugunMu
+              ? null
+              : () => ayarla(gun.add(const Duration(days: 1))),
+        ),
       ],
-      selected: {secilenGun},
-      showSelectedIcon: false,
-      onSelectionChanged: (secim) {
-        ref.read(selectedDateProvider.notifier).state = secim.first;
-      },
     );
   }
 }

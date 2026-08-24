@@ -21,7 +21,7 @@ class MacroBars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+        return Row(
       children: [
         Expanded(
           child: _Bar(
@@ -30,17 +30,25 @@ class MacroBars extends StatelessWidget {
             hedef: target.proteinG,
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 10),
         Expanded(
           child: _Bar(
-            baslik: 'Karbonhidrat',
+            baslik: 'Karb.',
             alinan: consumed.carbG,
             hedef: target.carbG,
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 10),
         Expanded(
           child: _Bar(baslik: 'Yağ', alinan: consumed.fatG, hedef: target.fatG),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _Bar(
+            baslik: 'Lif',
+            alinan: consumed.fiberG,
+            hedef: target.fiberG,
+          ),
         ),
       ],
     );

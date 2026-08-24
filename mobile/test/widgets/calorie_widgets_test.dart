@@ -61,13 +61,14 @@ void main() {
       await ciz(
         tester,
         const MacroBars(
-          consumed: MacroBreakdown(proteinG: 45, carbG: 120, fatG: 30),
-          target: MacroBreakdown(proteinG: 90, carbG: 240, fatG: 60),
+          consumed: MacroBreakdown(proteinG: 45, carbG: 120, fatG: 30, fiberG: 12),
+          target: MacroBreakdown(proteinG: 90, carbG: 240, fatG: 60, fiberG: 28),
         ),
       );
 
       expect(find.text('Protein'), findsOneWidget);
-      expect(find.text('Karbonhidrat'), findsOneWidget);
+      expect(find.text('Karb.'), findsOneWidget);
+      expect(find.text('Lif'), findsOneWidget);
       expect(find.text('Yağ'), findsOneWidget);
       expect(find.text('45 / 90 g'), findsOneWidget);
       // JARGON YASAGI: 'makro' kelimesi ekranda GECMEMELI.
