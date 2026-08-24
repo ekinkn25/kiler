@@ -54,6 +54,32 @@ void main() {
   });
 
   group('EmptyState', () {
+        testWidgets('footer icerigi baslik ile butonlar ARASINA cizilir',
+        (tester) async {
+      await ciz(
+        tester,
+        EmptyState(
+          icon: Icons.chat_bubble_outline,
+          title: 'Bugün ne yesen?',
+          message: 'Kilerine göre öneri yaparım.',
+          footer: const Chip(label: Text('Hafif bir şey öner')),
+          actionLabel: 'Başla',
+          onAction: () {},
+        ),
+      );
+
+      expect(find.text('Hafif bir şey öner'), findsOneWidget);
+      expect(find.text('Başla'), findsOneWidget);
+    });
+
+    testWidgets('footer verilmezse hicbir sey eklenmez', (tester) async {
+      await ciz(
+        tester,
+        const EmptyState(icon: Icons.kitchen, title: 'Kilerin boş'),
+      );
+
+      expect(find.byType(Chip), findsNothing);
+    });
     testWidgets('varsayilan halde SADE ikon cizer (geriye uyum)',
         (tester) async {
       await ciz(

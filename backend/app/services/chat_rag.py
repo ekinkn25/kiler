@@ -177,7 +177,11 @@ async def build_candidates(
 
 
 # 3) Prompt olusturma
-def build_prompt(intent: ChatIntent, candidates: list[dict]) -> tuple[str, str]:
+def build_prompt(
+    intent: ChatIntent,
+    candidates: list[dict],
+    detected_names: Sequence[str] = (),
+) -> tuple[str, str]:
     kompakt = [
         {
             "id": c["id"],
@@ -191,6 +195,17 @@ def build_prompt(intent: ChatIntent, candidates: list[dict]) -> tuple[str, str]:
     ]
     aday_json = json.dumps({"adaylar": kompakt}, ensure_ascii=False)
 
+    # Foto varsa gorme modelinin bulduklari LLM'e VERILIR. Bu satir
+    # olmadan model fotografta ne oldugunu bilemez ve 'taniyamiyorum' der.
+    foto_notu = ""
+    if detected_names:
+        liste = ", ".join(detected_names)
+        foto_notu = (
+            f'\nKullanicinin GONDERDIGI FOTOGRAFTA su malzemeler goruldu: '
+            f'{liste}.\nBu malzemeleri KULLANARAK yapilabilecek adaylari one '
+            f'cikar ve mesajinda bu malzemelere deginebilirsin.\n'
+        )
+
     system_prompt = (
         "Sen bir yemek tarifi onerme asistanisin. SADECE sana verilen aday "
         "listesinden secim yapabilirsin. Listede OLMAYAN hicbir tarifi "
@@ -203,7 +218,8 @@ def build_prompt(intent: ChatIntent, candidates: list[dict]) -> tuple[str, str]:
         "alanlarindan biri olmali, baska bir sey OLAMAZ."
     )
     user_prompt = (
-        f'Kullanicinin istegi: "{intent.raw_message}"\n\n'
+        f'Kullanicinin istegi: "{intent.raw_message}"\n'
+        f"{foto_notu}\n"
         f"{ADAYLAR_BASI}\n{aday_json}\n{ADAYLAR_SONU}\n\n"
         "Yukaridaki adaylardan en uygun 1-3 tanesini sec."
     )
@@ -333,7 +349,10 @@ async def chat_completion(
     adaylar, filtreler = await build_candidates(db, mongo_db, user, intent)
 
     anahtar = _cache_key(user, intent, [a["id"] for a in adaylar])
-    onbellek = _cache_oku(db, anahtar)
+    # Fotografli istekte ONBELLEK ATLANIR: tespit edilen malzemeler
+    # onbellek anahtarina girmiyor, yoksa foto yaniti metin sorgusunun
+    # bayat yanitina dusebilir.
+    onbellek = None if detected else _cache_oku(db, anahtar)
 
     db.add(ChatMessage(
         conversation_id=konusma.id, role=ChatRole.USER, content=message,
@@ -349,14 +368,15 @@ async def chat_completion(
         model_adi = prompt_tok = tamamlama_tok = None
         from_cache = True
     else:
-        system_prompt, user_prompt = build_prompt(intent, adaylar)
+        system_prompt, user_prompt = build_prompt(intent, adaylar, detected_names=[d.display_name for d in detected])
         saglayici = get_chat_provider()
         sonuc = await saglayici.complete(system_prompt, user_prompt)
         mesaj, onerilen = parse_and_validate(sonuc.data, adaylar)
         model_adi = sonuc.usage.model
         prompt_tok, tamamlama_tok = sonuc.usage.prompt_tokens, sonuc.usage.completion_tokens
         from_cache = False
-        _cache_yaz(db, anahtar, {"mesaj": mesaj, "onerilen_tarif_idleri": onerilen}, model_adi)
+        if not detected:
+            _cache_yaz(db, anahtar, {"mesaj": mesaj, "onerilen_tarif_idleri": onerilen}, model_adi)
 
     db.add(ChatMessage(
         conversation_id=konusma.id, role=ChatRole.ASSISTANT, content=mesaj,

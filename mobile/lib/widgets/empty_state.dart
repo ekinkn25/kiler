@@ -18,6 +18,7 @@ class EmptyState extends StatelessWidget {
     this.secondaryActionIcon,
     this.onSecondaryAction,
     this.illustrated = false,
+    this.footer,
   });
 
   final IconData icon;
@@ -30,6 +31,7 @@ class EmptyState extends StatelessWidget {
   final IconData? secondaryActionIcon;
   final VoidCallback? onSecondaryAction;
   final bool illustrated; // true ise büyük görsel çizilir
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,10 @@ class EmptyState extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
+              if (footer != null ) ...[
+                const SizedBox(height: 24,),
+                footer!,
+              ],
               if (message != null) ...[
                 const SizedBox(height: 8),
                 Text(
