@@ -220,6 +220,34 @@ async def create_meal_log(
     )
     return kayit
 
+def _makro_hedefleri(profil, hedef_kcal: float) -> MacroBreakdown:
+    """Gunluk makro hedefleri.
+
+    Profilde deger varsa onu kullanir; YOKSA kalori hedefinden makul bir
+    varsayilan turetir - onboarding'i 'Atla' ile gecen kullaniciya da
+    anlamli bir hedef gosterilsin, '0 g' gorunmesin.
+
+    Dagilim: protein %20, karbonhidrat %50, yag %30 (kcal payi).
+    Lif: 14 g / 1000 kcal (diyet rehberi degeri).
+    """
+    protein = (
+        float(profil.protein_target_g)
+        if profil and profil.protein_target_g
+        else round(hedef_kcal * 0.20 / 4, 1)
+    )
+    carb = (
+        float(profil.carb_target_g)
+        if profil and profil.carb_target_g
+        else round(hedef_kcal * 0.50 / 4, 1)
+    )
+    fat = (
+        float(profil.fat_target_g)
+        if profil and profil.fat_target_g
+        else round(hedef_kcal * 0.30 / 9, 1)
+    )
+    fiber = round(hedef_kcal / 1000 * 14, 1)
+    return MacroBreakdown(protein_g=protein, carb_g=carb, fat_g=fat, fiber_g=fiber)
+
 
 def get_daily_summary(db: Session, user: User, hedef_tarih: date) -> dict:
     """Verilen günün tüm kayıtlarını toplar ve öğün tipine göre gruplar."""
@@ -239,13 +267,7 @@ def get_daily_summary(db: Session, user: User, hedef_tarih: date) -> dict:
         fat_g=round(sum(k.fat_g or 0 for k in kayitlar), 1),
         fiber_g=round(sum(k.fiber_g or 0 for k in kayitlar), 1),
     )
-    makro_hedef = MacroBreakdown(
-        protein_g=float(profil.protein_target_g) if profil and profil.protein_target_g else 0,
-        carb_g=float(profil.carb_target_g) if profil and profil.carb_target_g else 0,
-        fat_g=float(profil.fat_target_g) if profil and profil.fat_target_g else 0,
-        # UserProfile'da fiber hedefi tanimli degil (W2-T13 kapsaminda eklenebilir); simdilik 0.
-        fiber_g=0,
-    )
+    makro_hedef = _makro_hedefleri(profil, hedef_kcal)
 
     gruplu: dict = {}
     for k in kayitlar:

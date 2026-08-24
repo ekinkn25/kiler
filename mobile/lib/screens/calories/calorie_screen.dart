@@ -17,6 +17,7 @@ import '../../widgets/chat/shot_guide.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/loading_skeleton.dart';
 import '../../models/meal_estimate.dart';
+import '../../widgets/calories/food_entry_sheet.dart';
 
 /// KALORI sekmesi (W3-T14 + W3-T15).
 ///
@@ -74,25 +75,37 @@ class _CalorieScreenState extends ConsumerState<CalorieScreen> {
     }
   }
 
-    /// Fotografsiz, tamamen elle ogun ekleme (kullanici her seyi doldurur).
+  /// Fotografsiz, tamamen elle ogun ekleme (kullanici her seyi doldurur).
+  /// Yazarak ekleme: once yiyecek ara (kalori otomatik). Listede yoksa
+  /// serbest giris (kalori elle) yoluna dusulur.
   Future<void> _elleEkle() async {
     final String gun = ref.read(selectedDateProvider);
-    // Bos tahmin: onay karti elle doldurulmaya acilir (kalori alani gorunur).
-    const bosTahmin = MealEstimate(
-      dishName: '',
-      portion: 'orta',
-      estimatedGrams: 0,
-      imageHash: '',
-    );
-    final eklendi = await showMealConfirmSheet(
-      context,
-      tahmin: bosTahmin,
-      date: gun,
-      manuel: true,
-    );
-    if (eklendi == true && mounted) {
+    final sonuc = await showFoodEntrySheet(context, date: gun);
+    if (!mounted) return;
+
+    if (sonuc == 'eklendi') {
       ref.invalidate(dailySummaryProvider(gun));
       _bilgi('Öğün günlüğe eklendi.');
+      return;
+    }
+    if (sonuc == 'elle') {
+      // Serbest giris: her seyi kullanici doldurur (kalori dahil).
+      const bosTahmin = MealEstimate(
+        dishName: '',
+        portion: 'orta',
+        estimatedGrams: 0,
+        imageHash: '',
+      );
+      final eklendi = await showMealConfirmSheet(
+        context,
+        tahmin: bosTahmin,
+        date: gun,
+        manuel: true,
+      );
+      if (eklendi == true && mounted) {
+        ref.invalidate(dailySummaryProvider(gun));
+        _bilgi('Öğün günlüğe eklendi.');
+      }
     }
   }
 
