@@ -1,21 +1,26 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../core/network/api_exception.dart';
+import '../../models/enums.dart';
 import '../../models/pantry_item.dart';
 import '../../providers/pantry_provider.dart';
+import '../../providers/shopping_provider.dart';
+import '../../widgets/chat/detected_ingredients_sheet.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/ingredient_search_dialog.dart';
 import '../../widgets/loading_skeleton.dart';
 import '../../widgets/pantry/pantry_item_tile.dart';
 
-/// KILER sekmesi (W3-T18).
+/// KILER sekmesi (W3-T18 + W3-T21).
 ///
-/// ELLE METIN GIRISI YOK (kapsam karari): kiler yalnizca barkod okutma
-/// ve fotograf tanima ile dolar. Bu yuzden ekranda '+ ekle' alani degil,
-/// ust barda iki yonlendirme butonu var.
+/// '+' menusu: Kamera (fotograftan tespit), Barkod (W3-T20 - simdilik
+/// placeholder), Yazi ile ekle. Ust barda alisveris listesine kisayol.
 class PantryScreen extends ConsumerStatefulWidget {
   const PantryScreen({super.key});
 
@@ -24,22 +29,31 @@ class PantryScreen extends ConsumerStatefulWidget {
 }
 
 class _PantryScreenState extends ConsumerState<PantryScreen> {
-  /// Istegi suren satir. Ayni satira cift dokunusu engeller.
+  final ImagePicker _secici = ImagePicker();
   int? _islemdekiId;
+  bool _mesgul = false;
 
-  Future<void> _durumDegistir(PantryItem kayit, {required bool stillHave}) async {
+  // ---------------------------------------------------------------
+  // Durum degistirme (var / emin degilim / yok)
+  // ---------------------------------------------------------------
+
+  Future<void> _durumDegistir(PantryItem kayit, Availability hedef) async {
     setState(() => _islemdekiId = kayit.id);
     try {
-      await ref.read(pantryProvider.notifier).durumDegistir(
-            kayit.id,
-            stillHave: stillHave,
-          );
+      await ref.read(pantryProvider.notifier).durumDegistir(kayit.id, hedef: hedef);
       if (!mounted) return;
-      _bilgi(
-        stillHave
-            ? '${kayit.ingredient.displayName} için 7 gün daha sayacağız.'
-            : '${kayit.ingredient.displayName} listeden çıkarıldı.',
-      );
+
+      if (hedef == Availability.finished) {
+        // 'Yok' -> kilerden dustu, alisveris listesine ekle.
+        await ref.read(shoppingListProvider.notifier)
+            .elleEkle(kayit.ingredient.displayName);
+        if (!mounted) return;
+        _bilgi('${kayit.ingredient.displayName} bitti; alışveriş listene eklendi.');
+      } else if (hedef == Availability.unknown) {
+        _bilgi('${kayit.ingredient.displayName} "emin değiliz"e taşındı.');
+      } else {
+        _bilgi('${kayit.ingredient.displayName} için 7 gün daha sayacağız.');
+      }
     } catch (hata) {
       if (!mounted) return;
       _bilgi('Güncellenemedi: ${friendlyErrorMessage(hata)}');
@@ -48,13 +62,112 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
     }
   }
 
+  // ---------------------------------------------------------------
+  // '+' menusu: kamera / barkod / yazi
+  // ---------------------------------------------------------------
+
+  Future<void> _ekleMenusu() async {
+    final secim = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('Fotoğraf çek'),
+              subtitle: const Text('Malzemeleri tanıyıp ekleyeyim'),
+              onTap: () => Navigator.of(context).pop('foto'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.qr_code_scanner),
+              title: const Text('Barkod okut'),
+              onTap: () => Navigator.of(context).pop('barkod'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Yazarak ekle'),
+              subtitle: const Text('Örn: elma, süt, yumurta'),
+              onTap: () => Navigator.of(context).pop('yazi'),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+    if (secim == null || !mounted) return;
+
+    switch (secim) {
+      case 'foto':
+        await _fotoylaEkle();
+      case 'barkod':
+        // W3-T20 kapsaminda; simdilik placeholder.
+        if (mounted) unawaited(context.push('/tara'));
+      case 'yazi':
+        await _yazarakEkle();
+    }
+  }
+
+  Future<void> _yazarakEkle() async {
+    final malzeme = await showIngredientSearchDialog(context);
+    if (malzeme == null || !mounted) return;
+    try {
+      await ref.read(pantryProvider.notifier).elleEkle(malzeme.id);
+      if (!mounted) return;
+      _bilgi('${malzeme.displayName} kilerine eklendi.');
+    } catch (hata) {
+      if (!mounted) return;
+      _bilgi('Eklenemedi: ${friendlyErrorMessage(hata)}');
+    }
+  }
+
+  Future<void> _fotoylaEkle() async {
+    try {
+      final XFile? secilen = await _secici.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1600,
+        imageQuality: 80,
+      );
+      if (secilen == null || !mounted) return;
+
+      setState(() => _mesgul = true);
+      final tespitler = await ref
+          .read(pantryConfirmServiceProvider)
+          .fotodanTespit(File(secilen.path));
+      if (!mounted) return;
+      setState(() => _mesgul = false);
+
+      final secilenCanonical =
+          await showDetectedIngredientsSheet(context, tespitler: tespitler);
+      if (secilenCanonical == null || secilenCanonical.isEmpty || !mounted) {
+        return;
+      }
+
+      final adet = await ref
+          .read(pantryConfirmServiceProvider)
+          .kilereEkle(secilenCanonical);
+      if (!mounted) return;
+      await ref.read(pantryProvider.notifier).yenile();
+      _bilgi('$adet malzeme kilerine eklendi.');
+    } catch (hata) {
+      if (!mounted) return;
+      setState(() => _mesgul = false);
+      _bilgi('Fotoğraf işlenemedi: ${friendlyErrorMessage(hata)}');
+    }
+  }
+
   void _bilgi(String mesaj) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        SnackBar(content: Text(mesaj), duration: const Duration(seconds: 2)),
+        SnackBar(content: Text(mesaj), duration: const Duration(seconds: 3)),
       );
   }
+
+  // ---------------------------------------------------------------
+  // Gorunum
+  // ---------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -66,14 +179,20 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
         centerTitle: false,
         actions: [
           IconButton(
-            tooltip: 'Fotoğraf Çek',
-            icon: const Icon(Icons.photo_camera_outlined),
-            onPressed: () => context.push('/foto'),
+            tooltip: 'Alışveriş listesi',
+            icon: const Icon(Icons.shopping_cart_outlined),
+            onPressed: () => context.push('/alisveris'),
           ),
           IconButton(
-            tooltip: 'Barkod Okut',
-            icon: const Icon(Icons.qr_code_scanner),
-            onPressed: () => context.push('/tara'),
+            tooltip: 'Ekle',
+            icon: _mesgul
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2.5),
+                  )
+                : const Icon(Icons.add),
+            onPressed: _mesgul ? null : () => unawaited(_ekleMenusu()),
           ),
         ],
       ),
@@ -110,13 +229,10 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
         icon: Icons.kitchen_outlined,
         illustrated: true,
         title: 'Kilerin henüz boş',
-        message: 'Fotoğraf çekerek ya da barkod okutarak doldurabilirsin.',
-        actionLabel: 'Fotoğraf çek',
-        actionIcon: Icons.photo_camera_outlined,
-        onAction: () => context.push('/foto'),
-        secondaryActionLabel: 'Barkod okut',
-        secondaryActionIcon: Icons.qr_code_scanner,
-        onSecondaryAction: () => context.push('/tara'),
+        message: 'Fotoğraf, barkod ya da yazarak ekleyebilirsin.',
+        actionLabel: 'Malzeme ekle',
+        actionIcon: Icons.add,
+        onAction: () => unawaited(_ekleMenusu()),
       );
     }
 
@@ -126,12 +242,14 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         children: [
           if (gruplar.kesinVar.isNotEmpty) ...[
-            _BolumBasligi(
-              baslik: 'Kesin var',
-              adet: gruplar.kesinVar.length,
-            ),
+            _BolumBasligi(baslik: 'Kesin var', adet: gruplar.kesinVar.length),
             for (final kayit in gruplar.kesinVar)
-              PantryItemTile(item: kayit),
+              PantryItemTile(
+                item: kayit,
+                busy: _islemdekiId == kayit.id,
+                onStatusChange: (hedef) =>
+                    unawaited(_durumDegistir(kayit, hedef)),
+              ),
             const SizedBox(height: 20),
           ],
           if (gruplar.eminDegiliz.isNotEmpty) ...[
@@ -144,10 +262,8 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
               PantryItemTile(
                 item: kayit,
                 busy: _islemdekiId == kayit.id,
-                onStillHave: () =>
-                    unawaited(_durumDegistir(kayit, stillHave: true)),
-                onFinished: () =>
-                    unawaited(_durumDegistir(kayit, stillHave: false)),
+                onStatusChange: (hedef) =>
+                    unawaited(_durumDegistir(kayit, hedef)),
               ),
           ],
         ],
@@ -157,11 +273,7 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
 }
 
 class _BolumBasligi extends StatelessWidget {
-  const _BolumBasligi({
-    required this.baslik,
-    required this.adet,
-    this.aciklama,
-  });
+  const _BolumBasligi({required this.baslik, required this.adet, this.aciklama});
 
   final String baslik;
   final int adet;
@@ -184,10 +296,7 @@ class _BolumBasligi extends StatelessWidget {
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(width: 8),
-              Text(
-                '($adet)',
-                style: TextStyle(color: renkler.onSurfaceVariant),
-              ),
+              Text('($adet)', style: TextStyle(color: renkler.onSurfaceVariant)),
             ],
           ),
           if (aciklama != null)

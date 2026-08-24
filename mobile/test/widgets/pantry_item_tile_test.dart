@@ -31,8 +31,7 @@ void main() {
   Future<void> ciz(
     WidgetTester tester,
     PantryItem kayit, {
-    VoidCallback? onStillHave,
-    VoidCallback? onFinished,
+    void Function(Availability)? onStatusChange,
   }) {
     return tester.pumpWidget(
       MaterialApp(
@@ -40,78 +39,55 @@ void main() {
         home: Scaffold(
           body: PantryItemTile(
             item: kayit,
-            onStillHave: onStillHave,
-            onFinished: onFinished,
+            onStatusChange: onStatusChange ?? (_) {},
           ),
         ),
       ),
     );
   }
 
-  testWidgets('kesin var satirinda kalan gun yazar, hizli buton YOK',
-      (tester) async {
+  testWidgets('kesin var satirinda kalan gun ve rozet gorunur', (tester) async {
     await ciz(tester, kayitUret());
 
     expect(find.text('Domates'), findsOneWidget);
     expect(find.text('Kesin var'), findsOneWidget);
     expect(find.text('5 gün sonra soracağız'), findsOneWidget);
-    // 'Kesin var' bolumunde dogrulama istemiyoruz.
-    expect(find.text('Var'), findsNothing);
-    expect(find.text('Bitti'), findsNothing);
   });
 
-  testWidgets('emin degiliz satirinda [Var] ve [Bitti] cikar', (tester) async {
-    await ciz(
-      tester,
-      kayitUret(availability: Availability.unknown, daysRemaining: 0),
-      onStillHave: () {},
-      onFinished: () {},
-    );
+  testWidgets('durum rozetine dokununca 3 secenek acilir', (tester) async {
+    await ciz(tester, kayitUret());
 
-    expect(find.text('Emin değiliz'), findsOneWidget);
+    await tester.tap(find.byType(PopupMenuButton<Availability>));
+    await tester.pumpAndSettle();
+
     expect(find.text('Var'), findsOneWidget);
-    expect(find.text('Bitti'), findsOneWidget);
-    expect(find.text('Hâlâ var mı?'), findsOneWidget);
+    expect(find.text('Emin değilim'), findsOneWidget);
+    expect(find.text('Yok (alışverişe ekle)'), findsOneWidget);
   });
 
-  testWidgets('butonlar dogru geri cagriyi tetikler', (tester) async {
-    var varBasildi = false;
-    var bittiBasildi = false;
+  testWidgets('secim dogru hedefi geri cagirir', (tester) async {
+    Availability? secilen;
+    await ciz(tester, kayitUret(), onStatusChange: (h) => secilen = h);
 
-    await ciz(
-      tester,
-      kayitUret(availability: Availability.unknown),
-      onStillHave: () => varBasildi = true,
-      onFinished: () => bittiBasildi = true,
-    );
+    await tester.tap(find.byType(PopupMenuButton<Availability>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Yok (alışverişe ekle)'));
+    await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Var'));
-    await tester.pump();
-    expect(varBasildi, isTrue);
-    expect(bittiBasildi, isFalse);
-
-    await tester.tap(find.text('Bitti'));
-    await tester.pump();
-    expect(bittiBasildi, isTrue);
+    expect(secilen, Availability.finished);
   });
 
   testWidgets('kaynak rozeti kaynaga gore degisir', (tester) async {
+    await ciz(tester, kayitUret(source: PantrySource.manuel));
+    expect(find.text('Elle'), findsOneWidget);
+
     await ciz(tester, kayitUret(source: PantrySource.barkod));
     expect(find.text('Barkod'), findsOneWidget);
-
-    await ciz(tester, kayitUret(source: PantrySource.foto));
-    expect(find.text('Fotoğraf'), findsOneWidget);
   });
 
-  testWidgets('kalan gun bilinmiyorsa sure metni bos gecer', (tester) async {
-    await ciz(tester, kayitUret(daysRemaining: null));
-
-    expect(tester.takeException(), isNull);
-    expect(find.textContaining('gün sonra'), findsNothing);
-  });
-
-  testWidgets('bugun soracagiz durumu', (tester) async {
-    await ciz(tester, kayitUret(daysRemaining: 0));
-    expect(find.text('Bugün soracağız'), findsOneWidget);
+  testWidgets('emin degiliz satirinda "Hâlâ var mı?" yazar', (tester) async {
+    await ciz(tester, kayitUret(availability: Availability.unknown));
+    expect(find.text('Emin değiliz'), findsOneWidget);
+    expect(find.text('Hâlâ var mı?'), findsOneWidget);
   });
 }

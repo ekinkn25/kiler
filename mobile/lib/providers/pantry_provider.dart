@@ -4,6 +4,10 @@ import '../core/network/dio_client.dart';
 import '../models/enums.dart';
 import '../models/pantry_item.dart';
 import 'package:dio/dio.dart';
+import '../core/network/multipart_helper.dart';
+import '../models/detected_ingredient.dart';
+import '../models/ingredient_lite.dart';
+import 'dart:io';
 
 /// Kiler listesi (W3-T18).
 ///
@@ -34,22 +38,31 @@ class PantryNotifier extends AsyncNotifier<List<PantryItem>> {
   ///
   /// still_have=false -> kayit 'bitti' olur ve backend'in varsayilan
   /// listesinden duser; bu yuzden yerelde de listeden CIKARILIR.
-  Future<void> durumDegistir(int itemId, {required bool stillHave}) async {
+  Future<void> durumDegistir(int itemId, {required Availability hedef}) async {
     final mevcut = state.valueOrNull;
     if (mevcut == null) return;
 
     final dio = ref.read(dioProvider);
     final response = await dio.patch<Map<String, dynamic>>(
       '/pantry/$itemId',
-      data: {'still_have': stillHave},
+      data: {'availability': availabilityToJson(hedef)},
     );
     final guncel = PantryItem.fromJson(response.data!);
 
     state = AsyncData(
-      stillHave
-          ? [for (final k in mevcut) if (k.id == itemId) guncel else k]
-          : [for (final k in mevcut) if (k.id != itemId) k],
+      hedef == Availability.finished
+          ? [for (final k in mevcut) if (k.id != itemId) k]
+          : [for (final k in mevcut) if (k.id == itemId) guncel else k],
     );
+  }
+
+  Future<void> elleEkle(int ingredientId) async {
+    final dio = ref.read(dioProvider);
+    await dio.post<Map<String, dynamic>>(
+      '/pantry/items',
+      data: {'ingredient_id': ingredientId},
+    );
+    await yenile();
   }
 }
 
@@ -93,8 +106,39 @@ class PantryConfirmService {
         (response.data?['confirmed'] as List<dynamic>?) ?? const [];
     return onaylanan.length;
   }
+
+  /// Fotografi POST /vision/ingredients'e gonderir, tespitleri doner.
+  /// Kiler ekranindaki '+' -> Kamera akisi bunu kullanir.
+  Future<List<DetectedIngredient>> fotodanTespit(File dosya) async {
+    final form = await MultipartHelper.singleImageForm(dosya);
+    final response =
+        await _dio.post<List<dynamic>>('/vision/ingredients', data: form);
+    return (response.data ?? const [])
+        .map((e) => DetectedIngredient.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 }
 
 final pantryConfirmServiceProvider = Provider<PantryConfirmService>(
   (ref) => PantryConfirmService(ref.read(dioProvider)),
 );
+
+
+/// Malzeme arama (elle ekleme icin). GET /catalog/ingredients/search.
+///
+/// family anahtari arama METNI. 2 karakterden kisa sorgu ag'a cikmaz -
+/// her tus basiminda istek atmamak icin.
+final ingredientSearchProvider =
+    FutureProvider.autoDispose.family<List<IngredientLite>, String>((ref, q) async {
+  final sorgu = q.trim();
+  if (sorgu.length < 2) return const [];
+
+  final dio = ref.read(dioProvider);
+  final response = await dio.get<List<dynamic>>(
+    '/catalog/ingredients/search',
+    queryParameters: {'q': sorgu, 'limit': 15},
+  );
+  return response.data!
+      .map((e) => IngredientLite.fromJson(e as Map<String, dynamic>))
+      .toList();
+});

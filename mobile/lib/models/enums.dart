@@ -51,13 +51,14 @@ String availabilityToJson(Availability value) => switch (value) {
   Availability.finished => 'bitti',
 };
 
-enum PantrySource { barkod, foto, tarif, sistem }
+enum PantrySource { barkod, foto, tarif, sistem, manuel}
 
 PantrySource pantrySourceFromJson(String value) => switch (value) {
   'barkod' => PantrySource.barkod,
   'foto' => PantrySource.foto,
   'tarif' => PantrySource.tarif,
   'sistem' => PantrySource.sistem,
+  'manuel' => PantrySource.manuel,
   _ => throw ArgumentError('Bilinmeyen pantry source: $value'),
 };
 
@@ -66,6 +67,7 @@ String pantrySourceToJson(PantrySource value) => switch (value) {
   PantrySource.foto => 'foto',
   PantrySource.tarif => 'tarif',
   PantrySource.sistem => 'sistem',
+  PantrySource.manuel => 'manuel',
 };
 
 enum ChatRole { user, assistant }
