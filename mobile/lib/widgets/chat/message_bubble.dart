@@ -5,6 +5,7 @@ import '../../models/enums.dart';
 import '../../providers/chat_provider.dart';
 import 'recipe_mini_card.dart';
 import '../../core/network/api_exception.dart';
+import 'dart:io';
 
 /// Tek mesaj baloncugu.
 ///
@@ -13,9 +14,13 @@ import '../../core/network/api_exception.dart';
 /// kirpilir - konusma yonunu renkten bagimsiz olarak da belli eder,
 /// renk koru kullanicilar icin onemli (W4-T09).
 class MessageBubble extends ConsumerWidget {
-  const MessageBubble({required this.entry, super.key});
+  const MessageBubble({required this.entry, this.onDetectedTap, super.key});
 
   final ChatEntry entry;
+
+  /// 'Kilerine ekle' butonuna dokununca cagirilir. Onay alt sayfasini
+  /// EKRAN acar; baloncuk navigasyon bilmez.
+  final ValueChanged<ChatEntry>? onDetectedTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,12 +56,42 @@ class MessageBubble extends ConsumerWidget {
                     bottomRight: const Radius.circular(16),
                   ),
                 ),
-                child: SelectableText(
-                  entry.text,
-                  style: TextStyle(
-                    color: kullanici ? renkler.onPrimary : renkler.onSurface,
-                    height: 1.35,
-                  ),
+                                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Gonderilen fotografin onizlemesi. Kullanici neyi
+                    // yolladigini gormeli - 'gitti mi' belirsizligi kalkar.
+                    if (entry.imagePath != null) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          File(entry.imagePath!),
+                          width: 180,
+                          height: 135,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stack) => Container(
+                            width: 180,
+                            height: 135,
+                            color: renkler.surfaceContainerHighest,
+                            child: Icon(
+                              Icons.broken_image_outlined,
+                              color: renkler.outline,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    SelectableText(
+                      entry.text,
+                      style: TextStyle(
+                        color:
+                            kullanici ? renkler.onPrimary : renkler.onSurface,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -67,6 +102,17 @@ class MessageBubble extends ConsumerWidget {
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: enFazlaGenislik + 40),
               child: _MiniKartlar(recipeIds: entry.recipeIds),
+            ),
+
+                    // Fotograftan malzeme cikmissa onay yolu (W3-T13).
+          if (entry.detected.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: OutlinedButton.icon(
+                onPressed: () => onDetectedTap?.call(entry),
+                icon: const Icon(Icons.kitchen_outlined, size: 18),
+                label: Text('${entry.detected.length} malzeme · Kilerine ekle'),
+              ),
             ),
 
           if (entry.status == ChatStatus.hatali)

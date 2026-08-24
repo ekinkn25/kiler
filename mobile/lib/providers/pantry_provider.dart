@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/network/dio_client.dart';
 import '../models/enums.dart';
 import '../models/pantry_item.dart';
+import 'package:dio/dio.dart';
 
 /// Kiler listesi (W3-T18).
 ///
@@ -67,3 +68,33 @@ final pantryGroupsProvider = Provider<({List<PantryItem> kesinVar, List<PantryIt
     eminDegiliz: liste.where((k) => k.availability == Availability.unknown).toList(),
   );
 });
+
+/// Fotograftan tespit edilen malzemeleri kilere yazar (W3-T13).
+///
+/// Ayri bir servis: sohbet ekrani kiler LISTESINI dinlemiyor, yalnizca
+/// yazma islemi yapiyor. Notifier'a koymak gereksiz bagimlilik olurdu.
+class PantryConfirmService {
+  const PantryConfirmService(this._dio);
+
+  final Dio _dio;
+
+  /// Doner: kilere gercekten yazilan malzeme sayisi.
+  ///
+  /// Sozlukte karsiligi olmayan adlar backend tarafinda ATLANIR
+  /// (skipped_unknown), bu yuzden donen sayi gonderilenden az olabilir.
+  Future<int> kilereEkle(List<String> canonicalNames) async {
+    if (canonicalNames.isEmpty) return 0;
+
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/pantry/confirm-detected',
+      data: {'canonical_name': canonicalNames, 'source': 'foto'},
+    );
+    final onaylanan =
+        (response.data?['confirmed'] as List<dynamic>?) ?? const [];
+    return onaylanan.length;
+  }
+}
+
+final pantryConfirmServiceProvider = Provider<PantryConfirmService>(
+  (ref) => PantryConfirmService(ref.read(dioProvider)),
+);

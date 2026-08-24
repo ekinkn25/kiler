@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +6,7 @@ import '../core/network/api_exception.dart';
 import '../core/network/dio_client.dart';
 import '../core/network/multipart_helper.dart';
 import '../models/chat_reply.dart';
+import '../models/detected_ingredient.dart';
 import '../models/enums.dart';
 import '../models/recipe_mini.dart';
 
@@ -19,6 +21,8 @@ class ChatEntry {
     required this.role,
     required this.text,
     this.recipeIds = const [],
+    this.detected = const [],
+    this.imagePath,
     this.status = ChatStatus.tamam,
     this.hata,
   });
@@ -33,6 +37,9 @@ class ChatEntry {
   /// Asistan yanitindaki onerilen tarifler (mini kart olarak cizilir).
   final List<String> recipeIds;
 
+  final List<DetectedIngredient> detected;
+  final String? imagePath;
+
   final ChatStatus status;
   final String? hata;
 
@@ -44,6 +51,8 @@ class ChatEntry {
     role: role,
     text: text,
     recipeIds: recipeIds,
+    detected: detected,
+    imagePath: imagePath,
     status: yeniDurum,
     hata: hata,
   );
@@ -55,6 +64,7 @@ class ChatState {
     this.entries = const [],
     this.yaziyor = false,
     this.conversationId,
+    this.yuklemeOrani,
   });
 
   final List<ChatEntry> entries;
@@ -66,16 +76,19 @@ class ChatState {
   /// konusmaya yazsin. Gonderilmezse her mesaj yeni sohbet acar ve
   /// baglam kaybolur.
   final int? conversationId;
+  final double? yuklemeOrani;
 
   ChatState copyWith({
     List<ChatEntry>? entries,
     bool? yaziyor,
     int? conversationId,
+    double? yuklemeOrani,
   }) => ChatState(
     entries: entries ?? this.entries,
     yaziyor: yaziyor ?? this.yaziyor,
     // conversationId yalnizca SET edilir, hic temizlenmez.
     conversationId: conversationId ?? this.conversationId,
+    yuklemeOrani: yaziyor == false ? null : (yuklemeOrani ?? this.yuklemeOrani),
   );
 }
 
@@ -85,18 +98,22 @@ class ChatState {
 /// konusma kaybolmamali. Backend'de sohbet gecmisi okuma ucu YOK, yani
 /// state kaybolursa konusma geri getirilemez.
 class ChatNotifier extends Notifier<ChatState> {
+  static const String fotoVarsayilanMetin= 'Bu fotoğraftaki malzemeler neler?';
+
   @override
   ChatState build() => const ChatState();
 
-  Future<void> gonder(String metin) async {
+  Future<void> gonder(String metin, {File? dosya}) async {
     final temiz = metin.trim();
     // Yanit beklenirken ikinci mesaj gonderilirse konusma sirasi bozulur.
-    if (temiz.isEmpty || state.yaziyor) return;
+    if (state.yaziyor) return;
+    if (temiz.isEmpty && dosya == null) return;
 
     final girdi = ChatEntry(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       role: ChatRole.user,
-      text: temiz,
+      text: temiz.isEmpty ? fotoVarsayilanMetin : temiz,
+      imagePath: dosya?.path,
       status: ChatStatus.gonderiliyor,
     );
     state = state.copyWith(entries: [...state.entries, girdi], yaziyor: true);
@@ -119,13 +136,22 @@ class ChatNotifier extends Notifier<ChatState> {
   Future<void> _istekAt(ChatEntry girdi) async {
     try {
       final dio = ref.read(dioProvider);
+      final File? dosya = girdi.imagePath == null ? null : File(girdi.imagePath!);
       // Uc JSON DEGIL multipart/form-data bekliyor (Form alanlari).
       // Duz JSON gonderilirse 422 doner.
       final form = await MultipartHelper.chatForm(
         message: girdi.text,
         conversationId: state.conversationId,
+        file: dosya,
       );
-      final response = await dio.post<Map<String, dynamic>>('/chat', data: form);
+      final response = await dio.post<Map<String, dynamic>>('/chat', data: form,
+        onSendProgress: dosya == null
+          ? null
+          : (gonderilen, toplam) {
+            if (toplam <= 0) return;
+            state = state.copyWith(yuklemeOrani: gonderilen / toplam);
+          },
+      );
       final yanit = ChatReply.fromJson(response.data!);
 
       state = state.copyWith(
@@ -137,6 +163,7 @@ class ChatNotifier extends Notifier<ChatState> {
             role: ChatRole.assistant,
             text: yanit.mesaj,
             recipeIds: yanit.onerilenTarifIdleri,
+            detected: yanit.detectedIngredients,
           ),
         ],
         yaziyor: false,
