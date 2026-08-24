@@ -1,0 +1,261 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../core/network/api_exception.dart';
+import '../../models/meal_estimate.dart';
+import '../../providers/meal_provider.dart';
+import '../app_button.dart';
+
+/// Tabak tahmininin DUZENLENEBILIR onay karti (W3-T15).
+///
+/// 'Tahmindir, duzeltebilirsin': yemek adi, porsiyon ve kalori hepsi
+/// degistirilebilir. Onaylaninca POST /meals ile gunluge yazilir.
+///
+/// Doner: true (eklendi) / null (vazgecildi).
+Future<bool?> showMealConfirmSheet(
+  BuildContext context, {
+  required MealEstimate tahmin,
+  required String date,
+}) {
+  return showModalBottomSheet<bool>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (context) => Padding(
+      // Klavye acilinca alan yukari itilsin.
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: _OnayGovdesi(tahmin: tahmin, date: date),
+    ),
+  );
+}
+
+class _OnayGovdesi extends ConsumerStatefulWidget {
+  const _OnayGovdesi({required this.tahmin, required this.date});
+
+  final MealEstimate tahmin;
+  final String date;
+
+  @override
+  ConsumerState<_OnayGovdesi> createState() => _OnayGovdesiState();
+}
+
+class _OnayGovdesiState extends ConsumerState<_OnayGovdesi> {
+  late final TextEditingController _adController =
+      TextEditingController(text: widget.tahmin.dishName);
+  late final TextEditingController _kaloriController = TextEditingController(
+    text: _seciliSecenek?.calories?.round().toString() ??
+        widget.tahmin.calories?.round().toString() ??
+        '',
+  );
+
+  late String _porsiyon = widget.tahmin.portion;
+  late String _ogunTipi = _varsayilanOgun();
+  bool _kaydediyor = false;
+
+  /// Gunun saatine gore mantikli varsayilan.
+  static String _varsayilanOgun() {
+    final int saat = DateTime.now().hour;
+    if (saat < 11) return 'kahvalti';
+    if (saat < 15) return 'ogle';
+    if (saat < 21) return 'aksam';
+    return 'atistirma';
+  }
+
+  static const Map<String, String> _ogunAdlari = {
+    'kahvalti': 'Kahvaltı',
+    'ogle': 'Öğle',
+    'aksam': 'Akşam',
+    'atistirma': 'Atıştırma',
+  };
+
+  static const Map<String, String> _porsiyonAdlari = {
+    'kucuk': 'Küçük',
+    'orta': 'Orta',
+    'buyuk': 'Büyük',
+  };
+
+  /// Secili porsiyona karsilik gelen secenek (gram+kalori hazir).
+  PortionOption? get _seciliSecenek {
+    for (final s in widget.tahmin.portionOptions) {
+      if (s.portion == _porsiyon) return s;
+    }
+    return null;
+  }
+
+  /// Sunulacak porsiyon boylari: backend secenek verdiyse onlar, yoksa
+  /// yalnizca tahminin kendi boyu.
+  List<String> get _porsiyonBoylari {
+    if (widget.tahmin.portionOptions.isEmpty) return [widget.tahmin.portion];
+    return widget.tahmin.portionOptions.map((s) => s.portion).toList();
+  }
+
+  void _porsiyonSec(String yeni) {
+    setState(() {
+      _porsiyon = yeni;
+      final kcal = _seciliSecenek?.calories;
+      // Porsiyon degisince kaloriyi guncelle - ama kullanici elle
+      // degistirdiyse ustune yazmamak icin yalnizca secenek varsa.
+      if (kcal != null) _kaloriController.text = kcal.round().toString();
+    });
+  }
+
+  Future<void> _kaydet() async {
+    final ad = _adController.text.trim();
+    final kcal = double.tryParse(_kaloriController.text.trim());
+
+    if (ad.isEmpty) {
+      _uyar('Yemek adı boş olamaz.');
+      return;
+    }
+    if (kcal == null || kcal <= 0) {
+      _uyar('Geçerli bir kalori gir.');
+      return;
+    }
+
+    setState(() => _kaydediyor = true);
+    try {
+      // Porsiyon oranina gore makrolari da olcekle: backend makrolari
+      // tahminin KENDI porsiyonuna gore verdi, boy degistiyse kaydir.
+      final double olcek = widget.tahmin.calories != null &&
+              widget.tahmin.calories! > 0
+          ? kcal / widget.tahmin.calories!
+          : 1;
+
+      await ref.read(mealPhotoServiceProvider).gunlugeYaz(
+            date: widget.date,
+            mealType: _ogunTipi,
+            dishName: ad,
+            calories: kcal,
+            grams: _seciliSecenek?.grams ?? widget.tahmin.estimatedGrams,
+            proteinG: _olcekli(widget.tahmin.proteinG, olcek),
+            carbG: _olcekli(widget.tahmin.carbG, olcek),
+            fatG: _olcekli(widget.tahmin.fatG, olcek),
+          );
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
+    } catch (hata) {
+      if (!mounted) return;
+      setState(() => _kaydediyor = false);
+      _uyar('Eklenemedi: ${friendlyErrorMessage(hata)}');
+    }
+  }
+
+  double? _olcekli(double? deger, double olcek) =>
+      deger == null ? null : deger * olcek;
+
+  void _uyar(String mesaj) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(mesaj)));
+  }
+
+  @override
+  void dispose() {
+    _adController.dispose();
+    _kaloriController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme renkler = Theme.of(context).colorScheme;
+    final TextTheme yazi = Theme.of(context).textTheme;
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 'Tahmindir' uyarisi: kullanici sayilarin kesin olmadigini
+            // bilmeli, kalori sayacinin guvenini sarsmasin.
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: renkler.secondaryContainer,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline,
+                      size: 18, color: renkler.onSecondaryContainer),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Bu bir tahmin; düzeltebilirsin.',
+                      style: yazi.bodySmall?.copyWith(
+                        color: renkler.onSecondaryContainer,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            TextField(
+              controller: _adController,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                labelText: 'Yemek adı',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            Text('Porsiyon', style: yazi.labelLarge),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final boy in _porsiyonBoylari)
+                  ChoiceChip(
+                    label: Text(_porsiyonAdlari[boy] ?? boy),
+                    selected: _porsiyon == boy,
+                    onSelected: (_) => _porsiyonSec(boy),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            TextField(
+              controller: _kaloriController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Kalori',
+                suffixText: 'kcal',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            Text('Hangi öğün?', style: yazi.labelLarge),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final tip in _ogunAdlari.keys)
+                  ChoiceChip(
+                    label: Text(_ogunAdlari[tip]!),
+                    selected: _ogunTipi == tip,
+                    onSelected: (_) => setState(() => _ogunTipi = tip),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            AppButton(
+              label: 'Günlüğe ekle',
+              icon: Icons.check,
+              loading: _kaydediyor,
+              onPressed: _kaydediyor ? null : _kaydet,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

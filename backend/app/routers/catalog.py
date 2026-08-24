@@ -1,7 +1,7 @@
 """Sozluk (lookup) uclari: onboarding'in diyet/alerjen cip listesi bunlardan beslenir."""
 from fastapi import APIRouter, Query
 
-from app.core.deps import DbSession
+from app.core.deps import DbSession, ActiveUser
 from app.models import Allergen, DietTag, Ingredient
 from app.schemas import AllergenRead, DietTagRead, IngredientRead
 
@@ -51,4 +51,29 @@ def list_ingredients(
         sorgu = sorgu.filter(Ingredient.canonical_name.in_(istenen))
 
     kayitlar = sorgu.order_by(Ingredient.display_name).limit(limit).all()
+    return [IngredientRead.model_validate(k) for k in kayitlar]
+
+@router.get(
+    "/ingredients/search",
+    response_model=list[IngredientRead],
+    summary="Malzeme arama (elle ekleme icin)",
+    description=(
+        "Yazilan metne gore malzeme onerir (W3-T21). Kiler ve alisveris "
+        "listesine elle ekleme akislari bunu besler."
+    ),
+)
+def search_ingredients(
+    db: DbSession,
+    current_user: ActiveUser,
+    q: str = Query(min_length=1, max_length=60, description="Arama metni"),
+    limit: int = Query(default=10, ge=1, le=30),
+) -> list[IngredientRead]:
+    kalip = f"%{q.strip()}%"
+    kayitlar = (
+        db.query(Ingredient)
+        .filter(Ingredient.display_name.ilike(kalip))
+        .order_by(Ingredient.display_name)
+        .limit(limit)
+        .all()
+    )
     return [IngredientRead.model_validate(k) for k in kayitlar]

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -16,6 +17,10 @@ from app.core.exceptions import NotFoundError
 from app.models.enums import Availability, PantryEventType, PantrySource, UnitType
 
 logger = logging.getLogger(__name__)
+
+
+def utcnow() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 @dataclass(frozen=True, slots=True)
@@ -114,26 +119,32 @@ def list_items(
 
 
 def set_availability(
-    db: Session, user: User, item_id: int, *, still_have: bool
+    db: Session, user: User, item_id: int, *, target: Availability
 ) -> PantryItem:
-    """[Var] / [Bitti] hizli aksiyonu.
+    """Uc durumlu hizli aksiyon (W3-T21).
 
-    still_have=True  -> 7 gunluk guven suresi BUGUNDEN yeniden baslar
-    still_have=False -> kayit 'bitti' olur, listeden duser
+    VAR        -> 7 gunluk guven suresi BUGUNDEN yeniden baslar
+    BILINMIYOR -> guven dusurulur ('Emin degiliz' bolumune duser)
+    BITTI      -> kayit 'bitti' olur, listeden duser
 
-    Her iki durumda da PantryEvent yazilir: kiler gecmisi append-only.
+    Her durumda PantryEvent yazilir: kiler gecmisi append-only.
     """
     kayit = db.get(PantryItem, item_id)
-    # 404 degil 403 ayrimi burada gereksiz: baskasinin kaydinin VAR
-    # oldugunu bile sizdirmiyoruz.
+    # 404 degil 403 ayrimi gereksiz: baskasinin kaydinin VAR oldugunu
+    # bile sizdirmiyoruz.
     if kayit is None or kayit.user_id != user.id:
         raise NotFoundError("Kiler kaydi bulunamadi.")
 
-    if still_have:
+    if target is Availability.VAR:
         kayit.confirm(kayit.source)
         olay = PantryEventType.DUZELTME
         not_metni = "Kullanici 'hala var' dedi, guven suresi yenilendi."
-    else:
+    elif target is Availability.BILINMIYOR:
+        kayit.availability = Availability.BILINMIYOR
+        kayit.confidence_expires_at = utcnow()  # suresi 'dolmus' say
+        olay = PantryEventType.DUZELTME
+        not_metni = "Kullanici 'emin degilim' dedi."
+    else:  # BITTI
         kayit.mark_finished()
         olay = PantryEventType.TUKETILDI_MANUEL
         not_metni = "Kullanici 'bitti' dedi."
@@ -154,4 +165,29 @@ def set_availability(
         "Kiler durumu | kullanici=%s kayit=%s -> %s",
         user.id, kayit.id, kayit.availability.value,
     )
+    return kayit
+
+
+def add_manual_item(db: Session, user: User, ingredient_id: int) -> PantryItem:
+    """Kullanicinin elle sectigi malzemeyi kilere yazar (W3-T21).
+
+    confirm_single_ingredient'i source=MANUEL ile paylasir; foto/barkod
+    onayiyla ayni 'var + 7 gun' davranisini uygular.
+    """
+    malzeme = db.get(Ingredient, ingredient_id)
+    if malzeme is None:
+        raise NotFoundError("Malzeme bulunamadi.")
+
+    confirm_single_ingredient(
+        db, user, malzeme, PantrySource.MANUEL, note="Kullanici elle ekledi."
+    )
+    db.commit()
+
+    kayit = db.scalar(
+        select(PantryItem).where(
+            PantryItem.user_id == user.id,
+            PantryItem.ingredient_id == ingredient_id,
+        )
+    )
+    logger.info("Kiler elle ekleme | kullanici=%s malzeme=%s", user.id, malzeme.canonical_name)
     return kayit

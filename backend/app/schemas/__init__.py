@@ -18,7 +18,9 @@ from app.schemas.nutrition import (
 from app.schemas.pantry import (
     PantryEventRead, PantryItemCreate, PantryItemRead,
     PantryScanRequest, ShoppingBulkAdd, ShoppingItemCreate, ShoppingItemRead,
-    ShoppingItemUpdate, PantryItemConfirm, DetectedIngredient, PantryConfirmDetectedRequest,
+    ShoppingItemUpdate, PantryItemConfirm, PantryStatusUpdate, PantryManualAdd,
+    ShoppingManualAdd, ShoppingTransferRequest, ShoppingTransferResponse,
+    DetectedIngredient, PantryConfirmDetectedRequest,
     ConfirmedPantryItem, PantryConfirmDetectedResponse,
     ProductScanResponse, PantryConfirmScannedRequest, ScannedConfirmResponse,
 )
@@ -44,7 +46,7 @@ __all__ = [
     "AllergenRead", "DietTagRead", "OnboardingRequest", "UserProfileCreate",
     "UserProfileRead", "UserProfileUpdate", "UserRead", "UserUpdate",
     "CategoryRead", "IngredientCreate", "IngredientRead", "ProductCreate", "ProductRead",
-    "PantryEventRead", "PantryItemCreate", "PantryItemRead", "PantryItemConfirm", "DetectedIngredient", "PantryConfirmDetectedRequest"
+    "PantryEventRead", "PantryItemCreate", "PantryItemRead", "PantryItemConfirm", "DetectedIngredient", "PantryConfirmDetectedRequest",
     "PantryScanRequest", "ShoppingBulkAdd", "ShoppingItemCreate", "ShoppingItemRead",
     "ShoppingItemUpdate",
     "DailySummary", "MacroBreakdown", "MealLogCreate", "MealLogRead",
@@ -59,4 +61,6 @@ __all__ = [
     "MealEstimate", "PortionOption",
     "RagChatResponse",  "ConfirmedPantryItem", "PantryConfirmDetectedResponse",
     "ProductScanResponse", "PantryConfirmScannedRequest", "ScannedConfirmResponse",
+    "PantryStatusUpdate", "PantryManualAdd",
+    "ShoppingManualAdd", "ShoppingTransferRequest", "ShoppingTransferResponse",
 ]

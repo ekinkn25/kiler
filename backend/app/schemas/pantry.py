@@ -107,6 +107,34 @@ class PantryItemConfirm(AppBaseModel):
     """[Var]/ [Bitti] hızlı aksiyonu"""
     still_have : bool = Field(description="true -> süre yenilenir, false -> bitti")
 
+class PantryStatusUpdate(AppBaseModel):
+    """W3-T21: uc durumlu hizli aksiyon (var / bilinmiyor / bitti)."""
+    availability: Availability = Field(
+        description="var -> sure yenilenir, bilinmiyor -> guven dusurulur, bitti -> listeden duser"
+    )
+
+
+class PantryManualAdd(AppBaseModel):
+    """W3-T21: kullanicinin elle sectigi malzemeyi kilere ekler."""
+    ingredient_id: int
+
+
+class ShoppingManualAdd(AppBaseModel):
+    """W3-T21: alisveris listesine elle tek oge ekleme."""
+    name: str = Field(min_length=1, max_length=150)
+
+
+class ShoppingTransferRequest(AppBaseModel):
+    """Isaretli ogeleri kilere aktarir. item_ids bos ise TUM isaretliler."""
+    item_ids: list[int] = Field(default_factory=list, max_length=100)
+
+
+class ShoppingTransferResponse(AppBaseModel):
+    transferred: list[str] = []
+    skipped: list[str] = Field(
+        default=[], description="ingredient_id'si olmayan (sozlukte eslesmeyen) ogeler"
+    )
+
 
 # ------------------------------------------------------------------ hareket gunlugu
 class PantryEventRead(AppBaseModel):

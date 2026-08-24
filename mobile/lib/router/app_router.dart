@@ -18,6 +18,7 @@ import '../screens/chat/chat_screen.dart';
 import '../screens/recipes/recipe_detail_screen.dart';
 import '../screens/calories/calorie_screen.dart';
 import '../screens/pantry/pantry_screen.dart';
+import '../screens/shopping/shopping_screen.dart';
 
 
 //uygulamanın tüm yönlendirme tablosu burada 
@@ -175,7 +176,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/alisveris',
         name: 'alisveris',
-        builder: (context, state) => const PlaceholderScreen(title: 'Alışveriş Listesi'),
+        builder: (context, state) => const ShoppingScreen(),
       ),
       GoRoute(
         path: '/profil',
