@@ -12,8 +12,8 @@ from app.core.deps import ActiveUser, DbSession
 from app.schemas import (
     ErrorResponse, IngredientRead, PantryConfirmDetectedRequest,
     PantryConfirmDetectedResponse, PantryConfirmScannedRequest, PantryItemConfirm,
-    PantryItemRead, PantryScanRequest, ProductCreate, ProductRead,
-    ProductScanResponse, ScannedConfirmResponse,
+    PantryItemRead, PantryManualAdd, PantryScanRequest, PantryStatusUpdate,
+    ProductCreate, ProductRead, ProductScanResponse, ScannedConfirmResponse,
 )
 from app.models import PantryItem
 from app.services import pantry_service
@@ -169,20 +169,39 @@ def list_pantry(
 @router.patch(
     "/{item_id}",
     response_model=PantryItemRead,
-    summary="[Var] / [Bitti] hizli aksiyonu",
+    summary="Durum degistir (var / bilinmiyor / bitti)",
     description=(
-        "`still_have=true` -> 7 gunluk guven suresi bugunden yeniden "
-        "baslar.\n`still_have=false` -> kayit 'bitti' olur ve listeden duser."
+        "W3-T21 uc durumlu aksiyon.\n"
+        "- `var` -> 7 gunluk guven suresi bugunden yeniden baslar\n"
+        "- `bilinmiyor` -> 'Emin degiliz' bolumune duser\n"
+        "- `bitti` -> listeden duser"
     ),
     responses={status.HTTP_404_NOT_FOUND: {"model": ErrorResponse}},
 )
 def update_pantry_item(
     item_id: int,
-    data: PantryItemConfirm,
+    data: PantryStatusUpdate,
     db: DbSession,
     current_user: ActiveUser,
 ) -> PantryItemRead:
     kayit = pantry_service.set_availability(
-        db, current_user, item_id, still_have=data.still_have
+        db, current_user, item_id, target=data.availability
     )
+    return _to_read(kayit)
+
+
+@router.post(
+    "/items",
+    response_model=PantryItemRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Kilere elle malzeme ekle",
+    description="W3-T21: sozlukten secilen malzemeyi 'var' olarak kilere yazar.",
+    responses={status.HTTP_404_NOT_FOUND: {"model": ErrorResponse}},
+)
+def add_pantry_item(
+    data: PantryManualAdd,
+    db: DbSession,
+    current_user: ActiveUser,
+) -> PantryItemRead:
+    kayit = pantry_service.add_manual_item(db, current_user, data.ingredient_id)
     return _to_read(kayit)

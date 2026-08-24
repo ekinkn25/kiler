@@ -124,6 +124,7 @@ class PantrySource(str, enum.Enum):
     FOTO = "foto"            # gorme modeli tespit etti, kullanici onayladi
     TARIF = "tarif"          # bir tarif yapildi, malzeme guveni degisti
     SISTEM = "sistem"        # gecis/seed kaydi (eski verilerin tasindigi durum)
+    MANUEL = "manuel"
 
 class PortionSize(str, enum.Enum):
     """görme modelinin döndürdüğü porsiyon büyüklüğü"""

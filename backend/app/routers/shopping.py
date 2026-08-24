@@ -9,7 +9,10 @@ import logging
 from fastapi import APIRouter, Query, status
 
 from app.core.deps import ActiveUser, DbSession
-from app.schemas import ErrorResponse, ShoppingBulkAdd, ShoppingItemRead
+from app.schemas import (
+    ErrorResponse, ShoppingBulkAdd, ShoppingItemRead, ShoppingManualAdd,
+    ShoppingTransferRequest, ShoppingTransferResponse,
+)
 from app.services import shopping_service
 
 logger = logging.getLogger(__name__)
@@ -56,3 +59,53 @@ def bulk_add(
         db, current_user, recipe_id=data.recipe_id, items=data.items,
     )
     return [ShoppingItemRead.model_validate(k) for k in kayitlar]
+
+@router.post(
+    "",
+    response_model=ShoppingItemRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Elle tek oge ekle",
+    description=(
+        "W3-T21: yazilan adi sozlukle eslestirir. Eslesirse kilere "
+        "aktarilabilir; eslesmezse serbest metin olarak saklanir."
+    ),
+)
+def add_manual_item(
+    data: ShoppingManualAdd, db: DbSession, current_user: ActiveUser,
+) -> ShoppingItemRead:
+    kayit = shopping_service.add_manual(db, current_user, data.name)
+    return ShoppingItemRead.model_validate(kayit)
+
+
+@router.patch(
+    "/{item_id}",
+    response_model=ShoppingItemRead,
+    summary="Isaretle / kaldir",
+    responses={status.HTTP_404_NOT_FOUND: {"model": ErrorResponse}},
+)
+def toggle_checked(
+    item_id: int,
+    db: DbSession,
+    current_user: ActiveUser,
+    checked: bool = Query(description="true -> alindi isareti"),
+) -> ShoppingItemRead:
+    kayit = shopping_service.set_checked(db, current_user, item_id, checked=checked)
+    return ShoppingItemRead.model_validate(kayit)
+
+
+@router.post(
+    "/transfer-to-pantry",
+    response_model=ShoppingTransferResponse,
+    summary="Isaretlenenleri kilere aktar",
+    description=(
+        "W3-T21: isaretli ogeleri kilere 'var' olarak yazar ve listeden "
+        "siler. item_ids bos gonderilirse TUM isaretliler aktarilir."
+    ),
+)
+def transfer_to_pantry(
+    data: ShoppingTransferRequest, db: DbSession, current_user: ActiveUser,
+) -> ShoppingTransferResponse:
+    sonuc = shopping_service.transfer_to_pantry(
+        db, current_user, item_ids=data.item_ids or None
+    )
+    return ShoppingTransferResponse(**sonuc)

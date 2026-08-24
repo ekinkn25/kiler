@@ -138,3 +138,66 @@ def test_baska_kullanicinin_listesi_sizmaz(db, user, malzemeler):
                     items=[ShoppingItemCreate(ingredient_id=malzemeler["limon"])])
 
     assert list_items(db, user) == []
+
+# ---------------------------------------------------------------- W3-T21
+def test_elle_ekleme_sozlukle_eslesir(db, user, malzemeler):
+    from app.services.shopping_service import add_manual
+
+    kayit = add_manual(db, user, "domates")
+    assert kayit.ingredient_id == malzemeler["domates"]
+    assert kayit.custom_name is None
+
+
+def test_elle_ekleme_eslesmezse_serbest_metin(db, user, malzemeler):
+    from app.services.shopping_service import add_manual
+
+    kayit = add_manual(db, user, "zzz_olmayan_sey")
+    assert kayit.ingredient_id is None
+    assert kayit.custom_name == "zzz_olmayan_sey"
+
+
+def test_isaretle_ve_kaldir(db, user, malzemeler):
+    from app.services.shopping_service import add_manual, set_checked
+
+    kayit = add_manual(db, user, "domates")
+    assert kayit.is_checked is False
+
+    set_checked(db, user, kayit.id, checked=True)
+    assert kayit.is_checked is True
+
+    set_checked(db, user, kayit.id, checked=False)
+    assert kayit.is_checked is False
+
+
+def test_kilere_aktarma_isaretlileri_tasir_ve_siler(db, user, malzemeler):
+    from app.models import PantryItem
+    from app.models.enums import Availability
+    from app.services.shopping_service import (
+        add_manual, list_items, set_checked, transfer_to_pantry,
+    )
+
+    a = add_manual(db, user, "domates")
+    b = add_manual(db, user, "sogan")
+    set_checked(db, user, a.id, checked=True)  # yalnizca domates isaretli
+
+    sonuc = transfer_to_pantry(db, user)
+
+    assert "Domates" in sonuc["transferred"]
+    # Isaretsiz sogan listede kaldi, domates dustu.
+    kalan = list_items(db, user)
+    assert len(kalan) == 1
+    assert kalan[0].id == b.id
+    # Kilere 'var' olarak yazildi.
+    kiler = db.query(PantryItem).filter_by(user_id=user.id).all()
+    assert any(k.availability is Availability.VAR for k in kiler)
+
+
+def test_eslesmeyen_oge_aktarilamaz_skipped(db, user, malzemeler):
+    from app.services.shopping_service import add_manual, set_checked, transfer_to_pantry
+
+    kayit = add_manual(db, user, "zzz_olmayan_sey")
+    set_checked(db, user, kayit.id, checked=True)
+
+    sonuc = transfer_to_pantry(db, user)
+    assert sonuc["transferred"] == []
+    assert sonuc["skipped"] == ["zzz_olmayan_sey"]

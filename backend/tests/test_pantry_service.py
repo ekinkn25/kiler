@@ -110,7 +110,7 @@ def test_bitti_kayitlari_varsayilan_olarak_listelenmez(db, user, malzemeler):
     assert len(kayitlar) == 2
 
     hedef = kayitlar[0]
-    set_availability(db, user, hedef.id, still_have=False)
+    set_availability(db, user, hedef.id, target=Availability.BITTI)
 
     kalanlar = list_items(db, user)
     assert len(kalanlar) == 1
@@ -134,7 +134,7 @@ def test_var_denince_guven_suresi_yenilenir(db, user, malzemeler):
     db.commit()
     assert kayit.effective_availability is Availability.BILINMIYOR
 
-    yeni = set_availability(db, user, kayit.id, still_have=True)
+    yeni = set_availability(db, user, kayit.id, target=Availability.VAR)
 
     assert yeni.availability is Availability.VAR
     assert yeni.effective_availability is Availability.VAR
@@ -148,7 +148,7 @@ def test_bitti_isaretleme_olay_gunlugune_yazilir(db, user, malzemeler):
 
     confirm_detected_ingredients(db, user, ["domates"], PantrySource.FOTO)
     kayit = list_items(db, user)[0]
-    set_availability(db, user, kayit.id, still_have=False)
+    set_availability(db, user, kayit.id, target=Availability.BITTI)
 
     olaylar = db.query(PantryEvent).filter_by(user_id=user.id).all()
     assert any(
@@ -169,4 +169,29 @@ def test_baskasinin_kaydi_degistirilemez(db, user, malzemeler):
 
     # 403 degil 404: baskasinin kaydinin VAR oldugunu bile sizdirmiyoruz.
     with pytest.raises(NotFoundError):
-        set_availability(db, baskasi, kayit.id, still_have=False)
+        set_availability(db, baskasi, kayit.id, target=Availability.BITTI)
+
+def test_elle_kilere_ekleme(db, user, malzemeler):
+    from app.models.enums import Availability
+    from app.services.pantry_service import add_manual_item, list_items
+
+    kayit = add_manual_item(db, user, malzemeler["domates"].id)
+    assert kayit.availability is Availability.VAR
+    assert kayit.source.value == "manuel"
+    assert len(list_items(db, user)) == 1
+
+
+def test_uc_durumlu_gecis(db, user, malzemeler):
+    from app.models.enums import Availability
+    from app.services.pantry_service import add_manual_item, set_availability
+
+    kayit = add_manual_item(db, user, malzemeler["domates"].id)
+
+    b = set_availability(db, user, kayit.id, target=Availability.BILINMIYOR)
+    assert b.effective_availability is Availability.BILINMIYOR
+
+    v = set_availability(db, user, kayit.id, target=Availability.VAR)
+    assert v.effective_availability is Availability.VAR
+
+    x = set_availability(db, user, kayit.id, target=Availability.BITTI)
+    assert x.availability is Availability.BITTI
