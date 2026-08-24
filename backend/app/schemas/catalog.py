@@ -19,6 +19,7 @@ class IngredientRead(AppBaseModel):
     category: CategoryRead | None = None
     default_unit_type: UnitType
     default_unit: UnitCode
+    grams_per_piece: float | None = None
     calories_per_100g: float | None = None
     protein_per_100g: float | None = None
     carb_per_100g: float | None = None

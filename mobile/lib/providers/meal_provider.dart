@@ -95,6 +95,27 @@ class MealPhotoService {
       },
     );
   }
+
+  Future<void> malzemeyleYaz({
+    required String date,
+    required String mealType,
+    required int ingredientId,
+    double? grams,
+    int adet = 1,
+  }) async {
+    await _dio.post<Map<String, dynamic>>(
+      '/meals',
+      data: {
+        'logged_date': date,
+        'meal_type': mealType,
+        'source': 'manuel',
+        'ingredient_id': ingredientId,
+        'servings': grams != null ? 1 : adet,
+        // if (grams != null) 'quantity_g': grams,
+        'quantity_g': ?grams,
+      },
+    );
+  }
 }
 
 final mealPhotoServiceProvider = Provider<MealPhotoService>(
