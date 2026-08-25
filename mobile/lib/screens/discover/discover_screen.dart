@@ -144,7 +144,12 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
             recipeId: kart.id,
             ingredientIds: [for (final malzeme in malzemeler) malzeme.id],
           );
-      if (!mounted || adet == 0) return;
+      if (!mounted) return;
+      // Alisveris ekrani ve tarif detayindaki 'yok' durumu ANINDA
+      // guncellensin: bu servis /shopping/bulk'a yaziyor ama
+      // shoppingListProvider'in onbellegine dokunmuyor.
+      ref.invalidate(shoppingListProvider);
+      if (adet == 0) return;
       final adlar = malzemeler.map((m) => m.displayName).join(', ');
       _bilgi('$adlar alışveriş listene eklendi.');
     } catch (hata) {
