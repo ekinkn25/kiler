@@ -8,19 +8,23 @@ import 'package:go_router/go_router.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/enums.dart';
+import '../../models/meal_estimate.dart';
 import '../../models/recipe.dart';
 import '../../providers/meal_provider.dart';
 import '../../providers/pantry_provider.dart';
 import '../../providers/recipe_provider.dart';
+import '../../providers/shopping_provider.dart';
 import '../../widgets/calories/meal_add_flow.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/loading_skeleton.dart';
 
-/// Tam tarif detayi (W4-T01 + W4-T02 + W4-T03 girisi).
+/// Tam tarif detayi (W4-T01/02/03).
 ///
-/// Malzemeler kiler ile capraz eslestirilip RENKLENDIRILIR:
-///   yesil=var, kirmizi=yok, sari=belki (kilerde 'bilinmiyor'),
-///   gri=sozlukte tanimsiz. Renk TEK BASINA degil; ikon+yazi da eslik eder.
+/// Malzeme durumu 3 renk:
+///   YESIL (tik)   = kilerde 'var'
+///   KIRMIZI (carpi) = alisveris listesinde (bilincli 'yok' denen)
+///   GRI (soru)    = digerleri (bilinmiyor)
+/// Renk TEK BASINA degil; en soldaki ikon da durumu tasir.
 class RecipeDetailScreen extends ConsumerStatefulWidget {
   const RecipeDetailScreen({required this.recipeId, super.key});
 
@@ -30,18 +34,30 @@ class RecipeDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<RecipeDetailScreen> createState() => _RecipeDetailScreenState();
 }
 
-class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
-  int? _kisi; // porsiyon (null iken tarifin kendi servings'i kullanilir)
+/// Malzemenin uc durumu.
+enum _Durum { var_, yok, bilinmiyor }
 
-  Future<void> _yaptim() async {
-    // 'Bu Tarifi Yaptim' -> tanidik ogun ekleme akisi (kamera/galeri/yazi).
+class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
+  int? _kisi;
+
+  Future<void> _yaptim(Recipe tarif, int kisi) async {
     final gun = ref.read(selectedDateProvider);
-    final eklendi = await baslatOgunEkle(context, ref, date: gun);
+    // Onay karti tarifle onceden dolu gelsin: ad + o porsiyondaki kalori.
+    final hazir = MealEstimate(
+      dishName: tarif.title,
+      portion: 'orta',
+      estimatedGrams: 0,
+      calories: tarif.caloriesPerServing * kisi,
+      imageHash: '',
+    );
+    final eklendi = await baslatOgunEkle(context, ref, date: gun, hazir: hazir);
     if (eklendi && mounted) {
       ref.invalidate(dailySummaryProvider(gun));
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(const SnackBar(content: Text('Afiyet olsun! Günlüğe eklendi.')));
+        ..showSnackBar(
+          const SnackBar(content: Text('Afiyet olsun! Günlüğe eklendi.')),
+        );
       if (mounted) context.pop();
     }
   }
@@ -76,10 +92,17 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
   }
 
   Widget _govde(Recipe tarif) {
-    // Kiler haritasi: canonical_name -> availability.
+    // Kilerde 'var' olan canonical adlar.
     final kilerList = ref.watch(pantryProvider).valueOrNull ?? const [];
-    final Map<String, Availability> kiler = {
-      for (final k in kilerList) k.ingredient.canonicalName: k.availability,
+    final Set<String> kilerVar = {
+      for (final k in kilerList)
+        if (k.availability == Availability.available) k.ingredient.canonicalName,
+    };
+    // Alisveris listesindeki canonical adlar (= bilincli 'yok').
+    final shoppingList = ref.watch(shoppingListProvider).valueOrNull ?? const [];
+    final Set<String> alisveriste = {
+      for (final s in shoppingList)
+        if (s.canonicalName != null) s.canonicalName!,
     };
 
     final int kisi = _kisi ?? tarif.servings;
@@ -112,7 +135,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                           ?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   for (final m in tarif.ingredients)
-                    _malzemeSatiri(m, kiler, olcek),
+                    _malzemeSatiri(m, kilerVar, alisveriste, olcek),
                   const SizedBox(height: 20),
                   Text('Adımlar',
                       style: Theme.of(context).textTheme.titleMedium
@@ -139,12 +162,11 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
             ),
           ],
         ),
-        // Alt sabit butonlar: Yaptim / Vazgec.
         Positioned(
           left: 0,
           right: 0,
           bottom: 0,
-          child: _altButonlar(),
+          child: _altButonlar(tarif, kisi),
         ),
       ],
     );
@@ -187,7 +209,8 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
         ),
         const SizedBox(width: 8),
         Text('$toplamKcal kcal',
-            style: TextStyle(color: Theme.of(context).colorScheme.primary,
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold)),
       ],
     );
@@ -210,33 +233,44 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
       children: [
         nokta(c.available, 'Var'),
         nokta(c.missing, 'Yok'),
-        nokta(c.warning, 'Belki'),
         nokta(c.unknown, 'Bilinmiyor'),
       ],
     );
   }
 
+  _Durum _durumBul(
+    RecipeIngredient m,
+    Set<String> kilerVar,
+    Set<String> alisveriste,
+  ) {
+    final cn = m.canonicalName;
+    if (cn != null && kilerVar.contains(cn)) return _Durum.var_;
+    // KIRMIZI yalnizca alisveris listesindeyse: bilincli 'yok' denen.
+    if (cn != null && alisveriste.contains(cn)) return _Durum.yok;
+    return _Durum.bilinmiyor;
+  }
+
   Widget _malzemeSatiri(
     RecipeIngredient m,
-    Map<String, Availability> kiler,
+    Set<String> kilerVar,
+    Set<String> alisveriste,
     double olcek,
   ) {
     final c = context.appColors;
-    // Durum + renk + ikon + yazi (renk tek basina degil).
-    final (Color renk, IconData ikon, String durum) = () {
-      final cn = m.canonicalName;
-      if (cn == null) return (c.unknown, Icons.help_outline, 'bilinmiyor');
-      final av = kiler[cn];
-      if (av == Availability.available) return (c.available, Icons.check_circle, 'var');
-      if (av == Availability.unknown) return (c.warning, Icons.help, 'belki');
-      return (c.missing, Icons.cancel, 'yok');
-    }();
+    final durum = _durumBul(m, kilerVar, alisveriste);
+
+    final (Color renk, Widget ikon) = switch (durum) {
+      _Durum.var_ => (c.available, Icon(Icons.check_circle, size: 20, color: c.available)),
+      _Durum.yok => (c.missing, Icon(Icons.cancel, size: 20, color: c.missing)),
+      // Gri yuvarlak icinde soru isareti.
+      _Durum.bilinmiyor => (c.unknown, Icon(Icons.help, size: 20, color: c.unknown)),
+    };
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(ikon, size: 18, color: renk),
+          ikon,
           const SizedBox(width: 8),
           Expanded(
             child: Text.rich(TextSpan(children: [
@@ -255,7 +289,6 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 ),
             ])),
           ),
-          Text(durum, style: TextStyle(color: renk, fontSize: 12)),
         ],
       ),
     );
@@ -267,7 +300,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     return u == null ? s : '$s ${unitCodeToJson(u)}';
   }
 
-  Widget _altButonlar() {
+  Widget _altButonlar(Recipe tarif, int kisi) {
     return Material(
       elevation: 8,
       child: SafeArea(
@@ -289,7 +322,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
               Expanded(
                 flex: 2,
                 child: FilledButton.icon(
-                  onPressed: () => unawaited(_yaptim()),
+                  onPressed: () => unawaited(_yaptim(tarif, kisi)),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
                   ),

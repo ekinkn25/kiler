@@ -20,6 +20,7 @@ Future<bool> baslatOgunEkle(
   BuildContext context,
   WidgetRef ref, {
   required String date,
+  MealEstimate? hazir,
 }) async {
   final secim = await showModalBottomSheet<String>(
     context: context,
@@ -73,7 +74,7 @@ Future<bool> baslatOgunEkle(
     case 'galeri':
       return _fotoAkis(context, ref, ImageSource.gallery, date);
     case 'yazi':
-      return _elleAkis(context, ref, date);
+      return _elleAkis(context, ref, date, hazir);
   }
   return false;
 }
@@ -113,7 +114,24 @@ Future<bool> _fotoAkis(
   return eklendi == true;
 }
 
-Future<bool> _elleAkis(BuildContext context, WidgetRef ref, String date) async {
+Future<bool> _elleAkis(
+  BuildContext context,
+  WidgetRef ref,
+  String date,
+  MealEstimate? hazir,
+) async {
+  // Tarif onceden secili geldiyse (Bu Tarifi Yaptim): arama adimini
+  // atla, onay kartini dogrudan tarifle dolu ac.
+  if (hazir != null) {
+    final eklendi = await showMealConfirmSheet(
+      context,
+      tahmin: hazir,
+      date: date,
+      manuel: true,
+    );
+    return eklendi == true;
+  }
+
   final sonuc = await showFoodEntrySheet(context, date: date);
   if (sonuc == 'eklendi') return true;
   if (sonuc == 'elle' && context.mounted) {
