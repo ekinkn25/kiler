@@ -5,6 +5,8 @@ import '../core/network/dio_client.dart';
 import '../models/deck_response.dart';
 import '../models/recipe_card.dart';
 import 'dart:async';
+import '../models/recipe.dart';
+import '../models/recipe_mini.dart';
 
 /// Kesfet sekmesindeki destenin EKRAN durumu.
 ///
@@ -271,3 +273,25 @@ final swipeDeckProvider =
     AsyncNotifierProvider<SwipeDeckNotifier, SwipeDeckState>(
   SwipeDeckNotifier.new,
 );
+
+// ==================================================================
+// Tarif detayi ve Yapacaklarim (W4-T01)
+// ==================================================================
+/// Tam tarif detayi. GET /recipes/{id}.
+final recipeDetailProvider =
+    FutureProvider.autoDispose.family<Recipe, String>((ref, id) async {
+  ref.keepAlive(); // detaydan cikip girince tekrar cekilmesin
+  final dio = ref.read(dioProvider);
+  final response = await dio.get<Map<String, dynamic>>('/recipes/$id');
+  return Recipe.fromJson(response.data!);
+});
+
+/// 'Yapacaklarim' listesi. GET /recipes/planned.
+final plannedProvider =
+    FutureProvider.autoDispose<List<RecipeMini>>((ref) async {
+  final dio = ref.read(dioProvider);
+  final response = await dio.get<List<dynamic>>('/recipes/planned');
+  return response.data!
+      .map((e) => RecipeMini.fromJson(e as Map<String, dynamic>))
+      .toList();
+});

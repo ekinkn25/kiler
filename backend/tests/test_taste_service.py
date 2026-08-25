@@ -80,7 +80,13 @@ def test_register_recipe_signal_tum_boyutlari_isler(db, user):
     }
 
 
-def test_tekrar_parametresi_event_count_u_katlar(db, user):
-    register_recipe_signal(db, user.id, {"cuisine": "italyan"}, signal=1.0, tekrar=3)
+def test_her_sinyal_event_count_u_bir_artirir(db, user):
+    """W4-T04: 'yaptim' artik tekrar=3 ile degil strength=3 ile isleniyor.
+
+    Eski tasarimda tek bir 'yaptim' event_count'u 3 artiriyordu; sayac
+    gercek swipe sayisini yansitmiyor, yakinsama olcumu yanilticiydi.
+    Guc artik sonum hizinda, sayacta degil.
+    """
+    register_recipe_signal(db, user.id, {"cuisine": "italyan"}, signal=1.0, strength=3.0)
     satir = db.query(UserTasteWeight).one()
-    assert satir.event_count == 3
+    assert satir.event_count == 1

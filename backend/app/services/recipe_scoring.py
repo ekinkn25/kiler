@@ -251,13 +251,26 @@ def build_scoring_pipeline(
                 ]}]}]}]
             },
 
-            # ZEVK: öğrenilen ağırlıkların toplamı
+            # ZEVK: eslesen ogrenilmis agirliklarin ORTALAMASI.
+            #
+            # W4-T04 olcumu: eskiden bu bir TOPLAM'di ve asagida [-1,1]'e
+            # kirpiliyordu. Bir tarifte cuisine + difficulty + diet_tag +
+            # ~8 zorunlu malzeme eslestigi icin ham toplam rahatca 5-8'e
+            # cikiyor, kirpma sonrasi 110 tarifin neredeyse hepsi 1.0
+            # oluyordu: zevk bileseni her tarife SABIT +0.10 ekleyen bir
+            # terime donusmustu, yani siralamayi hic degistirmiyordu
+            # (Spearman 0.987, top-10'da sifir degisiklik).
+            #
+            # Ortalama iki sorunu birden cozer: kirpma devreye girmez
+            # (agirliklar zaten [-1,1]) ve 40 malzemeli tarif 3 malzemeli
+            # tarifi salt uzunlugu yuzunden ezemez.
+            #
             # $literal sart: içerideki 'dim'/'key' anahtarları ifade olarak degil, düz veri olarak değerlendirilsin.
-            "_zevk_ham": {
+            "_zevk": {
                 "$reduce": {
                     "input": {"$literal": list(ctx.taste)},
-                    "initialValue": 0.0,
-                    "in": {"$add": ["$$value", {"$cond": [
+                    "initialValue": {"toplam": 0.0, "adet": 0},
+                    "in": {"$cond": [
                         {"$or": [
                             {"$and": [
                                 {"$eq": ["$$this.dim", "cuisine"]},
@@ -276,9 +289,12 @@ def build_scoring_pipeline(
                                 {"$in": ["$$this.key", "$_zorunlu"]},
                             ]},
                         ]},
-                        "$$this.w",
-                        0.0,
-                    ]}]},
+                        {
+                            "toplam": {"$add": ["$$value.toplam", "$$this.w"]},
+                            "adet": {"$add": ["$$value.adet", 1]},
+                        },
+                        "$$value",
+                    ]},
                 }
             },
 
@@ -288,7 +304,18 @@ def build_scoring_pipeline(
         }},
 
         {"$addFields": {
+            # Hic eslesme yoksa 0 (notr); bolme hatasi da boylece olmaz.
+            "_zevk_ham": {"$cond": [
+                {"$eq": ["$_zevk.adet", 0]},
+                0.0,
+                {"$divide": ["$_zevk.toplam", "$_zevk.adet"]},
+            ]},
+        }},
+
+        {"$addFields": {
             # -1..+1 aralığını 0..1'e taşi. Zevk verisi YOKKEN 0.5 (notr) çıkar eğer 0 verseydik yeni kullanıcı tüm tariflerde 0.20 kaybederdi.
+            # Kirpma artik guvenlik agi: agirliklar [-1,1] oldugu icin
+            # ortalamalari da oyle, ama bozuk veri skoru tasirmasin.
             "_s_zevk": {"$divide": [
                 {"$add": [{"$max": [-1.0, {"$min": [1.0, "$_zevk_ham"]}]}, 1.0]}, 2.0
             ]},
@@ -335,6 +362,10 @@ def build_scoring_pipeline(
                 "pantry": {"$round": ["$_s_kiler", 4]},
                 "calorie": {"$round": ["$_s_kalori", 4]},
                 "taste": {"$round": ["$_s_zevk", 4]},
+                # Zevk skoru kac ogrenilmis anahtardan hesaplandi. 0 ise
+                # skor notr 0.5'tir; 'motor bu tarif hakkinda bir sey
+                # bilmiyor' ile 'notr buluyor' ayirt edilebilsin.
+                "taste_matched": {"$ifNull": ["$_zevk.adet", 0]},
                 "time": {"$round": ["$_s_sure", 4]},
                 "weights": {"$literal":{
                     "pantry": settings.SCORE_W_PANTRY,

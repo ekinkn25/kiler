@@ -1,14 +1,19 @@
 """Tarif uclari. W2-T07: swipe destesi ve geri bildirim."""
 import logging
+from datetime import timedelta
 
 from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import APIRouter, Query, status
+from sqlalchemy import func, select
 
 from app.core.deps import ActiveUser, DbSession, MongoDb
+from app.core.exceptions import NotFoundError
 from app.db.mongo_schema import RECIPE_COLLECTION
+from app.models.enums import FeedbackAction
+from app.models.recipe import RecipeFeedback, utcnow
 from app.schemas import (
-    DeckResponse, ErrorResponse, RecipeCard, SwipeRequest, SwipeResponse,
+    DeckResponse, ErrorResponse, RecipeCard, SwipeRequest, SwipeResponse, RecipeRead,
 )
 from app.services import swipe_service
 
@@ -33,6 +38,32 @@ def order_like_request(dokumanlar: list[dict], istenen: list[str]) -> list[dict]
     """
     harita = {str(d["_id"]): d for d in dokumanlar}
     return [harita[k] for k in istenen if k in harita]
+
+async def fetch_cards(mongo_db, istenen: list[str]) -> list[RecipeCard]:
+    """Kimlik listesinden SIRAYI KORUYARAK kart verisi ceker.
+
+    /cards ve /planned bu yardimciyi paylasir.
+    """
+    nesne_kimlikleri = []
+    for kimlik in istenen:
+        try:
+            nesne_kimlikleri.append(ObjectId(kimlik))
+        except (InvalidId, TypeError):
+            logger.warning("Gecersiz tarif kimligi atlandi: %r", kimlik)
+    if not nesne_kimlikleri:
+        return []
+
+    imlec = mongo_db[RECIPE_COLLECTION].find(
+        {"_id": {"$in": nesne_kimlikleri}, "is_active": {"$ne": False}},
+        projection={
+            "_id": 1, "title": 1, "slug": 1, "image_url": 1,
+            "calories_per_serving": 1, "servings": 1,
+            "prep_time": 1, "cook_time": 1, "difficulty": 1, "diet_tags": 1,
+        },
+    )
+    dokumanlar = await imlec.to_list(length=len(nesne_kimlikleri))
+    sirali = order_like_request(dokumanlar, istenen)
+    return [RecipeCard.model_validate(d) for d in sirali]
 
 @router.get(
     "/cards",
@@ -60,33 +91,69 @@ async def get_cards(
         description="Virgulle ayrilmis tarif kimlikleri (24 karakter ObjectId).",
     ),
 ) -> list[RecipeCard]:
-    istenen = parse_card_ids(ids)
-    if not istenen:
-        return []
+    kartlar = await fetch_cards(mongo_db, parse_card_ids(ids))
+    logger.info("Kart istegi | donen=%d", len(kartlar))
+    return kartlar
+    # istenen = parse_card_ids(ids)
+    # if not istenen:
+    #     return []
 
-    nesne_kimlikleri = []
-    for kimlik in istenen:
-        try:
-            nesne_kimlikleri.append(ObjectId(kimlik))
-        except (InvalidId, TypeError):
-            logger.warning("Gecersiz tarif kimligi atlandi: %r", kimlik)
+    # nesne_kimlikleri = []
+    # for kimlik in istenen:
+    #     try:
+    #         nesne_kimlikleri.append(ObjectId(kimlik))
+    #     except (InvalidId, TypeError):
+    #         logger.warning("Gecersiz tarif kimligi atlandi: %r", kimlik)
 
-    if not nesne_kimlikleri:
-        return []
+    # if not nesne_kimlikleri:
+    #     return []
 
-    imlec = mongo_db[RECIPE_COLLECTION].find(
-        {"_id": {"$in": nesne_kimlikleri}, "is_active": {"$ne": False}},
-        projection={
-            "_id": 1, "title": 1, "slug": 1, "image_url": 1,
-            "calories_per_serving": 1, "servings": 1,
-            "prep_time": 1, "cook_time": 1, "difficulty": 1, "diet_tags": 1,
-        },
-    )
-    dokumanlar = await imlec.to_list(length=len(nesne_kimlikleri))
+    # imlec = mongo_db[RECIPE_COLLECTION].find(
+    #     {"_id": {"$in": nesne_kimlikleri}, "is_active": {"$ne": False}},
+    #     projection={
+    #         "_id": 1, "title": 1, "slug": 1, "image_url": 1,
+    #         "calories_per_serving": 1, "servings": 1,
+    #         "prep_time": 1, "cook_time": 1, "difficulty": 1, "diet_tags": 1,
+    #     },
+    # )
+    # dokumanlar = await imlec.to_list(length=len(nesne_kimlikleri))
 
-    sirali = order_like_request(dokumanlar, istenen)
-    logger.info("Kart istegi | istenen=%d donen=%d", len(istenen), len(sirali))
-    return [RecipeCard.model_validate(d) for d in sirali]
+    # sirali = order_like_request(dokumanlar, istenen)
+    # logger.info("Kart istegi | istenen=%d donen=%d", len(istenen), len(sirali))
+    # return [RecipeCard.model_validate(d) for d in sirali]
+
+
+@router.get(
+    "/planned",
+    response_model=list[RecipeCard],
+    summary="Yapacaklarim",
+    description=(
+        "Kullanicinin son 7 gunde 'Yapacagim' dedigi tarifler, en yeni "
+        "ustte. Kesfet ekranindaki 'Yapacaklarim' sekmesini besler."
+    ),
+)
+async def get_planned(
+    db: DbSession,
+    mongo_db: MongoDb,
+    current_user: ActiveUser,
+) -> list[RecipeCard]:
+    # Ayni tarife birden cok 'yapacagim' varsa en son olani baz al.
+    satirlar = db.execute(
+        select(
+            RecipeFeedback.recipe_id,
+            func.max(RecipeFeedback.created_at).label("son"),
+        )
+        .where(
+            RecipeFeedback.user_id == current_user.id,
+            RecipeFeedback.action == FeedbackAction.YAPACAGIM,
+            RecipeFeedback.created_at > utcnow() - timedelta(days=7),
+        )
+        .group_by(RecipeFeedback.recipe_id)
+        .order_by(func.max(RecipeFeedback.created_at).desc())
+    ).all()
+
+    kimlikler = [s[0] for s in satirlar]
+    return await fetch_cards(mongo_db, kimlikler)
 
 @router.get(
     "/deck",
@@ -166,3 +233,30 @@ async def swipe(
         session_filters=oturum.filters if oturum else {},
         effect=etki,
     )
+
+@router.get(
+    "/{recipe_id}",
+    response_model=RecipeRead,
+    summary="Tarif detayi",
+    description=(
+        "Tam tarif: malzemeler (canonical_name ile), adimlar, porsiyon, "
+        "makrolar. W4-T01 renkli malzeme durumu istemcide kiler ile "
+        "capraz eslestirilerek hesaplanir."
+    ),
+    responses={status.HTTP_404_NOT_FOUND: {"model": ErrorResponse}},
+)
+async def get_recipe(
+    recipe_id: str,
+    mongo_db: MongoDb,
+    current_user: ActiveUser,
+) -> RecipeRead:
+    try:
+        oid = ObjectId(recipe_id)
+    except (InvalidId, TypeError) as exc:
+        raise NotFoundError("Gecersiz tarif kimligi.") from exc
+
+    dokuman = await mongo_db[RECIPE_COLLECTION].find_one({"_id": oid})
+    if dokuman is None:
+        raise NotFoundError("Tarif bulunamadi.")
+
+    return RecipeRead.model_validate(dokuman)

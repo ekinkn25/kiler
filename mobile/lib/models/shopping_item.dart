@@ -9,6 +9,7 @@ class ShoppingItem {
     required this.name,
     required this.isChecked,
     required this.source,
+    this.canonicalName,
     this.categoryName,
     this.ingredientId,
   });
@@ -21,6 +22,7 @@ class ShoppingItem {
       name: (ing?['display_name'] as String?) ??
           (json['custom_name'] as String?) ??
           '—',
+      canonicalName: ing?['canonical_name'] as String?,
       categoryName: cat?['display_name'] as String?,
       isChecked: json['is_checked'] as bool? ?? false,
       source: json['source'] as String? ?? 'manuel',
@@ -30,6 +32,7 @@ class ShoppingItem {
 
   final int id;
   final String name;
+  final String? canonicalName;
   final String? categoryName;
   final bool isChecked;
 
