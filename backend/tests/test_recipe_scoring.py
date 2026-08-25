@@ -19,6 +19,14 @@ def asama(pipeline, ad):
     raise AssertionError(f"'{ad}' asamasi bulunamadi")
 
 
+def eklenen_alan(pipeline, ad):
+    """Verilen alani ureten $addFields asamasindaki ifadeyi doner."""
+    for a in pipeline:
+        if "$addFields" in a and ad in a["$addFields"]:
+            return a["$addFields"][ad]
+    raise AssertionError(f"'{ad}' alani hicbir $addFields asamasinda yok")
+
+
 def alan_ara(nesne, anahtar):
     """Ic ice dict/list icinde bir anahtari arar (varlik testi icin)."""
     if isinstance(nesne, dict):
@@ -142,7 +150,7 @@ def test_skor_kirilimi_yanitta(ctx):
     """Aciklanabilirlik: kabul kriteri skor kiriliminin donmesini istiyor."""
     proj = asama(pipeline := build_scoring_pipeline(ctx), "$project")
     assert set(proj["score_breakdown"]) == {
-        "pantry", "calorie", "taste", "time", "weights"
+        "pantry", "calorie", "taste", "taste_matched", "time", "weights"
     }
     for alan in ("matched_ingredients", "missing_ingredients",
                  "unknown_ingredients", "total_required", "final_score"):
@@ -153,11 +161,27 @@ def test_skor_kirilimi_yanitta(ctx):
 def test_zevk_vektoru_literal_ile_gomulur(ctx):
     """$literal olmadan 'dim'/'key' anahtarlari ifade sanilirdi."""
     pipeline = build_scoring_pipeline(ctx)
-    zevk = next(
-        a["$addFields"]["_zevk_ham"] for a in pipeline
-        if "$addFields" in a and "_zevk_ham" in a["$addFields"]
-    )
+    zevk = eklenen_alan(pipeline, "_zevk")
     assert zevk["$reduce"]["input"] == {"$literal": list(ctx.taste)}
+
+
+def test_zevk_toplam_degil_ortalama(ctx):
+    """W4-T04: zevk skoru eslesmelerin ORTALAMASI olmali, toplami degil.
+
+    Toplam oldugunda [-1,1] kirpmasi neredeyse her tarifi 1.0'a
+    yapistiriyor ve bilesen siralamayi degistiremiyordu. Ayrica cok
+    malzemeli tarifler salt uzunluk yuzunden avantaj kazaniyordu.
+    """
+    pipeline = build_scoring_pipeline(ctx)
+    zevk = eklenen_alan(pipeline, "_zevk")
+    # Biriktirici {toplam, adet} tasimali: ortalama ancak boyle alinabilir.
+    assert zevk["$reduce"]["initialValue"] == {"toplam": 0.0, "adet": 0}
+
+    # Eslesme yoksa notr 0, varsa toplam/adet.
+    ham = eklenen_alan(pipeline, "_zevk_ham")
+    assert ham["$cond"][0] == {"$eq": ["$_zevk.adet", 0]}
+    assert ham["$cond"][1] == 0.0
+    assert ham["$cond"][2] == {"$divide": ["$_zevk.toplam", "$_zevk.adet"]}
 
 
 def test_bos_baglamda_da_gecerli_pipeline():

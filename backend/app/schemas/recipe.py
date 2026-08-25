@@ -186,6 +186,14 @@ class ScoreBreakdown(AppBaseModel):
     pantry: float = Field(ge=0, le=1)
     calorie: float = Field(ge=0, le=1)
     taste: float = Field(ge=0, le=1)
+    taste_matched: int = Field(
+        default=0, ge=0,
+        description=(
+            "Zevk skorunun hesaplandigi ogrenilmis anahtar sayisi (W4-T04). "
+            "0 ise motor bu tarif hakkinda henuz bir sey ogrenmemistir ve "
+            "taste notr 0.5'tir."
+        ),
+    )
     time: float = Field(ge=0, le=1)
     weights: ScoreWeights
 

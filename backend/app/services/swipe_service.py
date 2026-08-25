@@ -284,12 +284,21 @@ async def record_swipe(
     db.add(kayit)
 
     # Ogrenen sinyal: SADECE begendim/begenmedim(sevmedim)/yaptim.
+    # W4-T04: sinyal gucu 'tekrar' ile degil sonum hiziyla veriliyor;
+    # eski tekrar=3 ayni ortalama guncellemesini uc kez kosturdugu icin
+    # 'yaptim'i begendim'den ayirt edemiyordu.
     if action == FeedbackAction.BEGENDIM:
-        taste_service.register_recipe_signal(db, user.id, varmi, signal=1.0)
+        taste_service.register_recipe_signal(
+            db, user.id, varmi, signal=1.0,
+            strength=taste_service.STRENGTH_BEGENDIM)
     elif action == FeedbackAction.YAPTIM:
-        taste_service.register_recipe_signal(db, user.id, varmi, signal=1.0, tekrar=3)
+        taste_service.register_recipe_signal(
+            db, user.id, varmi, signal=1.0,
+            strength=taste_service.STRENGTH_YAPTIM)
     elif action == FeedbackAction.BEGENMEDIM and reason == FeedbackReason.SEVMEDIM:
-        taste_service.register_recipe_signal(db, user.id, varmi, signal=-1.0)
+        taste_service.register_recipe_signal(
+            db, user.id, varmi, signal=-1.0,
+            strength=taste_service.STRENGTH_SEVMEDIM)
 
     # (c) 'Cok uzun' bir ELEME degil, oturum filtresinin daralmasidir.
     # tighten_time_limit min() kullanir: esik daralir, asla gevsemez.
