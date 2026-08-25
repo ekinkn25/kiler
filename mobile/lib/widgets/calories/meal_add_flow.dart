@@ -103,11 +103,11 @@ Future<bool> _fotoAkis(
   try {
     tahmin = await ref.read(mealPhotoServiceProvider).tahminEt(File(secilen.path));
   } catch (hata) {
-    if (context.mounted) Navigator.of(context).pop(); // gostergeyi kapat
+    if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
     if (context.mounted) _uyar(context, 'Fotoğraf işlenemedi: ${friendlyErrorMessage(hata)}');
     return false;
   }
-  if (context.mounted) Navigator.of(context).pop(); // gostergeyi kapat
+  if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
   if (!context.mounted) return false;
 
   final eklendi = await showMealConfirmSheet(context, tahmin: tahmin, date: date);
