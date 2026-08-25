@@ -16,6 +16,7 @@ import '../../widgets/swipe/swipe_deck.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/ingredient_lite.dart';
 import '../../providers/shopping_provider.dart';
+import '../../widgets/chat/recipe_mini_card.dart';
 
 /// KESFET sekmesi: 'Bugun ne yesen?' + swipe destesi.
 ///
@@ -58,7 +59,11 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     final RecipeCard kart = deste.cards[oncekiIndex];
 
     if (yon == CardSwiperDirection.right) {
-      unawaited(_gonder(kart: kart, action: FeedbackAction.yapacagim));
+      unawaited(
+        _gonder(kart: kart, action: FeedbackAction.yapacagim).then((_) {
+          if (mounted) ref.invalidate(plannedProvider);
+        }),
+      );
     } else if (yon == CardSwiperDirection.top) {
       unawaited(_gonder(kart: kart, action: FeedbackAction.kaydetti));
     } else if (yon == CardSwiperDirection.left) {
@@ -196,52 +201,102 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     final deste = ref.watch(swipeDeckProvider);
     final bool onYukleniyor = deste.valueOrNull?.loadingMore ?? false;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bugün ne yesen?'),
-        centerTitle: false,
-        // On yukleme gostergesi: 2 piksel, kaydirmayi ENGELLEMEZ.
-        // Kullanici fark etmese de olur - amac gelistirici icin
-        // gorunurluk ve yavas agda 'donmadi, calisiyor' hissi.
-        actions: [
-          IconButton(
-            tooltip: 'Yeni oturum başlat',
-            icon: const Icon(Icons.refresh),
-            onPressed: (){
-              unawaited(ref.read(swipeDeckProvider.notifier).oturumuSifirla());
-            }, 
-          ),
-        ],
-        bottom: onYukleniyor
-            ? const PreferredSize(
-                preferredSize: Size.fromHeight(2),
-                child: LinearProgressIndicator(minHeight: 2),
-              )
-            : null,
-      ),
-      body: deste.when(
-        loading: () => const Padding(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              LoadingSkeleton.card(),
-              SizedBox(height: 12),
-              LoadingSkeleton.card(),
-            ],
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Keşfet'),
+          centerTitle: false,
+          actions: [
+            IconButton(
+              tooltip: 'Yeni oturum başlat',
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                unawaited(ref.read(swipeDeckProvider.notifier).oturumuSifirla());
+              },
+            ),
+          ],
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(onYukleniyor ? 50 : 48),
+            child: Column(
+              children: [
+                const TabBar(
+                  tabs: [
+                    Tab(text: 'Bugün ne yesen?'),
+                    Tab(text: 'Yapacaklarım'),
+                  ],
+                ),
+                if (onYukleniyor) const LinearProgressIndicator(minHeight: 2),
+              ],
+            ),
           ),
         ),
-        error: (error, _) => EmptyState(
-          icon: Icons.error_outline,
-          title: 'Deste yüklenemedi',
-          message: friendlyErrorMessage(error),
-          actionLabel: 'Tekrar dene',
-          onAction: () => ref.invalidate(swipeDeckProvider),
+        body: TabBarView(
+          children: [
+            _swipeSekmesi(deste),
+            _yapacaklarimSekmesi(),
+          ],
         ),
-        data: _govde,
       ),
     );
   }
 
+  Widget _swipeSekmesi(AsyncValue<SwipeDeckState> deste) {
+    return deste.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            LoadingSkeleton.card(),
+            SizedBox(height: 12),
+            LoadingSkeleton.card(),
+          ],
+        ),
+      ),
+      error: (error, _) => EmptyState(
+        icon: Icons.error_outline,
+        title: 'Deste yüklenemedi',
+        message: friendlyErrorMessage(error),
+        actionLabel: 'Tekrar dene',
+        onAction: () => ref.invalidate(swipeDeckProvider),
+      ),
+      data: _govde,
+    );
+  }
+
+  Widget _yapacaklarimSekmesi() {
+    final planned = ref.watch(plannedProvider);
+    return planned.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(children: [LoadingSkeleton.card(), SizedBox(height: 8), LoadingSkeleton.card()]),
+      ),
+      error: (error, _) => EmptyState(
+        icon: Icons.error_outline,
+        title: 'Yüklenemedi',
+        message: friendlyErrorMessage(error),
+        actionLabel: 'Tekrar dene',
+        onAction: () => ref.invalidate(plannedProvider),
+      ),
+      data: (liste) => liste.isEmpty
+          ? const EmptyState(
+              icon: Icons.playlist_add_check,
+              illustrated: true,
+              title: 'Henüz yapacağın tarif yok',
+              message: 'Bir tarifi sağa kaydırınca ("Yapacağım") burada birikir.',
+            )
+          : RefreshIndicator(
+              onRefresh: () async => ref.invalidate(plannedProvider),
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  for (final tarif in liste) RecipeMiniCard(recipe: tarif),
+                ],
+              ),
+            ),
+    );
+  }
+  
   Widget _govde(SwipeDeckState veri) {
     // Hic kart gelmedi: kiler bos ya da filtreler cok darald.
     if (veri.cards.isEmpty) {
