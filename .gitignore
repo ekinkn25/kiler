@@ -87,3 +87,7 @@ data\unmatched_report.txt
 # ---------- IDE ----------
 .idea/
 *.iml
+
+#-----------TEST FOTO-------
+backend/tests/fixtures/vision/images/*
+!backend/tests/fixtures/vision/images/README.md

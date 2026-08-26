@@ -40,7 +40,7 @@ SessionLocal = sessionmaker(    #oturum fabrikası:engine anabağlantı hattı f
     bind=engine,
     autoflush=False,
     autocommit=False,
-    expire_on_commit=False, #python ile veriyi dbye kayıt ettikten sonra normalde sqlalchemy o veriyi python hafızasından siler bu özl false yaparak veriyi kaydettikten sonra bile kullanıcıya json olarak geri döndürülür
+    # expire_on_commit=False, #python ile veriyi dbye kayıt ettikten sonra normalde sqlalchemy o veriyi python hafızasından siler bu özl false yaparak veriyi kaydettikten sonra bile kullanıcıya json olarak geri döndürülür
 )
 
 

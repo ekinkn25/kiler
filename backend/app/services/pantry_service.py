@@ -10,13 +10,14 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models import Ingredient, PantryEvent, PantryItem, User
 from app.core.exceptions import NotFoundError
 from app.models.enums import Availability, PantryEventType, PantrySource, UnitType
 
 logger = logging.getLogger(__name__)
+_ARANMADI = object() 
 
 
 def utcnow() -> datetime:
@@ -30,7 +31,8 @@ class ConfirmResult:
 
 
 def confirm_single_ingredient(
-    db: Session, user: User, malzeme: Ingredient, source: PantrySource, *, note: str,
+    # db: Session, user: User, malzeme: Ingredient, source: PantrySource, *, note: str,
+    db, user, malzeme, source, *, note: str, mevcut=_ARANMADI,
 ) -> dict:
     """Tek bir malzemeyi kilere yazar/gunceller + PantryEvent kaydeder.
 
@@ -39,10 +41,15 @@ def confirm_single_ingredient(
     (barcode_service.confirm_scanned_product, tekli) BU FONKSIYONU
     ORTAK KULLANIR.
     """
-    kayit = db.scalar(
-        select(PantryItem).where(
-            PantryItem.user_id == user.id, PantryItem.ingredient_id == malzeme.id,
+    kayit = (
+        db.scalar(
+            select(PantryItem).where(
+                PantryItem.user_id == user.id,
+                PantryItem.ingredient_id == malzeme.id,
+            )
         )
+        if mevcut is _ARANMADI
+        else mevcut
     )
     yeni_kayit = kayit is None
     if yeni_kayit:
@@ -69,9 +76,7 @@ def confirm_single_ingredient(
     }
 
 
-def confirm_detected_ingredients(
-    db: Session, user: User, canonical_names: list[str], source: PantrySource,
-) -> ConfirmResult:
+def confirm_detected_ingredients(db, user, canonical_names, source) -> ConfirmResult:
     """Onaylanan (fotograftan tespit edilen) malzemeleri kilere yazar."""
     sozluk = {
         i.canonical_name: i for i in db.scalars(
@@ -84,14 +89,24 @@ def confirm_detected_ingredients(
             "Onaylanan malzemelerden bazilari sozlukte yok, atlandi: %s", bilinmeyen
         )
 
+    # W4-T13: mevcut kiler satirlari TEK sorguda.
+    mevcutlar = {
+        k.ingredient_id: k for k in db.scalars(
+            select(PantryItem).where(
+                PantryItem.user_id == user.id,
+                PantryItem.ingredient_id.in_([i.id for i in sozluk.values()]),
+            )
+        )
+    } if sozluk else {}
+
     onaylanan = [
         confirm_single_ingredient(
             db, user, sozluk[ad], source,
             note=f"Fotograftan tespit edildi ({source.value}), kullanici onayladi.",
+            mevcut=mevcutlar.get(sozluk[ad].id),
         )
         for ad in canonical_names if ad in sozluk
     ]
-
     db.commit()
     logger.info(
         "Kiler onayi | kullanici=%s onaylanan=%d atlanan=%d",
@@ -104,15 +119,16 @@ def confirm_detected_ingredients(
 # Okuma ve hizli durum degistirme (W3-T18)
 # ==================================================================
 def list_items(
-    db: Session, user: User, *, include_finished: bool = False
+        db:Session, user : User, *, include_finished: bool = False
 ) -> list[PantryItem]:
-    """Kiler ekraninin listesi.
-
-    'bitti' kayitlari VARSAYILAN OLARAK gelmez: kullanici bittigini
-    soylemis bir urunu listede gormek istemez. Kayit silinmiyor cunku
-    PantryEvent gecmisi ve tuketim hizi analizi ona bagli.
-    """
-    sorgu = select(PantryItem).where(PantryItem.user_id == user.id)
+    sorgu = (
+        select(PantryItem)
+        .options(
+            joinedload(PantryItem.ingredient).joinedload(Ingredient.category),
+            joinedload(PantryItem.product),
+        )
+        .where(PantryItem.user_id == user.id)
+    )
     if not include_finished:
         sorgu = sorgu.where(PantryItem.availability != Availability.BITTI)
     return list(db.scalars(sorgu.order_by(PantryItem.updated_at.desc())))

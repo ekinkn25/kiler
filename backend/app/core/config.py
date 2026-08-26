@@ -132,6 +132,14 @@ class Settings(BaseSettings):
     # Onbellekteki urun kac gun 'taze' sayilir; bu sureden eskiyse OFF'tan tekrar cekilir. Besin degerleri sik degismez, 30 gun makul.
     OFF_CACHE_DAYS: int = 30
 
+    PERF_LOG_ENABLED: bool = True
+    # Bu esigi asan HER SQL sorgusu WARNING olarak loglanir.
+    SLOW_QUERY_MS: int = 50
+    # Bu esigi asan istek WARNING olarak loglanir (kabul kriteri: deste < 800 ms).
+    SLOW_REQUEST_MS: int = 800
+    # Tek istekte bu kadar sorgu = N+1 suphesi.
+    QUERY_COUNT_WARN: int = 20
+
 
 @lru_cache
 def get_settings() -> Settings:

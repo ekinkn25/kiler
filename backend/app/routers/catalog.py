@@ -1,5 +1,6 @@
 """Sozluk (lookup) uclari: onboarding'in diyet/alerjen cip listesi bunlardan beslenir."""
 from fastapi import APIRouter, Query
+from sqlalchemy.orm import joinedload
 
 from app.core.deps import DbSession, ActiveUser
 from app.models import Allergen, DietTag, Ingredient
@@ -40,7 +41,7 @@ def list_ingredients(
     ),
     limit: int = Query(default=50, ge=1, le=200),
 ) -> list[IngredientRead]:
-    sorgu = db.query(Ingredient)
+    sorgu = db.query(Ingredient).options(joinedload(Ingredient.category))
 
     if names is not None:
         istenen = [p.strip() for p in names.split(",") if p.strip()]
@@ -71,6 +72,7 @@ def search_ingredients(
     kalip = f"%{q.strip()}%"
     kayitlar = (
         db.query(Ingredient)
+        .options(joinedload(Ingredient.category))
         .filter(Ingredient.display_name.ilike(kalip))
         .order_by(Ingredient.display_name)
         .limit(limit)
