@@ -1,0 +1,42 @@
+{
+  "_aciklama": [
+    "W4-T11 test seti. 'expected' KANONIK adlarla yazilir (ingredients.canonical_name).",
+    "Script her kanonik adin sozlukte var oldugunu dogrular; uyari verirse ya adi duzelt",
+    "ya da sozluge ekle - yoksa o malzeme recall'da asla yakalanamaz.",
+    "'optional': fotografta duran ama kacirilmasi affedilebilir seyler. FN de FP de sayilmaz."
+  ],
+
+  "pantry_01": {
+    "type": "malzeme",
+    "file": "pantry_01.jpg",
+    "note": "buzdolabi ust raf, dogal isik",
+    "expected": ["domates", "salatalik", "yumurta", "sut", "yogurt"],
+    "optional": ["limon"]
+  },
+  "pantry_02": {
+    "type": "malzeme",
+    "file": "pantry_02.jpg",
+    "note": "tezgah uzeri, karisik sebze",
+    "expected": ["sogan", "patates", "havuc", "yesil_biber"],
+    "optional": []
+  },
+
+  "dish_01": {
+    "type": "ogun",
+    "file": "dish_01.jpg",
+    "note": "kase corba, yaninda ekmek",
+    "expected_dish": "mercimek corbasi",
+    "expected_aliases": ["kirmizi mercimek corbasi", "corba"],
+    "expected_grams": 300,
+    "gram_tolerance": 0.35
+  },
+  "dish_02": {
+    "type": "ogun",
+    "file": "dish_02.jpg",
+    "note": "tabakta pilav + tavuk",
+    "expected_dish": "tavuklu pilav",
+    "expected_aliases": ["pilav", "tavuk pilav"],
+    "expected_grams": 350,
+    "gram_tolerance": 0.35
+  }
+}
