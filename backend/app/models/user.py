@@ -51,48 +51,57 @@ class User(TimestampMixin, Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     onboarding_completed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
+    
+    # W4-T14 / KVKK: asagidaki ILISKILERIN HEPSINDE passive_deletes=True var.
+    # Olmadiginda SQLAlchemy hesap silinirken tum cocuk satirlari BELLEGE
+    # yukleyip tek tek DELETE atiyor - bir kullanicida ~1200 SQL ifadesi.
+    # Veritabaninda zaten ON DELETE CASCADE tanimli (14 tablonun 14'unde) ve
+    # session.py'de PRAGMA foreign_keys=ON aciliyor; silme isini ona
+    # birakiyoruz, tek DELETE yetiyor.
+
     # 1:1
     profile: Mapped["UserProfile | None"] = relationship(
-        back_populates="user", uselist=False, cascade="all, delete-orphan"
+        back_populates="user", uselist=False,
+        cascade="all, delete-orphan", passive_deletes=True,
     )
     # N:N
     diet_tags: Mapped[list["DietTag"]] = relationship(
-        secondary=user_diet_tags, back_populates="users"
+        secondary=user_diet_tags, back_populates="users", passive_deletes=True,
     )
     allergens: Mapped[list["Allergen"]] = relationship(
-        secondary=user_allergens, back_populates="users"
+        secondary=user_allergens, back_populates="users", passive_deletes=True,
     )
     # 1:N - kullanici silinince hepsi silinir (KVKK)
     pantry_items: Mapped[list["PantryItem"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True,
     )
     #cascade="all, delete-orphan":Eğer bir User silinirse (hesabını kapatırsa), SQLAlchemy o kullanıcıya bağlı olan kiler eşyalarını, yemek loglarını, favori tariflerini ve sohbet geçmişini acımasızca temizler. Bu sayede veritabanında "sahipsiz" (orphan) veri kalmaz ve yasal veri imha yükümlülüğünü teknik düzeyde otomatikleştirmiş olursun.
     pantry_events: Mapped[list["PantryEvent"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True,
     )
     shopping_list_items: Mapped[list["ShoppingListItem"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True,
     )
     meal_logs: Mapped[list["MealLog"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True,
     )
     weight_logs: Mapped[list["WeightLog"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True,
     )
     recipe_feedback: Mapped[list["RecipeFeedback"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True,
     )
     recipe_favorites: Mapped[list["RecipeFavorite"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True,
     )
     taste_weights: Mapped[list["UserTasteWeight"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True,
     )
     conversations: Mapped[list["ChatConversation"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True,
     )
     swipe_sessions: Mapped[list["SwipeSession"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True,
     )
 
     def __repr__(self) -> str:
