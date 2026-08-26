@@ -10,7 +10,7 @@ import logging
 from typing import Sequence
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.exceptions import NotFoundError
 from app.models import Ingredient, PantryItem, ShoppingListItem, User
@@ -19,39 +19,48 @@ from app.services.ingredient_matcher import match_one
 from app.services.pantry_service import confirm_single_ingredient
 
 logger = logging.getLogger(__name__)
+_ARANMADI = object() 
 
 
 def list_items(
     db: Session, user: User, *, include_checked: bool = True
 ) -> list[ShoppingListItem]:
     """Kullanicinin alisveris listesi, en yeni ustte."""
-    sorgu = select(ShoppingListItem).where(ShoppingListItem.user_id == user.id)
+    sorgu = (
+        select(ShoppingListItem)
+        .options(
+            joinedload(ShoppingListItem.ingredient).joinedload(Ingredient.category))
+        .where(ShoppingListItem.user_id == user.id)
+    )
     if not include_checked:
         sorgu = sorgu.where(ShoppingListItem.is_checked.is_(False))
     return list(db.scalars(sorgu.order_by(ShoppingListItem.created_at.desc())))
 
 
-def add_from_recipe(
-    db: Session,
-    user: User,
-    *,
-    recipe_id: str,
-    items: Sequence,  # ShoppingItemCreate
-    source: ShoppingSource = ShoppingSource.TARIF,
-) -> list[ShoppingListItem]:
-    """Tarif kaynakli toplu ekleme.
+def add_from_recipe(db, user, *, recipe_id, items, source=ShoppingSource.TARIF):
+    """...(mevcut docstring)...
 
-    UYGULANAN KURALLAR:
-      - Malzeme listede ZATEN varsa yeni satir acilmaz, var olan
-        GUNCELLENIR (essiz kisit ihlali onlenir).
-      - Var olan satir 'alindi' isaretliyse isaret KALDIRILIR: kullanici
-        malzemeyi yeniden istiyor demektir.
-      - Ayni istekteki tekrarli kimlikler TEKILLESTIRILIR.
-      - Sozlukte olmayan ingredient_id sessizce ATLANIR; tek hatali kimlik
-        yuzunden butun toplu eklemeyi dusurmek dogru olmaz.
-      - custom_name'li satirlarda essiz kisit yok (ingredient_id NULL),
-        her biri ayri satir olur.
+    W4-T13: dogrulama ve 'zaten var mi' kontrolu DONGU ONCESI iki toplu
+    sorguya indirildi. Onceden 20 malzemelik bir tarif 40 sorgu atiyordu.
     """
+    istenen = {i.ingredient_id for i in items if i.ingredient_id is not None}
+
+    gecerli_ids: set[int] = set()
+    mevcutlar: dict[int, ShoppingListItem] = {}
+    if istenen:
+        gecerli_ids = set(db.scalars(
+            select(Ingredient.id).where(Ingredient.id.in_(istenen))
+        ))
+        mevcutlar = {
+            k.ingredient_id: k
+            for k in db.scalars(
+                select(ShoppingListItem).where(
+                    ShoppingListItem.user_id == user.id,
+                    ShoppingListItem.ingredient_id.in_(istenen),
+                )
+            )
+        }
+
     sonuc: list[ShoppingListItem] = []
     islenen: set[int] = set()
 
@@ -61,18 +70,13 @@ def add_from_recipe(
                 continue
             islenen.add(istek.ingredient_id)
 
-            if db.get(Ingredient, istek.ingredient_id) is None:
+            if istek.ingredient_id not in gecerli_ids:
                 logger.warning(
                     "Bilinmeyen malzeme kimligi atlandi: %s", istek.ingredient_id
                 )
                 continue
 
-            mevcut = db.scalar(
-                select(ShoppingListItem).where(
-                    ShoppingListItem.user_id == user.id,
-                    ShoppingListItem.ingredient_id == istek.ingredient_id,
-                )
-            )
+            mevcut = mevcutlar.get(istek.ingredient_id)
             if mevcut is not None:
                 mevcut.is_checked = False
                 mevcut.checked_at = None
@@ -100,9 +104,6 @@ def add_from_recipe(
         sonuc.append(kayit)
 
     db.commit()
-    for kayit in sonuc:
-        db.refresh(kayit)
-
     logger.info(
         "Alisveris listesi | kullanici=%s tarif=%s eklenen/guncellenen=%d",
         user.id, recipe_id, len(sonuc),
@@ -206,3 +207,58 @@ def transfer_to_pantry(
     logger.info("Alisveris -> kiler | kullanici=%s aktarilan=%d atlanan=%d",
                 user.id, len(aktarilan), len(atlanan))
     return {"transferred": aktarilan, "skipped": atlanan}
+
+# def confirm_single_ingredient(
+#     db, user, malzeme, source, *, note: str, mevcut=_ARANMADI,
+# ) -> dict:
+#     """...(mevcut docstring)...
+
+#     W4-T13: `mevcut` verilirse kiler satiri icin SORGU ATILMAZ. Toplu
+#     onayda cagiran taraf hepsini tek sorguda cekip buraya gecirir.
+#     """
+#     kayit = (
+#         db.scalar(
+#             select(PantryItem).where(
+#                 PantryItem.user_id == user.id,
+#                 PantryItem.ingredient_id == malzeme.id,
+#             )
+#         )
+#         if mevcut is _ARANMADI
+#         else mevcut
+#     )
+#     # ...gerisi aynen...
+
+
+# def confirm_detected_ingredients(db, user, canonical_names, source) -> ConfirmResult:
+#     """Onaylanan (fotograftan tespit edilen) malzemeleri kilere yazar."""
+#     sozluk = {
+#         i.canonical_name: i for i in db.scalars(
+#             select(Ingredient).where(Ingredient.canonical_name.in_(canonical_names))
+#         )
+#     }
+#     bilinmeyen = [ad for ad in canonical_names if ad not in sozluk]
+#     if bilinmeyen:
+#         logger.warning(
+#             "Onaylanan malzemelerden bazilari sozlukte yok, atlandi: %s", bilinmeyen
+#         )
+
+#     # W4-T13: mevcut kiler satirlari TEK sorguda.
+#     mevcutlar = {
+#         k.ingredient_id: k for k in db.scalars(
+#             select(PantryItem).where(
+#                 PantryItem.user_id == user.id,
+#                 PantryItem.ingredient_id.in_([i.id for i in sozluk.values()]),
+#             )
+#         )
+#     } if sozluk else {}
+
+#     onaylanan = [
+#         confirm_single_ingredient(
+#             db, user, sozluk[ad], source,
+#             note=f"Fotograftan tespit edildi ({source.value}), kullanici onayladi.",
+#             mevcut=mevcutlar.get(sozluk[ad].id),
+#         )
+#         for ad in canonical_names if ad in sozluk
+#     ]
+#     db.commit()
+#     ...

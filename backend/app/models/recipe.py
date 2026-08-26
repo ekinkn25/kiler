@@ -69,6 +69,7 @@ class RecipeFeedback(Base):
         Index("ix_feedback_user_recipe", "user_id", "recipe_id"),
         Index("ix_feedback_session", "session_id", "recipe_id"),
         Index("ix_feedback_user_reason_time", "user_id", "reason", "created_at"),    
+        Index("ix_feedback_user_action_time", "user_id", "action", "created_at"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)

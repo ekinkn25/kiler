@@ -16,7 +16,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, insert
 
 from app.core.exceptions import NotFoundError, PermissionDeniedError
 from app.db.mongo_schema import RECIPE_COLLECTION
@@ -119,7 +119,7 @@ def get_or_create_session(
         oturum = SwipeSession(user_id=user.id)
         db.add(oturum)
         db.commit()
-        db.refresh(oturum)
+        # db.refresh(oturum)
         logger.info("Yeni swipe oturumu: id=%s kullanici=%s", oturum.id, user.id)
         return oturum
 
@@ -170,14 +170,26 @@ def mark_shown(db: Session, user: User, oturum: SwipeSession, kartlar: list[dict
 
     'gordu' kaydinin reason'i YOKTUR; dolayisiyla kalici eleme listesine
     girmez, yalnizca ids_seen_in_session'a takilir.
+
+    W4-T13: ORM dongusu yerine TEK toplu INSERT. Olculdu: 10 kartlik
+    destede eski hali 10 ayri INSERT atiyordu. Geri donen kimliklere
+    ihtiyac olmadigi icin ORM nesnesi kurmaya da gerek yok.
     """
-    for kart in kartlar:
-        db.add(RecipeFeedback(
-            user_id=user.id,
-            recipe_id=kart["id"],
-            session_id=oturum.id,
-            action=FeedbackAction.GORDU,
-        ))
+    if not kartlar:
+        return
+
+    db.execute(
+        insert(RecipeFeedback),
+        [
+            {
+                "user_id": user.id,
+                "recipe_id": kart["id"],
+                "session_id": oturum.id,
+                "action": FeedbackAction.GORDU,
+            }
+            for kart in kartlar
+        ],
+    )
     oturum.shown_count += len(kartlar)
     db.commit()
 
@@ -206,12 +218,13 @@ async def build_deck(
         mongo_db, ctx, limit=limit, exclude_ids=elenecek
     )
 
-    if kartlar:
+    oturum_id = oturum.id
+    oturum_filtreleri = oturum.filters
+    if kartlar: 
         mark_shown(db, user, oturum, kartlar)
-
     logger.info(
-        "Deste | oturum=%s kullanici=%s istenen=%d donen=%d elenen=%d sure_tavani=%s",
-        oturum.id, user.id, limit, len(kartlar), len(elenecek), sure_tavani,
+        "Deste | oturum= %s kullanici= %s istenen= %d donen= %d elenen= %d sure_tavani= %s",
+        oturum_id, user.id, limit, len(kartlar), len(elenecek), sure_tavani,
     )
 
     return {
@@ -221,7 +234,7 @@ async def build_deck(
         "requested": limit,
         # Istemci 'deste bitti, filtreleri gevset' ekranini bununla acar.
         "exhausted": len(kartlar) < limit,
-        "session_filters": oturum.filters,
+        "session_filters": oturum_filtreleri,
         "excluded_count": len(elenecek),
     }
 

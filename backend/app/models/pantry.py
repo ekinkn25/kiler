@@ -75,6 +75,7 @@ class PantryItem(TimestampMixin, Base):
                         name="confidence_range"),
         Index("ix_pantry_user_availability", "user_id", "availability"),
         Index("ix_pantry_confidence_expiry", "confidence_expires_at"),
+        Index("ix_pantry_user_updated", "user_id", "updated_at"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -212,6 +213,7 @@ class ShoppingListItem(Base):
     __table_args__ = (
         UniqueConstraint("user_id", "ingredient_id", name="uq_shopping_user_ingredient"),
         Index("ix_shopping_user_checked", "user_id", "is_checked"),
+        Index("ix_shopping_user_created", "user_id", "created_at"),
     )
     """Uygulama açıldığında kullanıcının alışveriş listesini çekerken, sadece henüz alınmamış (is_checked=False) ürünleri getirmek istersin. Veritabanına koyduğun bu bileşik indeks (composite index), milyonlarca satır olsa bile "Şu kullanıcının alınmamış ürünlerini getir" sorgusunun milisaniyeler içinde sonuçlanmasını garanti eder."""
 
