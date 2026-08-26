@@ -39,6 +39,9 @@ from app.schemas.auth import (
     ChangePasswordRequest, LoginRequest, RefreshRequest,
     RegisterRequest, Token, TokenPayload,
 )
+from app.schemas.privacy import (
+    AccountDeleteResponse, AccountDeleteRequest
+)
 
 __all__ = [
     "AppBaseModel", "ErrorResponse", "HealthResponse", "Message", "Page", "PageParams",
@@ -63,4 +66,5 @@ __all__ = [
     "ProductScanResponse", "PantryConfirmScannedRequest", "ScannedConfirmResponse",
     "PantryStatusUpdate", "PantryManualAdd",
     "ShoppingManualAdd", "ShoppingTransferRequest", "ShoppingTransferResponse",
+    "AccountDeleteRequest", "AccountDeleteResponse"
 ]
