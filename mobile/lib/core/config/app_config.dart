@@ -35,5 +35,6 @@ class AppConfig {
   );
 
   static const String appName = 'Kalori Sayacı';
+  static const String appVersion = 'v1.0.0';
   static const Duration requestTimeout = Duration(seconds: 15);
 }
