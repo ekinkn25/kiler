@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/network/api_exception.dart';
 import '../../models/daily_summary.dart';
 import '../../models/meal_log.dart';
 import '../../providers/meal_provider.dart';
@@ -12,6 +11,7 @@ import '../../widgets/calories/macro_bars.dart';
 import '../../widgets/calories/meal_add_flow.dart';
 import '../../widgets/calories/meal_group_card.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/hata_gorunumu.dart';
 import '../../widgets/loading_skeleton.dart';
 
 /// KALORI sekmesi (W3-T14 + W3-T15 + W3-T16 cekirdegi).
@@ -80,12 +80,10 @@ class _CalorieScreenState extends ConsumerState<CalorieScreen> {
             ],
           ),
         ),
-        error: (error, _) => EmptyState(
-          icon: Icons.error_outline,
-          title: 'Özet yüklenemedi',
-          message: friendlyErrorMessage(error),
-          actionLabel: 'Tekrar dene',
-          onAction: () => ref.invalidate(dailySummaryProvider(secilenGun)),
+        error: (error, _) => HataDurumu(
+          hata: error,
+          baslik: 'Özet yüklenemedi',
+          onTekrar: () => ref.invalidate(dailySummaryProvider(secilenGun)),
         ),
         data: (veri) => _govde(context, veri),
       ),

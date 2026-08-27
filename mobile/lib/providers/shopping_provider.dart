@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/hata/hata_kaydi.dart';
 import '../core/network/dio_client.dart';
 import '../models/shopping_item.dart';
 
@@ -73,14 +74,20 @@ class ShoppingNotifier extends AsyncNotifier<List<ShoppingItem>> {
     if (mevcut == null) return;
 
     final dio = ref.read(dioProvider);
-    final response = await dio.patch<Map<String, dynamic>>(
-      '/shopping/$id',
-      queryParameters: {'checked': checked},
-    );
-    final guncel = ShoppingItem.fromJson(response.data!);
-    state = AsyncData([
-      for (final k in mevcut) if (k.id == id) guncel else k,
-    ]);
+    try {
+      final response = await dio.patch<Map<String, dynamic>>(
+        '/shopping/$id',
+        queryParameters: {'checked': checked},
+      );
+      final guncel = ShoppingItem.fromJson(response.data!);
+      state = AsyncData([
+        for (final k in mevcut) if (k.id == id) guncel else k,
+      ]);
+    } catch (hata, iz) {
+      HataKaydi.yaz(hata, iz, kaynak: 'alisveris.isaretle');
+      state = AsyncData(mevcut);   // eski liste: kutucuk geri doner
+      rethrow;                     // ekran kullaniciya mesaj gosterebilsin
+    }
   }
 
   /// Isaretlenenleri kilere aktarir. Aktarilanlar listeden duser.

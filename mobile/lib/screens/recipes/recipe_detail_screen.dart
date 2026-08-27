@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/network/api_exception.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/enums.dart';
 import '../../models/meal_estimate.dart';
@@ -15,7 +14,7 @@ import '../../providers/pantry_provider.dart';
 import '../../providers/recipe_provider.dart';
 import '../../providers/shopping_provider.dart';
 import '../../widgets/calories/meal_add_flow.dart';
-import '../../widgets/empty_state.dart';
+import '../../widgets/hata_gorunumu.dart';
 import '../../widgets/loading_skeleton.dart';
 
 /// Tam tarif detayi (W4-T01/02/03).
@@ -79,12 +78,10 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
             ],
           ),
         ),
-        error: (error, _) => EmptyState(
-          icon: Icons.error_outline,
-          title: 'Tarif yüklenemedi',
-          message: friendlyErrorMessage(error),
-          actionLabel: 'Tekrar dene',
-          onAction: () => ref.invalidate(recipeDetailProvider(widget.recipeId)),
+        error: (error, _) => HataDurumu(
+          hata: error,
+          baslik: 'Tarif yüklenemedi',
+          onTekrar: () => ref.invalidate(recipeDetailProvider(widget.recipeId)),
         ),
         data: _govde,
       ),

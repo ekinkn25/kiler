@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/hata/guvenli.dart';
 import '../../core/network/api_exception.dart';
 import '../../models/shopping_item.dart';
 import '../../providers/pantry_provider.dart';
 import '../../providers/shopping_provider.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/hata_gorunumu.dart';
 import '../../widgets/loading_skeleton.dart';
 
 /// Alisveris listesi alt ekrani (W3-T21).
@@ -92,12 +94,10 @@ class _ShoppingScreenState extends ConsumerState<ShoppingScreen> {
             children: [LoadingSkeleton.card(), SizedBox(height: 8), LoadingSkeleton.card()],
           ),
         ),
-        error: (error, _) => EmptyState(
-          icon: Icons.error_outline,
-          title: 'Liste yüklenemedi',
-          message: friendlyErrorMessage(error),
-          actionLabel: 'Tekrar dene',
-          onAction: () =>
+        error: (error, _) => HataDurumu(
+          hata: error,
+          baslik: 'Liste yüklenemedi',
+          onTekrar: () =>
               unawaited(ref.read(shoppingListProvider.notifier).yenile()),
         ),
         data: (ogeler) => ogeler.isEmpty
@@ -162,9 +162,13 @@ class _ShoppingScreenState extends ConsumerState<ShoppingScreen> {
           for (final oge in gruplar[kategori]!)
             CheckboxListTile(
               value: oge.isChecked,
-              onChanged: (v) => unawaited(
-                ref.read(shoppingListProvider.notifier).isaretle(oge.id, v ?? false),
-              ),
+              onChanged: (v) => unawaited(guvenliCalistir(
+                () => ref.read(shoppingListProvider.notifier)
+                    .isaretle(oge.id, v ?? false),
+                etiket: 'alisveris.isaretle',
+                context: context,
+                onEk: 'İşaretlenemedi:',
+              )),
               title: Text(
                 oge.name,
                 style: TextStyle(

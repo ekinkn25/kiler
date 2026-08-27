@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../providers/onboarding_provider.dart';
+import '../../../widgets/hata_gorunumu.dart';
 
 class OnboardingStep3Diyet extends ConsumerWidget {
   const OnboardingStep3Diyet({
@@ -28,7 +29,12 @@ class OnboardingStep3Diyet extends ConsumerWidget {
           const SizedBox(height: 16),
           diyetler.when(
             loading: () => const CircularProgressIndicator(),
-            error: (e, _) => const Text('Diyet listesi yüklenemedi.'),
+            // W4-T15: 'Yeniden dene' SART. Bu liste yuklenmezse kullanici
+            // onboarding adiminda kilitli kalir - uygulamaya hic giremez.
+            error: (e, _) => HataSatiriKucuk(
+              mesaj: 'Diyet listesi yüklenemedi.',
+              onTekrar: () => ref.invalidate(dietTagsProvider),
+            ),
             data: (liste) => Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -44,7 +50,10 @@ class OnboardingStep3Diyet extends ConsumerWidget {
           const SizedBox(height: 16),
           alerjenler.when(
             loading: () => const CircularProgressIndicator(),
-            error: (e, _) => const Text('Alerjen listesi yüklenemedi.'),
+            error: (e, _) => HataSatiriKucuk(
+              mesaj: 'Alerjen listesi yüklenemedi.',
+              onTekrar: () => ref.invalidate(allergensProvider),
+            ),
             data: (liste) => Wrap(
               spacing: 8,
               runSpacing: 8,

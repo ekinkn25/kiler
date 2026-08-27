@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../providers/onboarding_provider.dart';
+import '../../../widgets/hata_gorunumu.dart';
 
 class OnboardingStep4Tarifler extends ConsumerWidget {
   const OnboardingStep4Tarifler({
@@ -34,7 +35,11 @@ class OnboardingStep4Tarifler extends ConsumerWidget {
         Expanded(
           child: tarifler.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => const Center(child: Text('Tarifler yüklenemedi.')),
+            error: (e, _) => HataDurumu(
+              hata: e,
+              baslik: 'Tarifler yüklenemedi',
+              onTekrar: () => ref.invalidate(onboardingRecipeChoicesProvider),
+            ),
             data: (liste) => GridView.builder(
               padding: const EdgeInsets.all(16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

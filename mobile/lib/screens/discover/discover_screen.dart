@@ -10,6 +10,7 @@ import '../../models/recipe_card.dart';
 import '../../providers/recipe_provider.dart';
 import '../../providers/swipe_provider.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/hata_gorunumu.dart';
 import '../../widgets/loading_skeleton.dart';
 import '../../widgets/swipe/dislike_reason_sheet.dart';
 import '../../widgets/swipe/swipe_deck.dart';
@@ -258,12 +259,10 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
           ],
         ),
       ),
-      error: (error, _) => EmptyState(
-        icon: Icons.error_outline,
-        title: 'Deste yüklenemedi',
-        message: friendlyErrorMessage(error),
-        actionLabel: 'Tekrar dene',
-        onAction: () => ref.invalidate(swipeDeckProvider),
+      error: (error, _) => HataDurumu(
+        hata: error,
+        baslik: 'Deste yüklenemedi',
+        onTekrar: () => ref.invalidate(swipeDeckProvider),
       ),
       data: _govde,
     );
@@ -276,12 +275,10 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
         padding: EdgeInsets.all(20),
         child: Column(children: [LoadingSkeleton.card(), SizedBox(height: 8), LoadingSkeleton.card()]),
       ),
-      error: (error, _) => EmptyState(
-        icon: Icons.error_outline,
-        title: 'Yüklenemedi',
-        message: friendlyErrorMessage(error),
-        actionLabel: 'Tekrar dene',
-        onAction: () => ref.invalidate(plannedProvider),
+      error: (error, _) => HataDurumu(
+        hata: error,
+        baslik: 'Yapacaklarım yüklenemedi',
+        onTekrar: () => ref.invalidate(plannedProvider),
       ),
       data: (liste) => liste.isEmpty
           ? const EmptyState(

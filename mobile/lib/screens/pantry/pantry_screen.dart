@@ -6,6 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:dio/dio.dart';
+
+import '../../core/hata/hata_kaydi.dart';
 import '../../core/network/api_exception.dart';
 import '../../models/enums.dart';
 import '../../models/pantry_item.dart';
@@ -13,6 +16,7 @@ import '../../providers/pantry_provider.dart';
 import '../../providers/shopping_provider.dart';
 import '../../widgets/chat/detected_ingredients_sheet.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/hata_gorunumu.dart';
 import '../../widgets/ingredient_search_dialog.dart';
 import '../../widgets/loading_skeleton.dart';
 import '../../widgets/pantry/pantry_item_tile.dart';
@@ -150,11 +154,39 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
       if (!mounted) return;
       await ref.read(pantryProvider.notifier).yenile();
       _bilgi('$adet malzeme kilerine eklendi.');
-    } catch (hata) {
+    } catch (hata, iz) {
       if (!mounted) return;
       setState(() => _mesgul = false);
+      HataKaydi.yaz(hata, iz, kaynak: 'kiler.fotodanTespit');
+
+      // W4-T15: /vision/ingredients sozlesmesi list[...] oldugu icin
+      // sunucu 'degraded' bayragi tasiyamiyor; dusus BURADA yapiliyor.
+      // Gorme modeli coktugunde kullaniciyi cikmaza sokmuyoruz: ayni
+      // amaca (kilere malzeme eklemek) ELLE ARAMA yoluyla ulasabilir.
+      if (_gorunumSaglayiciArizasi(hata)) {
+        _bilgi('Fotoğrafı şu an okuyamadık, malzemeyi arayarak ekleyebilirsin.');
+        await _yazarakEkle();
+        return;
+      }
       _bilgi('Fotoğraf işlenemedi: ${friendlyErrorMessage(hata)}');
     }
+  }
+
+  /// Hata gorme modelinden mi geliyor, kullanicinin dosyasindan mi?
+  ///
+  /// 502/504 ve vision_* kodlari saglayici arizasi -> elle arama yoluna
+  /// dusulur. 413/415/400 (dosya cok buyuk, desteklenmeyen tur) ve 429
+  /// (gunluk kota) KULLANICIYA soylenir; elle aramaya kaydirmak bu
+  /// durumlarda kafa karistirici olur.
+  bool _gorunumSaglayiciArizasi(Object hata) {
+    final ApiException? api = hata is DioException
+        ? hata.apiException
+        : (hata is ApiException ? hata : null);
+    if (api == null) return false;
+    if (api.code.startsWith('vision_') && api.code != 'vision_daily_limit') {
+      return true;
+    }
+    return api.statusCode == 502 || api.statusCode == 504;
   }
 
   void _bilgi(String mesaj) {
@@ -209,12 +241,10 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
             ],
           ),
         ),
-        error: (error, _) => EmptyState(
-          icon: Icons.error_outline,
-          title: 'Kiler yüklenemedi',
-          message: friendlyErrorMessage(error),
-          actionLabel: 'Tekrar dene',
-          onAction: () => unawaited(ref.read(pantryProvider.notifier).yenile()),
+        error: (error, _) => HataDurumu(
+          hata: error,
+          baslik: 'Kiler yüklenemedi',
+          onTekrar: () => unawaited(ref.read(pantryProvider.notifier).yenile()),
         ),
         data: (_) => _govde(),
       ),

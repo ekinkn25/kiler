@@ -8,6 +8,7 @@ import '../../models/ingredient_lite.dart';
 import '../../providers/meal_provider.dart';
 import '../../providers/pantry_provider.dart';
 import '../app_button.dart';
+import '../hata_gorunumu.dart';
 
 /// Yiyecek arayip miktar girerek ogun ekleme (W3-T16 cekirdegi).
 ///
@@ -185,7 +186,15 @@ class _FoodEntryBodyState extends ConsumerState<_FoodEntryBody> {
               ? const Center(child: Text('En az 2 harf yaz'))
               : sonuc.when(
                   loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (e, _) => const Center(child: Text('Arama başarısız')),
+                  // Arama coktuyse kullanici 'elle gir' yoluna gecebilmeli;
+                  // bu tabakada zaten o buton var, o yuzden notr tek satir.
+                  error: (e, _) => Center(
+                    child: HataSatiriKucuk(
+                      mesaj: 'Arama şu an çalışmıyor.',
+                      onTekrar: () =>
+                          ref.invalidate(ingredientSearchProvider(_sorgu)),
+                    ),
+                  ),
                   data: (liste) => liste.isEmpty
                       ? const Center(child: Text('Sonuç yok'))
                       : ListView.builder(
