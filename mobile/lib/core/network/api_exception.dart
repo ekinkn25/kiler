@@ -27,7 +27,7 @@ extension DioExceptionApiError on DioException{
     final err = error;
     if (err is ApiException) return err;
     return ApiException(
-      code: "unknown_eror", 
+      code: "unknown_error",
       message: message ?? "Beklenmeyen bir hata oluştu.",
     );
   }
@@ -36,5 +36,5 @@ extension DioExceptionApiError on DioException{
 String friendlyErrorMessage(Object? error) {
   if (error is DioException) return error.apiException.message;
   if (error is ApiException) return error.message;
-  return 'Beklenmeyen bir hata oluştur';
+  return 'Beklenmeyen bir hata oluştu.';
 }
