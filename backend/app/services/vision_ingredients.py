@@ -29,7 +29,7 @@ class IngredientDetectionResult:
 
 class VisionDailyLimitExceeded(AppError):
     status_code = 429
-    code = "cision_daily_limit"
+    code = "vision_daily_limit"
     message = "Bugünlük foto hakkın doldu, yarın tekrar dene !"
 
 INGREDIENT_PROMPT = """Bu fotograftaki YENILEBILIR malzemeleri listele.
@@ -135,7 +135,7 @@ async def detect_ingredients(
     if user_id is not None:
         gunluk_kotayi_kontrol_et(db, user_id)
 
-        islenmis, ozet = prepare_image(raw_image)
+    islenmis, ozet = prepare_image(raw_image)
     saglayici = get_vision_provider()
 
     if not gorme_devresi.izin_var_mi():

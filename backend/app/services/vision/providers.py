@@ -54,7 +54,10 @@ class OpenAICompatibleProvider(VisionProvider):
             # Modelin serbest metin yerine JSON dondurmesini zorlar.
             # "response_format": {"type": "json_object"},
             "temperature": 0.1,     # tanima gorevi - yaraticilik istemiyoruz
-            "max_tokens": 1024,
+            # W4-T15/B1: burada 1024 SABIT yaziliydi, VISION_MAX_TOKENS olu
+            # ayardi. Akil yurutme modellerinde 1024 token yetmiyor, yanit
+            # finish_reason='length' ile kesilip 502 uretiyordu.
+            "max_tokens": settings.VISION_MAX_TOKENS,
         }
         if settings.VISION_JSON_MODE:
             govde["response_format"] = {"type": "json_object"}

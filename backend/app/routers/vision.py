@@ -4,7 +4,6 @@ from typing import Annotated
 from fastapi import APIRouter, File, UploadFile, status
 
 from app.core.deps import ActiveUser, DbSession, MongoDb
-from app.core.exceptions import AppError
 from app.schemas import DetectedIngredient, ErrorResponse, MealEstimate
 from app.services.vision_ingredients import detect_ingredients
 from app.services.meal_estimation import estimate_meal
@@ -14,16 +13,9 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-class UnsupportedImageType(AppError):
-    status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
-    code = "unsupported_image_type"
-    message = "Yalnizca JPEG, PNG ve WEBP fotograflar kabul ediliyor."
-
-
-class EmptyImage(AppError):
-    status_code = status.HTTP_400_BAD_REQUEST
-    code = "empty_image"
-    message = "Bos dosya gonderildi."
+# W4-T15/B3: UnsupportedImageType ve EmptyImage burada YENIDEN tanimliydi;
+# yukaridaki import olu kaliyor, ayni hata iki farkli metinle donebiliyordu.
+# Tek kaynak: app.services.vision.base.
 
 
 @router.post(

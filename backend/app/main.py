@@ -19,7 +19,7 @@ logging.basicConfig(
 )
 
 logging.getLogger("app").setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
-for gurultu in ("asynvio", "passlib", "httpx", "watchfiles", "multipart"):
+for gurultu in ("asyncio", "passlib", "httpx", "watchfiles", "multipart"):
     logging.getLogger(gurultu).setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)

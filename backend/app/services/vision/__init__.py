@@ -11,8 +11,8 @@ from functools import lru_cache
 from app.core.config import settings
 
 from .base import (
-    ImageTooLarge, VisionError, VisionInvalidResponse, VisionProvider,
-    VisionRateLimited, VisionResult, VisionTimeout, VisionUsage,
+    ImageTooLarge, InvalidImage, VisionError, VisionInvalidResponse,
+    VisionProvider, VisionRateLimited, VisionResult, VisionTimeout, VisionUsage,
     extract_json, prepare_image, to_data_uri,
     ALLOWED_IMAGE_TYPES, EmptyImage, UnsupportedImageType
 )
@@ -54,7 +54,7 @@ def reset_vision_provider() -> None:
 __all__ = [
     "VisionProvider", "VisionResult", "VisionUsage",
     "VisionError", "VisionTimeout", "VisionRateLimited",
-    "VisionInvalidResponse", "ImageTooLarge",
+    "VisionInvalidResponse", "ImageTooLarge", "InvalidImage",
     "get_vision_provider", "reset_vision_provider",
     "prepare_image", "to_data_uri", "extract_json",
     "FakeVisionProvider", "GroqVisionProvider", "OpenAIVisionProvider",

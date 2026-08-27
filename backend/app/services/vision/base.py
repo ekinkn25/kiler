@@ -57,6 +57,20 @@ class EmptyImage(AppError):
     code = "empty_image"
     message = "Bos dosya gonderildi"
 
+
+class InvalidImage(AppError):
+    """Dosya okunamiyor: bozuk, kesik veya goruntu degil (W4-T15/B4).
+
+    NEDEN AYRI SINIF: onceden bu durum VisionInvalidResponse (502, dis
+    servis ailesi) firlatiyordu. W4-T15 dusus mantigi 502'yi 'saglayici
+    coktu' diye yorumlayip sessizce elle girise duserdi; oysa sorun
+    KULLANICININ dosyasinda ve ona soylenmeli.
+    """
+
+    status_code = 400
+    code = "invalid_image"
+    message = "Bu dosya bir fotograf gibi gorunmuyor. Baska bir tane dener misin?"
+
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
 
 # ==================================================================
@@ -109,7 +123,10 @@ def prepare_image(raw: bytes) -> tuple[bytes, str]:
         img = ImageOps.exif_transpose(img)      # donmeyi uygula, EXIF'i birak
         img = img.convert("RGB")                # PNG saydamligi JPEG'e cevrilir
     except Exception as exc:  # noqa: BLE001
-        raise VisionInvalidResponse(f"Goruntu okunamadi: {exc}") from exc
+        # 400: kullanicinin dosyasi bozuk. 502 DEGIL - saglayiciya hic
+        # gitmedik, devre kesiciyi de tetiklememeli.
+        logger.info("Goruntu okunamadi (%d bayt): %s", len(raw), exc)
+        raise InvalidImage(f"Goruntu okunamadi: {exc}") from exc
 
     en_buyuk = settings.VISION_MAX_IMAGE_PX
     if max(img.size) > en_buyuk: #(genişil, yükseklik) max ile uzun kenara bakılır thumbnail ise en boy oranını koruyarak nesneyi yerinde değiştirir
