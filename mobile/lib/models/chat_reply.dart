@@ -17,6 +17,7 @@ class ChatReply {
     this.uygulananFiltreler = const [],
     this.detectedIngredients = const [],
     this.fromCache = false,
+    this.degraded = false,
   });
 
   factory ChatReply.fromJson(Map<String, dynamic> json) => ChatReply(
@@ -35,6 +36,7 @@ class ChatReply {
             .map((e) => DetectedIngredient.fromJson(e as Map<String, dynamic>))
             .toList(),
     fromCache: json['from_cache'] as bool? ?? false,
+    degraded: json['degraded'] as bool? ?? false
   );
 
   final int conversationId;
@@ -43,4 +45,5 @@ class ChatReply {
   final List<String> uygulananFiltreler;
   final List<DetectedIngredient> detectedIngredients;
   final bool fromCache;
+  final bool degraded;
 }

@@ -14,6 +14,7 @@ class MealEstimate {
     this.fatG,
     this.portionOptions = const [],
     this.scaleReferenceFound = false,
+    this.degraded = false,
   });
 
   factory MealEstimate.fromJson(Map<String, dynamic> json) {
@@ -32,6 +33,7 @@ class MealEstimate {
               .toList(),
       scaleReferenceFound: json['scale_reference_found'] as bool? ?? false,
       imageHash: json['image_hash'] as String? ?? '',
+      degraded:  json['degraded'] as bool? ?? false,
     );
   }
 
@@ -53,6 +55,7 @@ class MealEstimate {
   final bool scaleReferenceFound;
 
   final String imageHash;
+  final bool degraded;
 }
 
 /// Tek bir porsiyon secenegi.

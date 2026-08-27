@@ -97,6 +97,32 @@ class MessageBubble extends ConsumerWidget {
             ),
           ),
 
+          // W4-T15: yanit LLM'den degil kural tabanli motordan geldi.
+          // NOTR dil: 'asistan coktu' DEMIYORUZ - kullanici onerisini aldi,
+          // altyapi arizasi onun sorunu degil. Yalnizca onerinin NEYE gore
+          // secildigini soyluyoruz ki beklentisi dogru olsun.
+          if (entry.degraded)
+            Padding(
+              padding: const EdgeInsets.only(top: 6, left: 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.tips_and_updates_outlined,
+                    size: 14,
+                    color: renkler.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Kilerine göre seçildi',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: renkler.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
           // Onerilen tarifler: yalnizca asistan yanitinda.
           if (entry.recipeIds.isNotEmpty)
             ConstrainedBox(

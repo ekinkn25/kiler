@@ -25,6 +25,7 @@ class ChatEntry {
     this.imagePath,
     this.status = ChatStatus.tamam,
     this.hata,
+    this.degraded = false,
   });
 
   /// YEREL kimlik. Backend basarisiz istekte hicbir kimlik donmez; ama
@@ -43,6 +44,10 @@ class ChatEntry {
   final ChatStatus status;
   final String? hata;
 
+  /// Yanit LLM'den degil, kural tabanli skorlama motorundan geldi (W4-T15).
+  /// Baloncukta kucuk bir rozetle belirtilir - HATA EKRANI ACILMAZ.
+  final bool degraded;
+
   /// Durum degistirir. copyWith YERINE bu var: standart copyWith'te
   /// `hata: null` 'degistirme' anlamina gelir, bizim ise hatayi
   /// TEMIZLEMEMIZ gerekiyor (yeniden denerken).
@@ -55,6 +60,7 @@ class ChatEntry {
     imagePath: imagePath,
     status: yeniDurum,
     hata: hata,
+    degraded: degraded,
   );
 }
 
@@ -164,6 +170,7 @@ class ChatNotifier extends Notifier<ChatState> {
             text: yanit.mesaj,
             recipeIds: yanit.onerilenTarifIdleri,
             detected: yanit.detectedIngredients,
+            degraded: yanit.degraded,
           ),
         ],
         yaziyor: false,

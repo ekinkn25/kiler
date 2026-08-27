@@ -85,11 +85,21 @@ Future<bool> _fotoAkis(
   ImageSource kaynak,
   String date,
 ) async {
-  final XFile? secilen = await ImagePicker().pickImage(
-    source: kaynak,
-    maxWidth: 1600,
-    imageQuality: 80,
-  );
+  final XFile? secilen;
+  try {
+    // Izin reddi ve platform kanali hatalari BURADA dogar; asagidaki
+    // gorme modeli try'i bunlari kapsamiyor.
+    secilen = await ImagePicker().pickImage(
+      source: kaynak,
+      maxWidth: 1600,
+      imageQuality: 80,
+    );
+  } catch (hata) {
+    if (context.mounted) {
+      _uyar(context, 'Fotoğraf seçilemedi: ${friendlyErrorMessage(hata)}');
+    }
+    return false;
+  }
   if (secilen == null || !context.mounted) return false;
 
   // Gorme modeli cagrisi surerken engelleyici gosterge.
@@ -109,6 +119,15 @@ Future<bool> _fotoAkis(
   }
   if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
   if (!context.mounted) return false;
+  if (tahmin.degraded) {
+    // Gorme modeli yok: HATA GOSTERMIYORUZ, elle giris kartina duşuyoruz.
+    // Kullanicinin amaci ogun eklemekti; bu amac hala gerceklestirilebilir.
+    _uyar(context, 'Fotoğrafı şu an okuyamadık, bilgileri kendin girebilirsin.');
+    final eklendi = await showMealConfirmSheet(
+      context, tahmin: tahmin, date: date, manuel: true,
+    );
+    return eklendi == true;
+  }
 
   final eklendi = await showMealConfirmSheet(context, tahmin: tahmin, date: date);
   return eklendi == true;
