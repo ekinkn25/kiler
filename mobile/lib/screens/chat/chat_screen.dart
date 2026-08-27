@@ -27,23 +27,34 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _giris = TextEditingController();
   final ImagePicker _secici = ImagePicker();
+  final FocusNode _girisOdak = FocusNode();
+
+  //seçilmiş ama henüz gönderilmemiş foto
+  File? _bekleyenFoto;
 
   @override
   void dispose() {
     _giris.dispose();
+    _girisOdak.dispose();
     super.dispose();
   }
 
   // ---------------------------------------------------------------
   // Gonderim
   // ---------------------------------------------------------------
-
-  void _gonder({File? dosya}) {
-    final metin = _giris.text;
+  /// Tek gonderim kapisi: bekleyen foto varsa ONA da ekler ve temizler.
+  void _gonderMesaj(String metin) {
+    final File? dosya = _bekleyenFoto;
     if (metin.trim().isEmpty && dosya == null) return;
+
     _giris.clear();
+    // Foto gonderildi: onizleme kalkmali, yoksa ikinci mesaja da eklenir.
+    if (dosya != null) setState(() => _bekleyenFoto = null);
+
     unawaited(ref.read(chatProvider.notifier).gonder(metin, dosya: dosya));
   }
+
+  void _gonder() => _gonderMesaj(_giris.text);
 
   /// Hazir cip: KLAVYE ACILMADAN mesaj gonderir (W3-T11 kabul kriteri).
   ///
@@ -51,7 +62,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   /// aciktir ve cipe basinca acik kalirdi - 'klavyesiz yol' bozulurdu.
   void _cipSecildi(String soru) {
     FocusScope.of(context).unfocus();
-    unawaited(ref.read(chatProvider.notifier).gonder(soru));
+    // Cip de _gonderMesaj'dan geciyor: bekleyen foto varsa o da gider.
+    // Ayri yol yazmak, foto eklenmisken cipe basan kullanicinin fotosunu
+    // sessizce kaybetmesi demek olurdu.
+    _gonderMesaj(soru);
   }
 
   // ---------------------------------------------------------------
@@ -114,7 +128,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       );
       if (secilen == null || !mounted) return;
 
-      _gonder(dosya: File(secilen.path));
+      setState(() => _bekleyenFoto = File(secilen.path));
+      if (mounted) FocusScope.of(context).requestFocus(_girisOdak);
     } catch (hata) {
       if (!mounted) return;
       _bilgi('Fotoğraf alınamadı: ${friendlyErrorMessage(hata)}');
@@ -183,6 +198,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   )
                 : _mesajListesi(durum),
           ),
+          _bekleyenFotoOnizleme(),
           if (durum.yuklemeOrani != null)
             LinearProgressIndicator(value: durum.yuklemeOrani, minHeight: 3),
           _girisCubugu(durum),
@@ -218,6 +234,54 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
+    /// Gonderilmeyi bekleyen fotografin onizlemesi.
+  ///
+  /// Kullanici neyin ekli oldugunu GORMELI: aksi halde fotografin
+  /// eklenip eklenmedigini ancak mesaji gonderdikten sonra anlar.
+  Widget _bekleyenFotoOnizleme() {
+    final File? dosya = _bekleyenFoto;
+    if (dosya == null) return const SizedBox.shrink();
+
+    final ColorScheme renkler = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.file(
+              dosya,
+              width: 56,
+              height: 56,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stack) => Container(
+                width: 56,
+                height: 56,
+                color: renkler.surfaceContainerHighest,
+                child: Icon(Icons.broken_image_outlined, color: renkler.outline),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Fotoğraf eklendi — ne sormak istersin?',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: renkler.onSurfaceVariant,
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: () => setState(() => _bekleyenFoto = null),
+            icon: const Icon(Icons.close),
+            tooltip: 'Fotoğrafı kaldır',
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _girisCubugu(ChatState durum) {
     return SafeArea(
       top: false,
@@ -228,15 +292,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           children: [
             IconButton(
               // Dokunma alani 48dp'nin altina dusmesin (W4-T09).
-              onPressed: durum.yaziyor ? null : () => unawaited(_fotoSec()),
-              icon: const Icon(Icons.photo_camera_outlined),
-              tooltip: 'Fotoğraf ekle',
+              onPressed: durum.yaziyor || _bekleyenFoto != null
+                ? null
+                : () => unawaited(_fotoSec()),
+              icon: Icon(
+                _bekleyenFoto == null
+                    ? Icons.photo_camera_outlined
+                    : Icons.check_circle_outline,
+              ),
+              tooltip: _bekleyenFoto == null ? 'Fotoğraf ekle' : 'Fotoğraf ekli',
             ),
             Expanded(
               child: TextField(
                 controller: _giris,
                 // Yanit beklenirken yeni mesaj alinmaz: backend konusma
                 // sirasini koruyamaz, notifier zaten reddediyor.
+                focusNode: _girisOdak,
                 enabled: !durum.yaziyor,
                 minLines: 1,
                 maxLines: 4,
@@ -250,11 +321,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 }) => null,
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _gonder(),
-                decoration: const InputDecoration(
-                  hintText: 'Bir şey sor...',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  hintText: _bekleyenFoto == null
+                    ? 'Bir şey sor...'
+                    : 'Fotoğrafla ilgili bir şey sor...',
+                  border: const OutlineInputBorder(),
                   isDense: true,
-                  contentPadding: EdgeInsets.symmetric(
+                  contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 12,
                   ),
