@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kalori/widgets/profil_cekmecesi.dart';
 
 import '../../models/daily_summary.dart';
 import '../../models/meal_log.dart';
@@ -64,6 +65,7 @@ class _CalorieScreenState extends ConsumerState<CalorieScreen> {
           ),
         ),
       ),
+      drawer: const ProfilCekmecesi(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => unawaited(_ekle()),
         icon: const Icon(Icons.add),

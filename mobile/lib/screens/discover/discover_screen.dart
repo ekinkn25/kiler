@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kalori/widgets/profil_cekmecesi.dart';
 
 import '../../core/network/api_exception.dart';
 import '../../models/enums.dart';
@@ -237,6 +238,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
             ),
           ),
         ),
+        drawer: const ProfilCekmecesi(),
         body: TabBarView(
           children: [
             _swipeSekmesi(deste),

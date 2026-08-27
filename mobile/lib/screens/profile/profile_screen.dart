@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:kalori/widgets/cikis_akisi.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../widgets/widgets.dart';
@@ -34,7 +37,7 @@ class ProfileScreen extends ConsumerWidget {
             AppButton(
               label: 'Çıkış Yap',
               variant: AppButtonVariant.secondary,
-              onPressed: () => ref.read(authProvider.notifier).logout(),
+              onPressed: () => unawaited(cikisAkisi(context, ref)),
             ),
           ],
         ),

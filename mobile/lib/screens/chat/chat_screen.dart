@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kalori/widgets/profil_cekmecesi.dart';
 
 import '../../core/network/api_exception.dart';
 import '../../providers/chat_provider.dart';
@@ -15,6 +16,7 @@ import '../../widgets/chat/suggestion_chips.dart';
 import '../../widgets/chat/typing_indicator.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/chat/shot_guide.dart';
+export '../../widgets/profil_cekmecesi.dart';
 
 /// SOHBET sekmesi (W3-T10 + T11 + T12 + T13).
 class ChatScreen extends ConsumerStatefulWidget {
@@ -185,6 +187,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Sohbet'), centerTitle: false),
+      drawer: const ProfilCekmecesi(),
       body: Column(
         children: [
           Expanded(

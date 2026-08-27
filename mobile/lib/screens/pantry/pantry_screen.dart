@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:dio/dio.dart';
+import 'package:kalori/widgets/profil_cekmecesi.dart';
 
 import '../../core/hata/hata_kaydi.dart';
 import '../../core/network/api_exception.dart';
@@ -228,6 +229,7 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
           ),
         ],
       ),
+      drawer: const ProfilCekmecesi(),
       body: kiler.when(
         loading: () => const Padding(
           padding: EdgeInsets.all(20),

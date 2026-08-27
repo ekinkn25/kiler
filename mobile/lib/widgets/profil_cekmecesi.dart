@@ -5,9 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/config/app_config.dart';
-import '../core/hata/guvenli.dart';
+// import '../core/hata/guvenli.dart';
 import '../models/app_user.dart';
 import '../providers/auth_provider.dart';
+import 'cikis_akisi.dart';
 
 /// Sol taraftan acilan profil cekmecesi.
 ///
@@ -79,7 +80,13 @@ class ProfilCekmecesi extends ConsumerWidget {
                 'Çıkış Yap',
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
-              onTap: () => unawaited(_cikisYap(context, ref)),
+              onTap: () => unawaited(cikisAkisi(
+                context,
+                ref,
+                // Cekmece onay ALINDIKTAN sonra kapansin: kullanici
+                // 'Vazgec' derse acik kalmali.
+                onayVerildiginde: () => Navigator.of(context).pop(),
+              )),
             ),
 
             const SizedBox(height: 16),
@@ -97,54 +104,7 @@ class ProfilCekmecesi extends ConsumerWidget {
       ),
     );
   }
-
-  /// Cikis ONAY ISTER.
-  ///
-  /// Tek dokunusla cikis yaptirmak, yanlislikla basan kullanicinin
-  /// yeniden e-posta ve sifre girmesi demek. Geri alinamayan her islem
-  /// gibi bu da soruluyor.
-  Future<void> _cikisYap(BuildContext context, WidgetRef ref) async {
-    final onay = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Çıkış yapılsın mı?'),
-        content: const Text(
-          'Tekrar girmek için e-posta ve şifreni yazman gerekecek.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Vazgeç'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('Çıkış yap'),
-          ),
-        ],
-      ),
-    );
-
-    if (onay != true || !context.mounted) return;
-
-    // Cekmeceyi kapat: router /giris'e yonlendirdiginde acik kalmasin.
-    Navigator.of(context).pop();
-
-    // guvenliCalistir (W4-T15): secure storage temizligi patlarsa
-    // kullanici sessizce 'cikis yapamayan' bir ekranda kalmasin.
-    await guvenliCalistir(
-      () => ref.read(authProvider.notifier).logout(),
-      etiket: 'profil.cikis',
-      context: context,
-      onEk: 'Çıkış yapılamadı:',
-    );
-    // Yonlendirme YOK: app_router redirect'i authProvider'i dinliyor,
-    // durum null'a dusunce /giris'e kendisi gidiyor.
-  }
 }
-
 // ====================================================================
 // Kimlik karti
 // ====================================================================
