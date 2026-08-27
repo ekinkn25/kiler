@@ -40,3 +40,5 @@ class RagChatResponse(AppBaseModel):
     uygulanan_filtreler: list[str] = []
     from_cache: bool = False
     detected_ingredients: list[DetectedIngredient] = []
+    degraded: bool = False
+    degraded_reason: str | None = None

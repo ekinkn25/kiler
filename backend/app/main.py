@@ -10,6 +10,7 @@ from app.routers import health
 from app.routers.api_v1 import api_router
 from app.db.mongodb import close_mongo_connection, connect_to_mongo
 from app.core.timing import install_perf_logging
+from app.core.request_id import install_request_id
 
 logging.basicConfig(
     # Uygulamada olan biten her şeyi (kim girdi, nerede hata oldu, hangi veri çekildi) terminale veya bir dosyaya yazdırmak içindir
@@ -65,6 +66,7 @@ def create_app() -> FastAPI:
     # ---------- Global hata yakalayicilar ----------
     register_exception_handlers(application)
     install_perf_logging(application)
+    install_request_id(application)
 
     # ---------- Router'lar ----------
     # /health surum disidir: izleme araclari sabit bir adres bekler.

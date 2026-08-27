@@ -136,3 +136,6 @@ class MealEstimate(AppBaseModel):
     requires_confirmation: bool = True
     needs_manual_entry: bool = False
     image_hash: str
+    degraded: bool = False
+    degraded_reason: str | None = None
+

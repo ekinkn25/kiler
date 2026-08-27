@@ -13,9 +13,10 @@ from app.models import VisionRequest, VisionRequestType
 from app.schemas import DetectedIngredient
 from app.services.ingredient_matcher import match_ingredients
 from app.services.vision import (
-    VisionInvalidResponse, get_vision_provider, prepare_image,
+    VisionInvalidResponse, get_vision_provider, prepare_image, VisionError
 )
 from app.services.vision_log import log_vision_call
+from app.core.circuit_breaker import gorme_devresi
 
 logger = logging.getLogger(__name__)
 
@@ -134,21 +135,35 @@ async def detect_ingredients(
     if user_id is not None:
         gunluk_kotayi_kontrol_et(db, user_id)
 
-    islenmis, ozet = prepare_image(raw_image)
+        islenmis, ozet = prepare_image(raw_image)
     saglayici = get_vision_provider()
+
+    if not gorme_devresi.izin_var_mi():
+        # Devre acik: saglayiciya HIC gitmiyoruz. Hata AYNI ama 60 sn degil
+        # 5 ms'de doner; mobil taraf elle malzeme aramaya aninda duser.
+        log_vision_call(
+            db, request_type=VisionRequestType.MALZEME, image_hash=ozet,
+            error_code="vision_circuit_open", user_id=user_id,
+            image_bytes=len(islenmis), provider=saglayici.name,
+        )
+        raise VisionError("Fotograf tanima gecici olarak devre disi.")
 
     try:
         sonuc = await saglayici.analyze(islenmis, INGREDIENT_PROMPT)
-    except AppError as exc:
-        # Basarisiz cagri da kaydedilir: hata orani maliyet analizinin parcasi
+        gorme_devresi.basarili()
+    except VisionError as exc:
+        gorme_devresi.basarisiz()
         log_vision_call(
-            db,
-            request_type=VisionRequestType.MALZEME,
-            image_hash=ozet,
+            db, request_type=VisionRequestType.MALZEME, image_hash=ozet,
             error_code=getattr(exc, "code", "vision_error"),
-            user_id=user_id,
-            image_bytes=len(islenmis),
-            provider=saglayici.name,
+            user_id=user_id, image_bytes=len(islenmis), provider=saglayici.name,
+        )
+        raise
+    except AppError as exc:
+        log_vision_call(
+            db, request_type=VisionRequestType.MALZEME, image_hash=ozet,
+            error_code=getattr(exc, "code", "vision_error"),
+            user_id=user_id, image_bytes=len(islenmis), provider=saglayici.name,
         )
         raise
 

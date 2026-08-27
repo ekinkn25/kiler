@@ -231,3 +231,20 @@ class FakeVisionProvider(VisionProvider):
                 latency_ms=150, image_bytes=len(image_bytes),
             ),
         )
+
+class BrokenVisionProvider(VisionProvider):
+    """W4-T15: DUSUS YOLUNU test etmek icin HER CAGRIDA patlayan saglayici.
+
+    Ag kesmek yerine bunu kullaniyoruz: deterministik, hizli ve CI'da da
+    calisir. .env'de VISION_PROVIDER=broken yaz, uygulamayi ac.
+    """
+
+    name = "broken"
+
+    @property
+    def is_fake(self) -> bool:
+        return True
+
+    async def analyze(self, image_bytes: bytes, prompt: str) -> VisionResult:
+        await asyncio.sleep(0.05)
+        raise VisionTimeout("Bozuk saglayici: kasten basarisiz (W4-T15 testi).")

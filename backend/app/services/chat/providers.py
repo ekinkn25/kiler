@@ -184,3 +184,14 @@ class FakeChatProvider(ChatProvider):
             usage=ChatUsage(provider=self.name, model="fake-chat-1",
                            prompt_tokens=0, completion_tokens=0, latency_ms=100),
         )
+
+class BrokenChatProvider(ChatProvider):
+    """W4-T15: LLM çöktüğünde kural tabalı öneriye düşüldüğünü kanıtlar"""
+    name = "broken"
+    @property
+    def is_fake(self) -> bool:
+        return True
+
+    async def complete(self, system_prompt: str, user_prompt: str) -> ChatResult:
+        await asyncio.sleep(0.05)
+        raise ChatTimeout("Bozuk saglayici: kasten basarisiz (W4-T15 testi).")

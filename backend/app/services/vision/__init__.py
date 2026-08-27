@@ -16,12 +16,13 @@ from .base import (
     extract_json, prepare_image, to_data_uri,
     ALLOWED_IMAGE_TYPES, EmptyImage, UnsupportedImageType
 )
-from .providers import FakeVisionProvider, GroqVisionProvider, OpenAIVisionProvider
+from .providers import FakeVisionProvider, GroqVisionProvider, OpenAIVisionProvider, BrokenVisionProvider
 
 _SAGLAYICILAR: dict[str, type[VisionProvider]] = {
     "fake": FakeVisionProvider,
     "groq": GroqVisionProvider,
     "openai": OpenAIVisionProvider,
+    "broken": BrokenVisionProvider,
 }
 
 
@@ -57,5 +58,6 @@ __all__ = [
     "get_vision_provider", "reset_vision_provider",
     "prepare_image", "to_data_uri", "extract_json",
     "FakeVisionProvider", "GroqVisionProvider", "OpenAIVisionProvider",
-    "ALLOWED_IMAGE_TYPES", "EmptyImage", "UnsupportedImageType"
+    "ALLOWED_IMAGE_TYPES", "EmptyImage", "UnsupportedImageType",
+    "BrokenVisionProvider"
 ]

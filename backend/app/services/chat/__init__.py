@@ -13,11 +13,12 @@ from .base import (
     ADAYLAR_BASI, ADAYLAR_SONU, ChatError, ChatInvalidResponse, ChatProvider,
     ChatRateLimited, ChatResult, ChatTimeout, ChatUsage,
 )
-from .providers import FakeChatProvider, GroqChatProvider
+from .providers import FakeChatProvider, GroqChatProvider, BrokenChatProvider
 
 _SAGLAYICILAR: dict[str, type[ChatProvider]] = {
     "fake": FakeChatProvider,
     "groq": GroqChatProvider,
+    "broken": BrokenChatProvider,
 }
 
 

@@ -26,16 +26,18 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.core.exceptions import AppError, NotFoundError, PermissionDeniedError
+from app.core.exceptions import AppError, NotFoundError, PermissionDeniedError, ExternalServiceError
 from app.models import ChatConversation, ChatMessage, LlmCache, User
 from app.models.enums import ChatRole
 from app.models.recipe import ids_permanently_disliked
-from app.services.chat import ADAYLAR_BASI, ADAYLAR_SONU, get_chat_provider
+from app.services.chat import ADAYLAR_BASI, ADAYLAR_SONU, get_chat_provider, ChatError
 from app.services.ingredient_matcher import IngredientLookup, get_lookup, match_name
 from app.services.recipe_scoring import build_context, score_recipes
 from app.services.unit_service import normalize_text
 from app.schemas import DetectedIngredient
 from app.services.vision_ingredients import detect_ingredients
+from app.core.circuit_breaker import sohbet_devresi
+
 
 logger = logging.getLogger(__name__)
 
@@ -257,6 +259,30 @@ def parse_and_validate(data: dict, candidates: list[dict]) -> tuple[str, list[st
     return mesaj.strip()[:1000], onerilen
 
 
+# 4b) LLM'siz kural tabanli yanit  (W4-T15)
+def kural_tabanli_yanit(candidates: list[dict]) -> tuple[str, list[str]]:
+    """LLM devre disiyken uretilen DETERMINISTIK yanit.
+
+    Adaylar zaten build_candidates() tarafindan kiler/kalori/zevk/sure
+    agirliklariyla SIRALANMIS durumda (W2-T06 skorlama motoru). LLM'in
+    isi yalnizca bu listeden secim yapmakti; o cokunce ilk 3'u aliyoruz.
+
+    Mesaj NOTR: 'yapay zeka coktu', 'hata olustu' YAZMAZ. Kullanicinin
+    umursadigi sey oneri almak; altyapi ariza detayi onun sorunu degil.
+    """
+    if not candidates:
+        return (
+            "Şu an sana uygun bir tarif bulamadım. Kilerine birkaç malzeme "
+            "ekleyip tekrar dener misin?",
+            [],
+        )
+    secilen = [c["id"] for c in candidates[:3]]
+    return (
+        "Kilerine ve hedefine en yakın {} tarifi seçtim.".format(len(secilen)),
+        secilen,
+    )
+
+
 # 5) Önbellek
 def _cache_key(user: User, intent: ChatIntent, candidate_ids: Sequence[str]) -> str:
     """sha256(soru + kullanici + aday parmak izi).
@@ -340,13 +366,23 @@ async def chat_completion(
     # burada hicbir sey pantry_items'a YAZILMAZ (bkz. pantry_service.py).
     image_hash: str | None = None
     detected: list[DetectedIngredient] = []
+    dusus_nedeni: str | None = None
     if raw_image is not None:
-        tespit = await detect_ingredients(db, raw_image=raw_image, user_id=user.id)
-        image_hash, detected = tespit.image_hash, tespit.items
+        try:
+            tespit = await detect_ingredients(db, raw_image=raw_image, user_id=user.id)
+            image_hash, detected = tespit.image_hash, tespit.items
+        except ExternalServiceError as exc:
+            dusus_nedeni = getattr(exc, "code", "vision_error")
+            logger.warning("Foto tespiti dustu (%s); sohbet fotosuz suruyor.", dusus_nedeni)
 
     lookup = get_lookup(db)
     intent = extract_intent(message, lookup)
-    adaylar, filtreler = await build_candidates(db, mongo_db, user, intent)
+    try:
+        adaylar, filtreler = await build_candidates(db, mongo_db, user, intent)
+    except ExternalServiceError as exc: 
+        dusus_nedeni = dusus_nedeni or getattr(exc, "code", "recipe_storage_error")
+        adaylar, filtreler = [], []
+        logger.error("Aday uretimi dustu (%s); bos listeyle devam ediliyor.", dusus_nedeni)
 
     anahtar = _cache_key(user, intent, [a["id"] for a in adaylar])
     # Fotografli istekte ONBELLEK ATLANIR: tespit edilen malzemeler
@@ -369,13 +405,34 @@ async def chat_completion(
         from_cache = True
     else:
         system_prompt, user_prompt = build_prompt(intent, adaylar, detected_names=[d.display_name for d in detected])
-        saglayici = get_chat_provider()
-        sonuc = await saglayici.complete(system_prompt, user_prompt)
-        mesaj, onerilen = parse_and_validate(sonuc.data, adaylar)
-        model_adi = sonuc.usage.model
-        prompt_tok, tamamlama_tok = sonuc.usage.prompt_tokens, sonuc.usage.completion_tokens
+        model_adi = prompt_tok = tamamlama_tok = None
         from_cache = False
-        if not detected:
+        if not adaylar : 
+            mesaj, onerilen = kural_tabanli_yanit(adaylar)
+            dusus_nedeni = dusus_nedeni or "no_candidates"
+        elif not sohbet_devresi.izin_var_mi():
+            mesaj, onerilen = kural_tabanli_yanit(adaylar)
+            dusus_nedeni = "chat_circuit_open"
+            logger.warning("Sohbet devresi acik; kural tabanli yanit verildi.")
+        else: 
+            try: 
+                sonuc = await get_chat_provider().complete(system_prompt, user_prompt)
+                sohbet_devresi.basarili()
+                mesaj, onerilen = parse_and_validate(sonuc.data, adaylar)
+                model_adi = sonuc.usage.model
+                prompt_tok = sonuc.usage.prompt_tokens
+                tamamlama_tok = sonuc.usage.completion_tokens
+            except ChatError as exc:
+                sohbet_devresi.basarisiz()
+                if not settings.DEGRADE_ON_PROVIDER_FAILURE:
+                    raise                      # acil geri alma anahtari
+                dusus_nedeni = getattr(exc, "code", "chat_error")
+                logger.warning("LLM dustu (%s); kural tabanli oneriye geciliyor.", dusus_nedeni)
+                mesaj, onerilen = kural_tabanli_yanit(adaylar)
+
+        # DUSUS YANITI ONBELLEGE YAZILMAZ: yoksa saglayici geri geldikten
+        # sonra da 30 dakika boyunca bayat/duz yanit servis ederiz.
+        if not detected and dusus_nedeni is None:
             _cache_yaz(db, anahtar, {"mesaj": mesaj, "onerilen_tarif_idleri": onerilen}, model_adi)
 
     db.add(ChatMessage(
@@ -400,6 +457,8 @@ async def chat_completion(
         "uygulanan_filtreler": filtreler,
         "from_cache": from_cache,
         "detected_ingredients": detected,
+        "degraded" : dusus_nedeni is not None,
+        "degraded_reason": dusus_nedeni,
     }
 
 

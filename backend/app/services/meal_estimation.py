@@ -21,7 +21,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.core.exceptions import AppError
+from app.core.exceptions import AppError, ExternalServiceError
 from app.db.mongo_schema import RECIPE_COLLECTION
 from app.models import Ingredient, Product, VisionRequestType
 from app.models.enums import PortionSize
@@ -30,12 +30,13 @@ from app.services.unit_service import (
     UnitConversionError, normalize_text, raw_to_cooked, to_grams,
 )
 from app.services.vision import (
-    VisionInvalidResponse, get_vision_provider, prepare_image,
+    VisionInvalidResponse, get_vision_provider, prepare_image, VisionError
 )
 from app.services.vision_ingredients import (
     _guveni_normalize_et, gunluk_kotayi_kontrol_et,
 )
 from app.services.vision_log import log_vision_call
+from app.core.circuit_breaker import gorme_devresi
 
 logger = logging.getLogger(__name__)
 
@@ -351,26 +352,44 @@ async def estimate_meal(
     islenmis, ozet = prepare_image(raw_image)
     saglayici = get_vision_provider()
 
+    if not gorme_devresi.izin_var_mi():
+        logger.warning("Gorme devresi acik; elle girise dusuluyor.")
+        log_vision_call(
+            db, request_type=VisionRequestType.OGUN, image_hash=ozet,
+            error_code="vision_circuit_open", user_id=user_id,
+            image_bytes=len(islenmis), provider=saglayici.name,
+        )
+        return bos_tahmin(ozet, neden="vision_circuit_open")
+
     try:
         sonuc = await saglayici.analyze(islenmis, MEAL_PROMPT)
-    except AppError as exc:
+        gorme_devresi.basarili()
+    except VisionError as exc:                      # SADECE dis servis hatasi
+        gorme_devresi.basarisiz()
         log_vision_call(
             db, request_type=VisionRequestType.OGUN, image_hash=ozet,
             error_code=getattr(exc, "code", "vision_error"),
             user_id=user_id, image_bytes=len(islenmis), provider=saglayici.name,
         )
+        if not settings.DEGRADE_ON_PROVIDER_FAILURE:
+            raise
+        return bos_tahmin(ozet, neden=getattr(exc, "code", "vision_error"))
+    except AppError:
+        # 413/415/400/429: kullanicinin duzeltebilecegi hatalar - AYNEN gider.
         raise
 
     try:
         tahmin = parse_meal_response(sonuc.data)
     except AppError as exc:
-        logger.warning("Öğün yanıtı ayrıştırılamadı: %s", sonuc.raw_text[:300])
+        logger.warning("Ogun yaniti ayristirilamadi: %s", sonuc.raw_text[:300])
         log_vision_call(
             db, request_type=VisionRequestType.OGUN, image_hash=ozet,
             error_code=getattr(exc, "code", "vision_invalid_response"),
             user_id=user_id, image_bytes=len(islenmis), provider=saglayici.name,
         )
-        raise
+        if not settings.DEGRADE_ON_PROVIDER_FAILURE:
+            raise
+        return bos_tahmin(ozet,neden=getattr(exc, "code", "vision_invalid_response"))
 
     kaynak = await resolve_calories(db, mongo_db, tahmin.dish_name)
 
@@ -432,4 +451,38 @@ async def estimate_meal(
         "requires_confirmation": True,
         "needs_manual_entry": kaynak.kcal_per_100g is None,
         "image_hash": ozet,
+    }
+
+def bos_tahmin(image_hash: str, *, neden: str) -> dict:
+    """Gorme modeli yokken donen ISKELET tahmin (W4-T15).
+
+    Neden 502 degil de 200: kullanicinin amaci 'fotografi analiz ettirmek'
+    degil, OGUN EKLEMEK. Model yoksa da bunu yapabilmeli - onay karti
+    bos adla ve varsayilan porsiyonla acilir, kullanici doldurur.
+    Porsiyon secenekleri ayarlardan uretilir; kalori bilinmedigi icin null.
+    """
+    return {
+        "dish_name": "",
+        "portion": PortionSize.ORTA,
+        "estimated_grams": porsiyon_gramlari()[PortionSize.ORTA],
+        "confidence": 0.0,
+        "scale_reference_found": False,
+        "notes": None,
+        "calories": None,
+        "calorie_confidence": 0.0,
+        "macros": None,
+        "match_source": "none",
+        "matched_id": None,
+        "matched_name": None,
+        "match_score": 0.0,
+        "portion_options": [
+            {"portion": p, "grams": g, "calories": None}
+            for p, g in porsiyon_gramlari().items()
+        ],
+        "is_estimate": True,
+        "requires_confirmation": True,
+        "needs_manual_entry": True,
+        "degraded": True,
+        "degraded_reason": neden,
+        "image_hash": image_hash,
     }

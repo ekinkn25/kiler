@@ -140,6 +140,15 @@ class Settings(BaseSettings):
     # Tek istekte bu kadar sorgu = N+1 suphesi.
     QUERY_COUNT_WARN: int = 20
 
+    # ---------- W4-T15 Dayaniklilik ----------
+    # Kac ardisik hatadan sonra saglayiciya hic gidilmesin.
+    CIRCUIT_FAILURE_THRESHOLD: int = 3
+    # Devre acik kaldiktan sonra tek deneme cagrisina izin verilene kadar gecen sure.
+    CIRCUIT_OPEN_SECONDS: float = 60
+    # Gorme/LLM coktugunde 502 yerine kural tabanli dususe gecilsin mi.
+    # Kapatilirsa eski davranis (hata firlat) geri gelir - acil geri alma anahtari.
+    DEGRADE_ON_PROVIDER_FAILURE: bool = True
+
 
 @lru_cache
 def get_settings() -> Settings:
