@@ -9,3 +9,7 @@ export 'password_strength_indicator.dart';
 export 'profil_cekmecesi.dart';
 export 'cikis_akisi.dart';
 export 'hata_gorunumu.dart';
+export 'profil_parcalari.dart';
+export 'profil_duzenle_sheet.dart';
+export 'kilo_grafigi.dart';
+export 'tema_secici.dart';

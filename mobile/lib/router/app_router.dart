@@ -9,6 +9,8 @@ import '../models/app_user.dart';
 import '../providers/auth_provider.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/profile/profile_screen.dart';
+import '../screens/profile/kilo_gecmisi_screen.dart';
+import '../screens/dev/hata_gunlugu_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
@@ -184,6 +186,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ProfileScreen(),
       ),
       GoRoute(
+        // '/profil' ALTINDA degil kardesi: alt rota yapilsaydi go_router
+        // geri yiginini profil ekranindan gecirir, cekmeceden dogrudan
+        // gelen kullanici geri basinca beklemedigi bir ekrana duserdi.
+        path: '/kilo-gecmisi',
+        name: 'kilo-gecmisi',
+        builder: (context, state) => const KiloGecmisiScreen(),
+      ),
+      GoRoute(
         path: '/onboarding',
         name: 'onboarding',
         builder: (context, state) => const OnboardingScreen(),
@@ -206,6 +216,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/dev/swipe',
         name: 'dev-swipe',
         builder: (context, state) => const DevSwipePreviewScreen(),
+      ),
+      GoRoute(
+        // '/dev' altinda: redirect bu on eki kimlik kontrolunden muaf
+        // tutuyor. Hata gunlugu bilerek boyle - giris YAPILAMADIGINDA
+        // hatayi gormek en cok ihtiyac duyulan an.
+        path: '/dev/hatalar',
+        name: 'dev-hatalar',
+        builder: (context, state) => const HataGunluguScreen(),
       ),
     ],
   );

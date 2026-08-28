@@ -5,17 +5,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/config/app_config.dart';
-// import '../core/hata/guvenli.dart';
+import '../core/hata/hata_kaydi.dart';
+import '../core/theme/tema_provider.dart';
 import '../models/app_user.dart';
 import '../providers/auth_provider.dart';
 import 'cikis_akisi.dart';
+import 'profil_parcalari.dart';
+import 'tema_secici.dart';
 
 /// Sol taraftan acilan profil cekmecesi.
 ///
 /// NEDEN VAR: /profil rotasi tanimliydi ama ona giden TEK link gelistirici
 /// ekranindaydi - yani gercek kullanici hesabini goremiyor ve CIKIS
-/// YAPAMIYORDU. Cekmece bu bosluğu kapatir ve ilerideki profil
-/// ozelliklerinin (vucut olculeri, KVKK, tema) tek toplanma noktasi olur.
+/// YAPAMIYORDU. Cekmece bu boslugu kapatir.
+///
+/// NEDEN SADECE KIMLIK + MENU: vucut olculeri, hedef ve cipler burada da
+/// duruyordu ama liste uzayinca menu ogelerini asagi itiyor ve kaydirma
+/// gerektiriyordu. O bilgiler artik ProfileScreen'de nefes alan bir
+/// duzende; cekmece hizli gecis icin sade kaldi.
 ///
 /// NEDEN MainShell'DE DEGIL: dort sekmenin her birinin KENDI Scaffold'u ve
 /// AppBar'i var. MainShell'in Scaffold'una drawer koyulursa hamburger
@@ -28,6 +35,11 @@ class ProfilCekmecesi extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final oturum = ref.watch(authProvider);
+    final temaModu = ref.watch(temaProvider);
+    // Statik halka; cekmece her acilista okunuyor. Canli dinleme icin
+    // HataKaydi'ni bir saglayiciya cevirmek gerekirdi - bir rozet ugruna
+    // hata kayit yolunu karmasiklastirmaya degmez.
+    final hataSayisi = HataKaydi.sonHatalar.length;
 
     return Drawer(
       child: SafeArea(
@@ -52,6 +64,7 @@ class ProfilCekmecesi extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.person_outline),
               title: const Text('Profilim'),
+              subtitle: const Text('Ölçüler, hedef ve tercihler'),
               onTap: () {
                 // ONCE cekmeceyi kapat, SONRA gez. Ters sirada yapilirsa
                 // yeni ekranin ustunde acik cekmece kalir.
@@ -60,13 +73,49 @@ class ProfilCekmecesi extends ConsumerWidget {
               },
             ),
 
+            ListTile(
+              leading: const Icon(Icons.monitor_weight_outlined),
+              title: const Text('Kilo Geçmişi'),
+              subtitle: Text(_kiloOzeti(oturum.valueOrNull)),
+              onTap: () {
+                Navigator.of(context).pop();
+                context.push('/kilo-gecmisi');
+              },
+            ),
+
+            const Divider(height: 24),
+
+            // ---------------------------------------------------------
+            // Gorunum ve tanilama
+            // ---------------------------------------------------------
+            ListTile(
+              leading: Icon(temaModu.ikon),
+              title: const Text('Tema'),
+              subtitle: Text(temaModu.etiket),
+              onTap: () => unawaited(temaSeciciAc(context)),
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.bug_report_outlined),
+              title: const Text('Son Hatalar'),
+              subtitle: Text(
+                hataSayisi == 0
+                    ? 'Kayıtlı hata yok'
+                    : '$hataSayisi kayıt · yalnızca bu oturum',
+              ),
+              trailing: hataSayisi == 0
+                  ? null
+                  : Badge(label: Text('$hataSayisi')),
+              onTap: () {
+                Navigator.of(context).pop();
+                context.push('/dev/hatalar');
+              },
+            ),
+
             // ---------------------------------------------------------
             // Sonraki adimlarda buraya eklenecek:
-            //   2) Vucut olculeri + hedef karti (AppUser genisletilince)
             //   3) KVKK: verilerimi indir / hesabimi sil
             //   4) Canli sayaclar (kiler, alisveris, yapacaklarim)
-            //   5) Kilo/boy duzenleme (PATCH /me/profile)
-            //   6) Tema secimi + debug: son hatalar
             // ---------------------------------------------------------
 
             const Divider(height: 24),
@@ -105,6 +154,17 @@ class ProfilCekmecesi extends ConsumerWidget {
     );
   }
 }
+
+/// 'Kilo Geçmişi' satirinin alt yazisi.
+///
+/// Oturum henuz yuklenmediyse veya anket tamamlanmadiysa sayi yerine ne ise
+/// yaradigini anlatan bir cumle duruyor - bos bir '— kg' hicbir sey soylemez.
+String _kiloOzeti(AppUser? kullanici) {
+  final kilo = kullanici?.profile?.weightKg;
+  if (kilo == null) return 'Değişimini takip et';
+  return 'Şu an ${kilo.toStringAsFixed(1)} kg';
+}
+
 // ====================================================================
 // Kimlik karti
 // ====================================================================
@@ -125,18 +185,9 @@ class _KimlikKarti extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: renkler.primary,
-            child: Text(
-              _basHarf(ad, kullanici.email),
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: renkler.onPrimary,
-              ),
-            ),
-          ),
+          // Avatar ve tarih bicimi ProfileScreen ile ORTAK
+          // (profil_parcalari.dart) - iki yerde ayri kopya tutulmuyor.
+          ProfilAvatar(ad: ad, eposta: kullanici.email),
           const SizedBox(height: 12),
           Text(
             ad.isEmpty ? 'Merhaba!' : ad,
@@ -158,7 +209,7 @@ class _KimlikKarti extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '${_tarihMetni(kullanici.createdAt)} tarihinden beri üye',
+            '${uyelikTarihi(kullanici.createdAt)} tarihinden beri üye',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: renkler.onPrimaryContainer.withValues(alpha: 0.7),
             ),
@@ -167,37 +218,6 @@ class _KimlikKarti extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Avatardaki bas harf.
-///
-/// TURKCE INCELIGI: Dart'in toUpperCase()'i dilden bagimsizdir ve
-/// 'ismail' -> 'I' verir; dogrusu 'İ'. Tek karakterlik bir ayrinti ama
-/// kullanicinin kendi adini yanlis gormesi demek.
-String _basHarf(String ad, String eposta) {
-  final kaynak = ad.isNotEmpty ? ad : eposta;
-  if (kaynak.isEmpty) return '?';
-  final ilk = kaynak[0];
-  if (ilk == 'i') return 'İ';
-  return ilk.toUpperCase();
-}
-
-/// '27 Ağustos 2026' bicimi.
-///
-/// NEDEN intl'in DateFormat'i DEGIL: Turkce ay adlari icin
-/// initializeDateFormatting('tr') cagrilmasi ve MaterialApp'e
-/// localizationsDelegates eklenmesi gerekiyor. Projede ikisi de yok;
-/// tek bir tarih icin o kurulumu yapmak yerine sabit liste yeterli.
-/// (Uygulama coklu dile gecerse burasi DateFormat'a devredilir.)
-const List<String> _aylar = [
-  'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-  'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık',
-];
-
-String _tarihMetni(DateTime utc) {
-  // Backend UTC gonderiyor; kullaniciya KENDI saat diliminde gosteriyoruz.
-  final t = utc.toLocal();
-  return '${t.day} ${_aylar[t.month - 1]} ${t.year}';
 }
 
 // ====================================================================
