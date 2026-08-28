@@ -15,7 +15,7 @@ api_router.include_router(meals.router, prefix="/meals", tags=["calories"])
 api_router.include_router(onboarding.router, prefix="/onboarding", tags=["onboarding"])
 api_router.include_router(catalog.router, prefix="/catalog", tags=["catalog"])
 api_router.include_router(shopping.router, prefix="/shopping", tags=["shopping"])
-api_router.include_router(me.router, prefix="/me", tags=["kvkk"])
+api_router.include_router(me.router, prefix="/me", tags=["me"])
 
 @api_router.get("/ping", tags=["system"], summary="Versiyonlu API canlilik testi")
 def ping() -> dict[str, bool]:
