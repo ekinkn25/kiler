@@ -35,6 +35,33 @@ String? fullNameValidator(String? value){
   return null;
 }
 
+/// Kilo ve boy sinirlari backend'deki Field(gt/lt) ile BIREBIR AYNI
+/// (backend: schemas/user.py UserProfileBase). Amac istegi bosuna
+/// gondermemek: ayni kural sunucuda da var, burasi yalnizca kullaniciya
+/// 422 yerine anlasilir bir cumle gostermek icin.
+String? kiloValidator(String? value) {
+  final v = (value ?? '').trim().replaceAll(',', '.');
+  if (v.isEmpty) return 'Kilo gerekli.';
+  final sayi = double.tryParse(v);
+  if (sayi == null) return 'Sayı girmelisin.';
+  if (sayi <= 20 || sayi >= 400) return 'Kilo 20-400 kg arasında olmalı.';
+  return null;
+}
+
+String? boyValidator(String? value) {
+  final v = (value ?? '').trim().replaceAll(',', '.');
+  if (v.isEmpty) return 'Boy gerekli.';
+  final sayi = double.tryParse(v);
+  if (sayi == null) return 'Sayı girmelisin.';
+  if (sayi <= 50 || sayi >= 260) return 'Boy 50-260 cm arasında olmalı.';
+  return null;
+}
+
+/// '78,5' -> 78.5. Turkce klavyede ondalik ayraci VIRGULDUR; double.parse
+/// virgulu kabul etmez ve kullanici neden kaydedilmedigini anlamaz.
+double? ondalikCoz(String? value) =>
+    double.tryParse((value ?? '').trim().replaceAll(',', '.'));
+
 enum PasswordStrength {weak, medium, strong }
 
 PasswordStrength calculatePasswordStength(String value){

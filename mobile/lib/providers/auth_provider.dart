@@ -105,6 +105,27 @@ class AuthNotifier extends AsyncNotifier<AppUser?> {
     state = const AsyncValue.data(null);
   }
 
+  /// PATCH /me/profile yanitini oturuma YERINDE isler - ek istek YOK.
+  ///
+  /// Backend guncel profili zaten donduruyor; tekrar /auth/me cagirmak
+  /// ayni veriyi ikinci kez indirmek olurdu.
+  void profiliDegistir(UserProfile yeniProfil) {
+    final mevcut = state.valueOrNull;
+    if (mevcut == null) return;
+    state = AsyncValue.data(mevcut.copyWith(profile: yeniProfil));
+  }
+
+  /// Profili sunucudan tazeler (yanitinda profil OLMAYAN islemler icin,
+  /// orn. kilo kaydi).
+  ///
+  /// NEDEN 'loading'E GECMIYOR: bu bir arka plan tazelemesi. state loading
+  /// olsaydi acik olan her ekran bir an iskelete donerdi - kullanici
+  /// kilosunu girdi diye profil ekraninin bosalmasi anlamsiz.
+  Future<void> profiliTazele() async {
+    final guncel = await _fetchMe();
+    if (guncel != null) state = AsyncValue.data(guncel);
+  }
+
   /// Oturumu yeniden kontrol eder (orn. ag hatasi sonrasi 'tekrar dene').
   Future<void> retry() async {
     state = const AsyncValue<AppUser?>.loading().copyWithPrevious(state);
