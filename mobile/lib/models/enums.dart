@@ -1,5 +1,7 @@
 library;
 
+import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 enum MealType { kahvalti, ogle, aksam, atistirma }
 
 MealType mealTypeFromJson(String value) => switch(value){
@@ -158,7 +160,22 @@ String unitCodeToJson(UnitCode value) => switch (value) {
   UnitCode.dilim => 'dilim',
 };
 
-enum Gender { erkek, kadin, belirtilmedi }
+// ==================================================================
+// Profil enum'lari (backend: app/models/enums.py)
+// ==================================================================
+//
+// @JsonValue NEDEN GEREKLI: bu enum'lar artik IKI yerde kullaniliyor -
+// onboarding gonderirken asagidaki elle yazilmis *ToJson fonksiyonlariyla,
+// AppUser.profile okunurken json_serializable tarafindan. Annotasyon
+// olmadan json_serializable enum'u ADIYLA kodlar ('cokYuksek'), oysa
+// backend 'cok_yuksek' bekler. Elle yazilmis fonksiyonlar bundan
+// ETKILENMEZ; ikisi yan yana calisir.
+
+enum Gender {
+  @JsonValue('erkek') erkek,
+  @JsonValue('kadin') kadin,
+  @JsonValue('belirtilmedi') belirtilmedi,
+}
 
 String genderToJson(Gender value) => switch (value) {
   Gender.erkek => 'erkek',
@@ -166,7 +183,34 @@ String genderToJson(Gender value) => switch (value) {
   Gender.belirtilmedi => 'belirtilmedi',
 };
 
-enum ActivityLevel { sedanter, hafif, orta, yuksek, cokYuksek }
+/// AppUser.profile.gender NULLABLE oldugu icin ayri sarmalayici.
+///
+/// json_serializable nullable bir alanda toJson fonksiyonunun da null
+/// kabul etmesini bekliyor. Yukaridaki genderToJson non-nullable ve
+/// onboarding onu kullaniyor - imzasini DEGISTIRMIYORUZ, sariyoruz.
+String? genderToJsonNullable(Gender? value) =>
+    value == null ? null : genderToJson(value);
+
+/// Bilinmeyen deger veya null -> null. COKMEZ.
+///
+/// NEDEN: /auth/me uygulama her acilista cagriliyor
+/// (auth_provider._restoreSession). ArgumentError firlatan bir cozumde,
+/// backend'e yarin yeni bir cinsiyet degeri eklenirse eski surumdeki
+/// uygulama splash ekraninda kilitlenirdi.
+Gender? genderFromJson(Object? value) => switch (value) {
+  'erkek' => Gender.erkek,
+  'kadin' => Gender.kadin,
+  'belirtilmedi' => Gender.belirtilmedi,
+  _ => null,
+};
+
+enum ActivityLevel {
+  @JsonValue('sedanter') sedanter,
+  @JsonValue('hafif') hafif,
+  @JsonValue('orta') orta,
+  @JsonValue('yuksek') yuksek,
+  @JsonValue('cok_yuksek') cokYuksek,
+}
 
 String activityLevelToJson(ActivityLevel value) => switch (value) {
   ActivityLevel.sedanter => 'sedanter',
@@ -176,10 +220,47 @@ String activityLevelToJson(ActivityLevel value) => switch (value) {
   ActivityLevel.cokYuksek => 'cok_yuksek',
 };
 
-enum Goal { kiloVerme, koruma, kiloAlma }
+enum Goal {
+  @JsonValue('kilo_verme') kiloVerme,
+  @JsonValue('koruma') koruma,
+  @JsonValue('kilo_alma') kiloAlma,
+}
 
 String goalToJson(Goal value) => switch (value) {
   Goal.kiloVerme => 'kilo_verme',
   Goal.koruma => 'koruma',
   Goal.kiloAlma => 'kilo_alma',
 };
+
+// ---------------------------------------------------------------- gosterim
+extension GenderGosterim on Gender {
+  String get etiket => switch (this) {
+    Gender.erkek => 'Erkek',
+    Gender.kadin => 'Kadın',
+    Gender.belirtilmedi => 'Belirtilmedi',
+  };
+}
+
+extension ActivityLevelGosterim on ActivityLevel {
+  String get etiket => switch (this) {
+    ActivityLevel.sedanter => 'Hareketsiz',
+    ActivityLevel.hafif => 'Hafif aktif',
+    ActivityLevel.orta => 'Orta aktif',
+    ActivityLevel.yuksek => 'Çok aktif',
+    ActivityLevel.cokYuksek => 'Aşırı aktif',
+  };
+}
+
+extension GoalGosterim on Goal {
+  String get etiket => switch (this) {
+    Goal.kiloVerme => 'Kilo verme',
+    Goal.koruma => 'Kiloyu koruma',
+    Goal.kiloAlma => 'Kilo alma',
+  };
+
+  IconData get ikon => switch (this) {
+    Goal.kiloVerme => Icons.trending_down,
+    Goal.koruma => Icons.trending_flat,
+    Goal.kiloAlma => Icons.trending_up,
+  };
+}
